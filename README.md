@@ -4,6 +4,12 @@ Make your undo and redo in neovim glows! This plugin does not setup or hijack th
 
 ## Previews
 
+### Undo
+https://github.com/user-attachments/assets/a8201d41-3735-44c2-b177-77f8a7063d8a
+
+### Redo
+https://github.com/user-attachments/assets/d8c99f9e-88da-4218-9396-231aa786673b
+
 ## Motivation
 
 This project is inspired by [highlight-undo.nvim](https://github.com/tzachar/highlight-undo.nvim) and I had been using the project for some time.
