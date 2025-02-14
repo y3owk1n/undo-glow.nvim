@@ -5,10 +5,12 @@ Make your undo and redo in neovim glows! This plugin does not setup or hijack th
 ## Previews
 
 ### Undo
-https://github.com/user-attachments/assets/a8201d41-3735-44c2-b177-77f8a7063d8a
+
+<https://github.com/user-attachments/assets/a8201d41-3735-44c2-b177-77f8a7063d8a>
 
 ### Redo
-https://github.com/user-attachments/assets/d8c99f9e-88da-4218-9396-231aa786673b
+
+<https://github.com/user-attachments/assets/d8c99f9e-88da-4218-9396-231aa786673b>
 
 ## Motivation
 
@@ -68,11 +70,11 @@ Here is the default configuration:
 ## API
 
 ```lua
-require("undo-glow").undo() -- Undo command
-require("undo-glow").redo() -- Redo command
+require("undo-glow").undo() -- Undo command with highlights
+require("undo-glow").redo() -- Redo command with highlights
 ```
 
-You can set it up anywhere you like, I set it up at the keymap level directly
+You can set it up anywhere you like, I set it up at the keymap level directly.
 
 ### How I set it up?
 
@@ -81,7 +83,20 @@ return {
  {
   "y3owk1n/undo-glow.nvim",
   event = { "VeryLazy" },
-  opts = {},
+  ---@param _ any
+  ---@param opts UndoGlow.Config
+  opts = function(_, opts)
+ -- How i set up the colors using catppuccin
+   local has_catppuccin, catppuccin = pcall(require, "catppuccin.palettes")
+
+   if has_catppuccin then
+    local colors = catppuccin.get_palette()
+    opts.undo_hl_color = { bg = colors.red, fg = colors.base }
+    opts.redo_hl_color = { bg = colors.flamingo, fg = colors.base }
+   end
+  end,
+  ---@param _ any
+  ---@param opts UndoGlow.Config
   config = function(_, opts)
    local undo_glow = require("undo-glow")
 
@@ -90,22 +105,6 @@ return {
    vim.keymap.set("n", "u", undo_glow.undo, { noremap = true, silent = true })
    -- I like to use U to redo instead
    vim.keymap.set("n", "U", undo_glow.redo, { noremap = true, silent = true })
-  end,
- },
- -- How i set up the colors using catppuccin
- {
-  "catppuccin/nvim",
-  optional = true,
-  opts = function(_, opts)
-   local colors = require("catppuccin.palettes").get_palette()
-   local highlights = {
-    UgUndo = { bg = colors.red, fg = colors.base },
-    UgRedo = { bg = colors.flamingo, fg = colors.base },
-   }
-   opts.custom_highlights = opts.custom_highlights or {}
-   for key, value in pairs(highlights) do
-    opts.custom_highlights[key] = value
-   end
   end,
  },
 }
