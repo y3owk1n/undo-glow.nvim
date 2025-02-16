@@ -116,8 +116,8 @@ local function clear_highlights(bufnr)
 	vim.defer_fn(function()
 		if vim.api.nvim_buf_is_valid(bufnr) then
 			vim.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
-			state.should_detach = true
 		end
+		state.should_detach = true
 	end, M.config.duration)
 end
 
