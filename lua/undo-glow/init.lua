@@ -1,7 +1,6 @@
 local M = {}
 
 local ns = vim.api.nvim_create_namespace("undo-glow")
-local should_detach = false
 
 -- Default configuration
 ---@class UndoGlow.Config
@@ -16,6 +15,12 @@ M.config = {
 	redo_hl = "UgRedo",
 	undo_hl_color = { bg = "#FF5555", fg = "#000000" },
 	redo_hl_color = { bg = "#50FA7B", fg = "#000000" },
+}
+
+---@class UndoGlow.State
+---@field should_detach boolean
+local state = {
+	should_detach = false,
 }
 
 ---@param name string Highlight name
@@ -73,7 +78,7 @@ local function on_bytes(
 	new_ec,
 	_new_off
 )
-	if should_detach then
+	if state.should_detach then
 		return true
 	end
 
@@ -108,14 +113,14 @@ end
 local function clear_highlights(bufnr)
 	vim.defer_fn(function()
 		vim.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
-		should_detach = true
+		state.should_detach = true
 	end, M.config.duration)
 end
 
 function M.undo()
 	local bufnr = vim.api.nvim_get_current_buf()
 	M.current_hlgroup = M.config.undo_hl
-	should_detach = false
+	state.should_detach = false
 	vim.api.nvim_buf_attach(bufnr, false, { on_bytes = on_bytes })
 	vim.cmd("undo")
 	vim.schedule(function()
@@ -126,7 +131,7 @@ end
 function M.redo()
 	local bufnr = vim.api.nvim_get_current_buf()
 	M.current_hlgroup = M.config.redo_hl
-	should_detach = false
+	state.should_detach = false
 	vim.api.nvim_buf_attach(bufnr, false, { on_bytes = on_bytes })
 	vim.cmd("redo")
 	vim.schedule(function()
