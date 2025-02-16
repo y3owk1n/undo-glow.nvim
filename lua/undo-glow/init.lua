@@ -114,8 +114,10 @@ end
 ---@param bufnr integer Buffer number
 local function clear_highlights(bufnr)
 	vim.defer_fn(function()
-		vim.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
-		state.should_detach = true
+		if vim.api.nvim_buf_is_valid(bufnr) then
+			vim.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
+			state.should_detach = true
+		end
 	end, M.config.duration)
 end
 
