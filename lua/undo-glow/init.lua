@@ -96,14 +96,16 @@ local function on_bytes(
 	end
 
 	vim.schedule(function()
-		highlight_range(
-			bufnr,
-			M.current_hlgroup,
-			s_row,
-			s_col,
-			end_row,
-			end_col
-		)
+		if vim.api.nvim_buf_is_valid(bufnr) then
+			highlight_range(
+				bufnr,
+				M.current_hlgroup,
+				s_row,
+				s_col,
+				end_row,
+				end_col
+			)
+		end
 	end)
 	return false
 end
