@@ -1,7 +1,6 @@
 local M = {}
 
 local ns = vim.api.nvim_create_namespace("undo-glow")
-local timer = vim.loop.new_timer()
 local should_detach = false
 
 -- Default configuration
@@ -107,15 +106,10 @@ end
 -- Clear highlights after a duration
 ---@param bufnr integer Buffer number
 local function clear_highlights(bufnr)
-	timer:stop()
-	timer:start(
-		M.config.duration,
-		0,
-		vim.schedule_wrap(function()
-			vim.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
-			should_detach = true
-		end)
-	)
+	vim.defer_fn(function()
+		vim.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
+		should_detach = true
+	end, M.config.duration)
 end
 
 function M.undo()
