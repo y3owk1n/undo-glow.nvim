@@ -17,12 +17,6 @@ M.config = {
 	redo_hl_color = { bg = "#50FA7B", fg = "#000000" },
 }
 
----@class UndoGlow.State
----@field should_detach boolean
-local state = {
-	should_detach = false,
-}
-
 ---@param name string Highlight name
 ---@param color vim.api.keyset.highlight
 local function set_highlight(name, color)
@@ -51,6 +45,7 @@ local function highlight_range(bufnr, hlgroup, s_row, s_col, e_row, e_col)
 end
 
 --- Callback to track changes
+---@param state{should_detach:boolean,current_hlgroup: string} State
 ---@param _err any Error
 ---@param bufnr integer Buffer number
 ---@param _changedtick any Changed tick
@@ -64,7 +59,8 @@ end
 ---@param new_ec integer New end column
 ---@param _new_off any New offset
 ---@return boolean
-local function on_bytes(
+local function on_bytes_wrapper(
+	state,
 	_err,
 	bufnr,
 	_changedtick,
@@ -99,7 +95,7 @@ local function on_bytes(
 		if vim.api.nvim_buf_is_valid(bufnr) then
 			highlight_range(
 				bufnr,
-				M.current_hlgroup,
+				state.current_hlgroup,
 				s_row,
 				s_col,
 				end_row,
@@ -112,7 +108,8 @@ end
 
 -- Clear highlights after a duration
 ---@param bufnr integer Buffer number
-local function clear_highlights(bufnr)
+---@param state{should_detach:boolean,current_hlgroup: string} State
+local function clear_highlights(bufnr, state)
 	vim.defer_fn(function()
 		if vim.api.nvim_buf_is_valid(bufnr) then
 			vim.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
@@ -121,26 +118,32 @@ local function clear_highlights(bufnr)
 	end, M.config.duration)
 end
 
+-- Helper to attach to a buffer with a local state.
+---@param bufnr integer
+---@param cmd 'undo'|'redo'
+local function attach_and_run(bufnr, cmd, hlgroup)
+	local state = { should_detach = false }
+	state.current_hlgroup = hlgroup
+
+	vim.api.nvim_buf_attach(bufnr, false, {
+		on_bytes = function(...)
+			return on_bytes_wrapper(state, ...)
+		end,
+	})
+
+	vim.cmd(cmd)
+
+	clear_highlights(bufnr, state)
+end
+
 function M.undo()
 	local bufnr = vim.api.nvim_get_current_buf()
-	M.current_hlgroup = M.config.undo_hl
-	state.should_detach = false
-	vim.api.nvim_buf_attach(bufnr, false, { on_bytes = on_bytes })
-	vim.cmd("undo")
-	vim.schedule(function()
-		clear_highlights(bufnr)
-	end)
+	attach_and_run(bufnr, "undo", M.config.undo_hl)
 end
 
 function M.redo()
 	local bufnr = vim.api.nvim_get_current_buf()
-	M.current_hlgroup = M.config.redo_hl
-	state.should_detach = false
-	vim.api.nvim_buf_attach(bufnr, false, { on_bytes = on_bytes })
-	vim.cmd("redo")
-	vim.schedule(function()
-		clear_highlights(bufnr)
-	end)
+	attach_and_run(bufnr, "redo", M.config.redo_hl)
 end
 
 ---@param user_config? UndoGlow.Config
