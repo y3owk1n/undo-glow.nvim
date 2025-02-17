@@ -173,6 +173,7 @@ end
 -- Helper to attach to a buffer with a local state.
 ---@param bufnr integer
 ---@param cmd 'undo'|'redo'
+---@param hlgroup string
 local function attach_and_run(bufnr, cmd, hlgroup)
 	local state = { should_detach = false }
 	state.current_hlgroup = hlgroup
