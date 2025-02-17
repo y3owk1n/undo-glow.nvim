@@ -33,15 +33,12 @@ end
 ---@param e_row integer End row
 ---@param e_col integer End column
 local function highlight_range(bufnr, hlgroup, s_row, s_col, e_row, e_col)
-	if s_row == e_row then
-		vim.api.nvim_buf_add_highlight(bufnr, ns, hlgroup, s_row, s_col, e_col)
-	else
-		vim.api.nvim_buf_add_highlight(bufnr, ns, hlgroup, s_row, s_col, -1)
-		for l = s_row + 1, e_row - 1 do
-			vim.api.nvim_buf_add_highlight(bufnr, ns, hlgroup, l, 0, -1)
-		end
-		vim.api.nvim_buf_add_highlight(bufnr, ns, hlgroup, e_row, 0, e_col)
-	end
+	vim.api.nvim_buf_set_extmark(bufnr, ns, s_row, s_col, {
+		end_row = e_row,
+		end_col = e_col,
+		hl_group = hlgroup,
+		hl_mode = "combine",
+	})
 end
 
 --- Callback to track changes
