@@ -172,9 +172,9 @@ end
 
 -- Helper to attach to a buffer with a local state.
 ---@param bufnr integer
----@param cmd 'undo'|'redo'
 ---@param hlgroup string
-local function attach_and_run(bufnr, cmd, hlgroup)
+---@param cmd function
+local function attach_and_run(bufnr, hlgroup, cmd)
 	local state = { should_detach = false }
 	state.current_hlgroup = hlgroup
 
@@ -184,19 +184,23 @@ local function attach_and_run(bufnr, cmd, hlgroup)
 		end,
 	})
 
-	vim.cmd(cmd)
+	cmd()
 
 	clear_highlights(bufnr, state)
 end
 
 function M.undo()
 	local bufnr = vim.api.nvim_get_current_buf()
-	attach_and_run(bufnr, "undo", M.config.undo_hl)
+	attach_and_run(bufnr, M.config.undo_hl, function()
+		vim.cmd("undo")
+	end)
 end
 
 function M.redo()
 	local bufnr = vim.api.nvim_get_current_buf()
-	attach_and_run(bufnr, "redo", M.config.redo_hl)
+	attach_and_run(bufnr, M.config.redo_hl, function()
+		vim.cmd("redo")
+	end)
 end
 
 ---@param user_config? UndoGlow.Config
