@@ -73,10 +73,8 @@ Here is the default configuration:
 require("undo-glow").undo() -- Undo command with highlights
 require("undo-glow").redo() -- Redo command with highlights
 ---@param hlgroup string
----@param cmd function
+---@param cmd? function Function to run some action
 require("undo-glow").attach_and_run(hlgroup, cmd) -- API to create custom actions that glows
----@param hlgroup? string Default to undo_hl
-require("undo-glow").track_changes(hlgroup?) -- Track changes and highlight them
 ```
 
 You can set it up anywhere you like, I set it up at the keymap level directly.
@@ -109,7 +107,7 @@ vim.api.nvim_create_autocmd({ "TextChanged" }, {
  pattern = "*",
  callback = function()
   vim.schedule(function()
-   require("undo-glow").track_changes()
+   require("undo-glow").attach_and_run("UgUndo")
   end)
  end,
 })

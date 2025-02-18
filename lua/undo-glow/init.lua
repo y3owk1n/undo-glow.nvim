@@ -96,6 +96,18 @@ local function highlight_range(bufnr, hlgroup, s_row, s_col, e_row, e_col)
 	})
 end
 
+-- Clear highlights after a duration
+---@param bufnr integer Buffer number
+---@param state{should_detach:boolean,current_hlgroup: string} State
+local function clear_highlights(bufnr, state)
+	vim.defer_fn(function()
+		if vim.api.nvim_buf_is_valid(bufnr) then
+			vim.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
+		end
+		state.should_detach = true
+	end, M.config.duration)
+end
+
 --- Callback to track changes
 ---@param state{should_detach:boolean,current_hlgroup: string} State
 ---@param _err any Error
@@ -153,26 +165,15 @@ local function on_bytes_wrapper(
 				end_row,
 				end_col
 			)
+			clear_highlights(bufnr, state)
 		end
 	end)
 	return false
 end
 
--- Clear highlights after a duration
----@param bufnr integer Buffer number
----@param state{should_detach:boolean,current_hlgroup: string} State
-local function clear_highlights(bufnr, state)
-	vim.defer_fn(function()
-		if vim.api.nvim_buf_is_valid(bufnr) then
-			vim.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
-		end
-		state.should_detach = true
-	end, M.config.duration)
-end
-
 -- Helper to attach to a buffer with a local state.
 ---@param hlgroup string
----@param cmd function
+---@param cmd? function
 function M.attach_and_run(hlgroup, cmd)
 	local bufnr = vim.api.nvim_get_current_buf()
 
@@ -184,39 +185,9 @@ function M.attach_and_run(hlgroup, cmd)
 		end,
 	})
 
-	cmd()
-
-	clear_highlights(bufnr, state)
-end
-
--- Track changes and highlight them.
----@param hlgroup? string Default to undo_hl
-function M.track_changes(hlgroup)
-	local bufnr = vim.api.nvim_get_current_buf()
-	local state =
-		{ should_detach = false, current_hlgroup = hlgroup or M.config.undo_hl }
-
-	local on_lines = function(_, _, _, first_line, last_line)
-		if state.should_detach then
-			return true
-		end
-		vim.schedule(function()
-			highlight_range(
-				bufnr,
-				state.current_hlgroup,
-				first_line,
-				0,
-				last_line,
-				0
-			)
-			clear_highlights(bufnr, state)
-		end)
-		return false
+	if cmd then
+		cmd()
 	end
-
-	vim.api.nvim_buf_attach(bufnr, false, {
-		on_lines = on_lines,
-	})
 end
 
 function M.undo()
