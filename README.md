@@ -76,6 +76,27 @@ require("undo-glow").redo() -- Redo command with highlights
 
 You can set it up anywhere you like, I set it up at the keymap level directly.
 
+### Creating custom command to highlight
+
+```lua
+function some_action()
+ require("undo-glow").attach_and_run("your_desired_hl_group", function()
+  do_something_here()
+ end)
+end
+
+--- then you can use it to bind to anywhere just like before. Undo and redo command are fundamentally doing the same thing.
+
+--- Example of undo function
+function M.undo()
+ M.attach_and_run(M.config.undo_hl, function()
+  vim.cmd("undo")
+ end)
+end
+````
+
+Feel free to send a PR if you think there are some good actions that can be merged into the source.
+
 ### How I set it up?
 
 ```lua

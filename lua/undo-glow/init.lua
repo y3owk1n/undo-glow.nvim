@@ -173,11 +173,10 @@ end
 -- Helper to attach to a buffer with a local state.
 ---@param hlgroup string
 ---@param cmd function
-local function attach_and_run(hlgroup, cmd)
+function M.attach_and_run(hlgroup, cmd)
 	local bufnr = vim.api.nvim_get_current_buf()
 
-	local state = { should_detach = false }
-	state.current_hlgroup = hlgroup
+	local state = { should_detach = false, current_hlgroup = hlgroup }
 
 	vim.api.nvim_buf_attach(bufnr, false, {
 		on_bytes = function(...)
@@ -191,13 +190,13 @@ local function attach_and_run(hlgroup, cmd)
 end
 
 function M.undo()
-	attach_and_run(M.config.undo_hl, function()
+	M.attach_and_run(M.config.undo_hl, function()
 		vim.cmd("undo")
 	end)
 end
 
 function M.redo()
-	attach_and_run(M.config.redo_hl, function()
+	M.attach_and_run(M.config.redo_hl, function()
 		vim.cmd("redo")
 	end)
 end
