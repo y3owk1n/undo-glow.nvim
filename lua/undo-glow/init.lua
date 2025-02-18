@@ -189,6 +189,36 @@ function M.attach_and_run(hlgroup, cmd)
 	clear_highlights(bufnr, state)
 end
 
+-- Track changes and highlight them.
+---@param hlgroup? string Default to undo_hl
+function M.track_changes(hlgroup)
+	local bufnr = vim.api.nvim_get_current_buf()
+	local state =
+		{ should_detach = false, current_hlgroup = hlgroup or M.config.undo_hl }
+
+	local on_lines = function(_, _, _, first_line, last_line)
+		if state.should_detach then
+			return true
+		end
+		vim.schedule(function()
+			highlight_range(
+				bufnr,
+				state.current_hlgroup,
+				first_line,
+				0,
+				last_line,
+				0
+			)
+			clear_highlights(bufnr, state)
+		end)
+		return false
+	end
+
+	vim.api.nvim_buf_attach(bufnr, false, {
+		on_lines = on_lines,
+	})
+end
+
 function M.undo()
 	M.attach_and_run(M.config.undo_hl, function()
 		vim.cmd("undo")

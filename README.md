@@ -72,6 +72,7 @@ Here is the default configuration:
 ```lua
 require("undo-glow").undo() -- Undo command with highlights
 require("undo-glow").redo() -- Redo command with highlights
+require("undo-glow").track_changes() -- Track changes and highlight them
 ```
 
 You can set it up anywhere you like, I set it up at the keymap level directly.
@@ -96,6 +97,23 @@ end
 ````
 
 Feel free to send a PR if you think there are some good actions that can be merged into the source.
+
+### Creating an autocmd that will highlight anything when textChanged
+
+```lua
+vim.api.nvim_create_autocmd({ "TextChanged" }, {
+ pattern = "*",
+ callback = function()
+  vim.schedule(function()
+   require("undo-glow").track_changes()
+  end)
+ end,
+})
+```
+
+> As per docs for `TextChanged`, `Careful: This is triggered very often, don't do anything that the user does not expect or that is slow.`, so please becareful about this. I personnaly do not use autocmd for this purpose.
+
+Feel free to send a PR if you think anything can be improved to better support autocmd
 
 ### How I set it up?
 
