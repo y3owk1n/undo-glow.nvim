@@ -171,10 +171,11 @@ local function clear_highlights(bufnr, state)
 end
 
 -- Helper to attach to a buffer with a local state.
----@param bufnr integer
 ---@param hlgroup string
 ---@param cmd function
-local function attach_and_run(bufnr, hlgroup, cmd)
+local function attach_and_run(hlgroup, cmd)
+	local bufnr = vim.api.nvim_get_current_buf()
+
 	local state = { should_detach = false }
 	state.current_hlgroup = hlgroup
 
@@ -190,15 +191,13 @@ local function attach_and_run(bufnr, hlgroup, cmd)
 end
 
 function M.undo()
-	local bufnr = vim.api.nvim_get_current_buf()
-	attach_and_run(bufnr, M.config.undo_hl, function()
+	attach_and_run(M.config.undo_hl, function()
 		vim.cmd("undo")
 	end)
 end
 
 function M.redo()
-	local bufnr = vim.api.nvim_get_current_buf()
-	attach_and_run(bufnr, M.config.redo_hl, function()
+	attach_and_run(M.config.redo_hl, function()
 		vim.cmd("redo")
 	end)
 end
