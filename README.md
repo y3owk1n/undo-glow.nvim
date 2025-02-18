@@ -72,7 +72,11 @@ Here is the default configuration:
 ```lua
 require("undo-glow").undo() -- Undo command with highlights
 require("undo-glow").redo() -- Redo command with highlights
-require("undo-glow").track_changes() -- Track changes and highlight them
+---@param hlgroup string
+---@param cmd function
+require("undo-glow").attach_and_run(hlgroup, cmd) -- API to create custom actions that glows
+---@param hlgroup? string Default to undo_hl
+require("undo-glow").track_changes(hlgroup?) -- Track changes and highlight them
 ```
 
 You can set it up anywhere you like, I set it up at the keymap level directly.
