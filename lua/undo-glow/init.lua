@@ -171,13 +171,16 @@ local function on_bytes_wrapper(
 	return false
 end
 
+---@class UndoGlow.AttachAndRunOpts
+---@field hlgroup string
+---@field cmd? function
+
 -- Helper to attach to a buffer with a local state.
----@param hlgroup string
----@param cmd? function
-function M.attach_and_run(hlgroup, cmd)
+---@param opts UndoGlow.AttachAndRunOpts
+function M.attach_and_run(opts)
 	local bufnr = vim.api.nvim_get_current_buf()
 
-	local state = { should_detach = false, current_hlgroup = hlgroup }
+	local state = { should_detach = false, current_hlgroup = opts.hlgroup }
 
 	vim.api.nvim_buf_attach(bufnr, false, {
 		on_bytes = function(...)
@@ -185,21 +188,27 @@ function M.attach_and_run(hlgroup, cmd)
 		end,
 	})
 
-	if cmd then
-		cmd()
+	if opts.cmd then
+		opts.cmd()
 	end
 end
 
 function M.undo()
-	M.attach_and_run(M.config.undo_hl, function()
-		vim.cmd("undo")
-	end)
+	M.attach_and_run({
+		hlgroup = M.config.undo_hl,
+		cmd = function()
+			vim.cmd("undo")
+		end,
+	})
 end
 
 function M.redo()
-	M.attach_and_run(M.config.redo_hl, function()
-		vim.cmd("redo")
-	end)
+	M.attach_and_run({
+		hlgroup = M.config.redo_hl,
+		cmd = function()
+			vim.cmd("redo")
+		end,
+	})
 end
 
 ---@param user_config? UndoGlow.Config

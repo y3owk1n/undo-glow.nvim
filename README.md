@@ -71,10 +71,14 @@ Here is the default configuration:
 
 ```lua
 require("undo-glow").undo() -- Undo command with highlights
+
 require("undo-glow").redo() -- Redo command with highlights
----@param hlgroup string
----@param cmd? function Function to run some action
-require("undo-glow").attach_and_run(hlgroup, cmd) -- API to create custom actions that glows
+
+---@class UndoGlow.AttachAndRunOpts
+---@field hlgroup string
+---@field cmd? function
+---@param opts UndoGlow.AttachAndRunOpts
+require("undo-glow").attach_and_run(opts) -- API to create custom actions that glows
 ```
 
 You can set it up anywhere you like, I set it up at the keymap level directly.
@@ -83,18 +87,24 @@ You can set it up anywhere you like, I set it up at the keymap level directly.
 
 ```lua
 function some_action()
- require("undo-glow").attach_and_run("your_desired_hl_group", function()
-  do_something_here()
- end)
+ require("undo-glow").attach_and_run({
+  hlgroup = "hlgroup",
+  cmd = function()
+   do_something_here()
+  end
+ })
 end
 
 --- then you can use it to bind to anywhere just like before. Undo and redo command are fundamentally doing the same thing.
 
 --- Example of undo function
 function M.undo()
- M.attach_and_run(M.config.undo_hl, function()
-  vim.cmd("undo")
- end)
+ M.attach_and_run({
+  hlgroup = M.config.undo_hl,
+  cmd = function()
+   vim.cmd("undo")
+  end,
+ })
 end
 ````
 
@@ -107,7 +117,9 @@ vim.api.nvim_create_autocmd({ "TextChanged" }, {
  pattern = "*",
  callback = function()
   vim.schedule(function()
-   require("undo-glow").attach_and_run("UgUndo")
+   require("undo-glow").attach_and_run({
+    hlgroup = "UgUndo"
+   })
   end)
  end,
 })
