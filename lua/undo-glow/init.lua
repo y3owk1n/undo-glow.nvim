@@ -14,8 +14,10 @@ local counter = 0 -- For unique highlight groups
 ---@class UndoGlow.HlColor
 ---@field bg string
 ---@field fg string
+
 ---@class UndoGlow.State
 ---@field current_hlgroup string
+---@field should_detach boolean
 
 ---@class UndoGlow.RGBColor
 ---@field r integer Red (0-255)
@@ -247,6 +249,8 @@ local function clear_highlights(bufnr, state, hlgroup, start_bg, start_fg)
 			end
 		end, M.config.duration)
 	end
+
+	state.should_detach = true
 end
 
 --- Callback to track changes
@@ -279,6 +283,10 @@ local function on_bytes_wrapper(
 	new_ec,
 	_new_off
 )
+	if state.should_detach then
+		return true
+	end
+
 	-- Calculate the ending position.
 	local end_row, end_col
 	if new_er == 0 then
@@ -331,7 +339,7 @@ function M.attach_and_run(opts)
 	local bufnr = vim.api.nvim_get_current_buf()
 
 	---@type UndoGlow.State
-	local state = { current_hlgroup = opts.hlgroup }
+	local state = { should_detach = false, current_hlgroup = opts.hlgroup }
 
 	vim.api.nvim_buf_attach(bufnr, false, {
 		on_bytes = function(...)
