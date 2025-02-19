@@ -1,0 +1,247 @@
+*undo-glow.nvim.txt*             For             Last change: 2025 February 20
+
+==============================================================================
+Table of Contents                           *undo-glow.nvim-table-of-contents*
+
+1. undo-glow.nvim                              |undo-glow.nvim-undo-glow.nvim|
+  - Previews                          |undo-glow.nvim-undo-glow.nvim-previews|
+  - Motivation                      |undo-glow.nvim-undo-glow.nvim-motivation|
+  - Contents                          |undo-glow.nvim-undo-glow.nvim-contents|
+  - Installation                  |undo-glow.nvim-undo-glow.nvim-installation|
+  - Configuration                |undo-glow.nvim-undo-glow.nvim-configuration|
+  - API                                    |undo-glow.nvim-undo-glow.nvim-api|
+  - Contributing                  |undo-glow.nvim-undo-glow.nvim-contributing|
+
+==============================================================================
+1. undo-glow.nvim                              *undo-glow.nvim-undo-glow.nvim*
+
+Make your undo and redo in neovim glows! This plugin does not setup or hijack
+the keymaps but provides api for you to hook into.
+
+
+PREVIEWS                              *undo-glow.nvim-undo-glow.nvim-previews*
+
+
+UNDO WITH ANIMATION ~
+
+
+<https://github.com/user-attachments/assets/b83ca873-3656-4f37-85d8-a04bd64af86f>
+
+
+UNDO WITHOUT ANIMATION ~
+
+
+<https://github.com/user-attachments/assets/f1e08be8-9356-4844-ae3b-a7e9c22a83e0>
+
+
+REDO WITH ANIMATION ~
+
+
+<https://github.com/user-attachments/assets/2cf762d2-dada-4786-a602-d71cdd15c560>
+
+
+REDO WITHOUT ANIMATION ~
+
+
+<https://github.com/user-attachments/assets/13e08e01-0ad2-4907-ab2f-a9e5e203746e>
+
+
+MOTIVATION                          *undo-glow.nvim-undo-glow.nvim-motivation*
+
+This project is inspired by highlight-undo.nvim
+<https://github.com/tzachar/highlight-undo.nvim> and I had been using the
+project for some time.
+
+However, on and off the plugins will break my existing configuration due to
+some code changes from the source. Hence i created this 100+ line of code
+simple plugin that only does 1 thing, highlight the changes whenever I perform
+undo or redo.
+
+For this project, there is no autocmd that being setup, but just pure lua
+function as an API to hook into your configuration.
+
+
+CONTENTS                              *undo-glow.nvim-undo-glow.nvim-contents*
+
+- |undo-glow.nvim-installation|
+- |undo-glow.nvim-configuration|
+- |undo-glow.nvim-api|
+- |undo-glow.nvim-contributing|
+
+
+INSTALLATION                      *undo-glow.nvim-undo-glow.nvim-installation*
+
+Using lazy.nvim <https://github.com/folke/lazy.nvim>:
+
+>lua
+    -- undo-glow.lua
+    return {
+     "y3owk1n/undo-glow.nvim",
+     opts = {} -- your configuration
+    }
+<
+
+If you are using other package managers you need to call `setup`:
+
+>lua
+    require("undo-glow").setup({
+      -- your configuration
+    })
+<
+
+
+CONFIGURATION                    *undo-glow.nvim-undo-glow.nvim-configuration*
+
+Here is the default configuration:
+
+>lua
+    ---@class UndoGlow.Config
+    ---@field duration number In ms
+    ---@field animation boolean
+    ---@field fps number
+    ---@field undo_hl string
+    ---@field redo_hl string
+    ---@field undo_hl_color UndoGlow.HlColor
+    ---@field redo_hl_color UndoGlow.HlColor
+    
+    ---@class UndoGlow.HlColor
+    ---@field bg string Background color
+    ---@field fg? string Optional for text color (Without this, it will just remain the existing text color as it is)
+    {
+     duration = 500, -- in ms
+     animation = true, -- whether to turn on or off for animation
+     fps = 120, -- change the fps, normally either 60 / 120
+     undo_hl = "UgUndo", -- highlight
+     redo_hl = "UgRedo", -- highlight
+     undo_hl_color = { bg = "#FF5555" }, -- ugly red color, please change it!
+     redo_hl_color = { bg = "#50FA7B" }, -- ugly green color, please change it!
+    }
+<
+
+
+API                                        *undo-glow.nvim-undo-glow.nvim-api*
+
+>lua
+    require("undo-glow").undo() -- Undo command with highlights
+    
+    require("undo-glow").redo() -- Redo command with highlights
+    
+    ---@class UndoGlow.AttachAndRunOpts
+    ---@field hlgroup string
+    ---@field cmd? function
+    ---@param opts UndoGlow.AttachAndRunOpts
+    require("undo-glow").attach_and_run(opts) -- API to create custom actions that highlights
+<
+
+You can set it up anywhere you like, I set it up at the keymap level directly.
+
+
+CREATING CUSTOM COMMAND TO HIGHLIGHT ~
+
+>lua
+    function some_action()
+     require("undo-glow").attach_and_run({
+      hlgroup = "hlgroup",
+      cmd = function()
+       do_something_here()
+      end
+     })
+    end
+    
+    --- then you can use it to bind to anywhere just like before. Undo and redo command are fundamentally doing the same thing.
+    
+    --- Example of undo function
+    function M.undo()
+     M.attach_and_run({
+      hlgroup = M.config.undo_hl,
+      cmd = function()
+       vim.cmd("undo")
+      end,
+     })
+    end
+<
+
+Feel free to send a PR if you think there are some good actions that can be
+merged into the source.
+
+
+CREATING AN AUTOCMD THAT WILL HIGHLIGHT ANYTHING WHEN TEXTCHANGED ~
+
+>lua
+    -- Also add `BufReadPost` so that it will also highlight for first changes
+    vim.api.nvim_create_autocmd({ "BufReadPost", "TextChanged" }, {
+     pattern = "*",
+     callback = function()
+      -- Either provide a list of ignored filetypes
+      local ignored_filetypes = { "mason", "snacks_picker_list", "lazy" }
+      if vim.tbl_contains(ignored_filetypes, vim.bo.filetype) then
+       return
+      end
+    
+      -- or just use buftype to ignore all other type
+      if vim.bo.buftype ~= "" then
+       return
+      end
+    
+      -- then run undo-glow with your desired hlgroup
+      vim.schedule(function()
+       require("undo-glow").attach_and_run({
+        hlgroup = "UgUndo",
+       })
+      end)
+     end,
+    })
+<
+
+
+  As per docs for `TextChanged`, `Careful: This is triggered very often, don't do
+  anything that the user does not expect or that is slow.`, so please becareful
+  about this. I personnaly do not use autocmd for this purpose.
+Feel free to send a PR if you think anything can be improved to better support
+autocmd
+
+
+HOW I SET IT UP? ~
+
+>lua
+    return {
+     {
+      "y3owk1n/undo-glow.nvim",
+      event = { "VeryLazy" },
+      ---@param _ any
+      ---@param opts UndoGlow.Config
+      opts = function(_, opts)
+      -- How i set up the colors using catppuccin
+       local has_catppuccin, catppuccin = pcall(require, "catppuccin.palettes")
+    
+       if has_catppuccin then
+        local colors = catppuccin.get_palette()
+        opts.undo_hl_color = { bg = colors.red }
+        opts.redo_hl_color = { bg = colors.flamingo }
+       end
+      end,
+      ---@param _ any
+      ---@param opts UndoGlow.Config
+      config = function(_, opts)
+       local undo_glow = require("undo-glow")
+    
+       undo_glow.setup(opts)
+    
+       vim.keymap.set("n", "u", undo_glow.undo, { noremap = true, silent = true })
+       -- I like to use U to redo instead
+       vim.keymap.set("n", "U", undo_glow.redo, { noremap = true, silent = true })
+      end,
+     },
+    }
+<
+
+
+CONTRIBUTING                      *undo-glow.nvim-undo-glow.nvim-contributing*
+
+Read the documentation carefully before submitting any issue.
+
+Feature and pull requests are welcome.
+
+Generated by panvimdoc <https://github.com/kdheepak/panvimdoc>
+
+vim:tw=78:ts=8:noet:ft=help:norl:
