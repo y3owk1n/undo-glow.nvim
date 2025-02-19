@@ -28,6 +28,11 @@ local counter = 0 -- For unique highlight groups
 ---@field hlgroup string
 ---@field cmd? function
 
+local default_bg = "#000000"
+local default_fg = "#FFFFFF"
+local default_undo = { bg = "#FF5555", fg = default_bg }
+local default_redo = { bg = "#50FA7B", fg = default_bg }
+
 -- Default configuration
 ---@type UndoGlow.Config
 M.config = {
@@ -35,8 +40,8 @@ M.config = {
 	animation = true,
 	undo_hl = "UgUndo",
 	redo_hl = "UgRedo",
-	undo_hl_color = { bg = "#FF5555", fg = "#000000" },
-	redo_hl_color = { bg = "#50FA7B", fg = "#000000" },
+	undo_hl_color = default_undo,
+	redo_hl_color = default_redo,
 }
 
 -- Utility functions for color manipulation and easing
@@ -79,7 +84,7 @@ local function get_normal_bg()
 	if normal.bg then
 		return string.format("#%06X", normal.bg)
 	else
-		return "#000000"
+		return default_bg
 	end
 end
 
@@ -89,7 +94,7 @@ local function get_normal_fg()
 	if normal.fg then
 		return string.format("#%06X", normal.fg)
 	else
-		return "#FFFFFF"
+		return default_fg
 	end
 end
 
@@ -305,10 +310,28 @@ local function on_bytes_wrapper(
 			counter = counter + 1
 			local unique_hlgroup = state.current_hlgroup .. "_" .. counter
 
-			local init_color = (
-				state.current_hlgroup == M.config.undo_hl
-				and M.config.undo_hl_color
-			) or M.config.redo_hl_color
+			local current_hlgroup_detail =
+				vim.api.nvim_get_hl(0, { name = state.current_hlgroup })
+
+			local bg = nil
+			local fg = nil
+
+			if not current_hlgroup_detail.bg then
+				bg = default_undo.bg
+			else
+				bg = string.format("#%06X", current_hlgroup_detail.bg)
+			end
+
+			if not current_hlgroup_detail.fg then
+				fg = default_undo.fg
+			else
+				fg = string.format("#%06X", current_hlgroup_detail.fg)
+			end
+
+			local init_color = {
+				bg = bg,
+				fg = fg,
+			}
 
 			set_highlight(unique_hlgroup, init_color)
 
@@ -373,6 +396,9 @@ end
 ---@param user_config? UndoGlow.Config
 function M.setup(user_config)
 	M.config = vim.tbl_extend("force", M.config, user_config or {})
+
+	set_highlight(M.config.undo_hl, M.config.undo_hl_color)
+	set_highlight(M.config.redo_hl, M.config.redo_hl_color)
 end
 
 return M
