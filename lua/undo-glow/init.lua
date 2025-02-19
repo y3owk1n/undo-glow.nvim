@@ -1,21 +1,107 @@
 local M = {}
 
 local ns = vim.api.nvim_create_namespace("undo-glow")
+local counter = 0 -- For unique highlight groups
 
 -- Default configuration
 ---@class UndoGlow.Config
 ---@field duration number In ms
+---@field animation boolean
 ---@field undo_hl string
 ---@field redo_hl string
 ---@field undo_hl_color vim.api.keyset.highlight
 ---@field redo_hl_color vim.api.keyset.highlight
 M.config = {
 	duration = 300,
+	animation = true,
 	undo_hl = "UgUndo",
 	redo_hl = "UgRedo",
 	undo_hl_color = { bg = "#FF5555", fg = "#000000" },
 	redo_hl_color = { bg = "#50FA7B", fg = "#000000" },
 }
+
+---@class UndoGlow.RGBColor
+---@field r integer Red (0-255)
+---@field g integer Green (0-255)
+---@field b integer Blue (0-255)
+
+-- Utility functions for color manipulation and easing
+---@param hex string
+---@return UndoGlow.RGBColor
+local function hex_to_rgb(hex)
+	hex = hex:gsub("#", "")
+	return {
+		r = tonumber(hex:sub(1, 2), 16),
+		g = tonumber(hex:sub(3, 4), 16),
+		b = tonumber(hex:sub(5, 6), 16),
+	}
+end
+---@param rgb UndoGlow.RGBColor
+---@return string
+local function rgb_to_hex(rgb)
+	return string.format("#%02X%02X%02X", rgb.r, rgb.g, rgb.b)
+end
+
+---@param c1 UndoGlow.RGBColor
+---@param c2 UndoGlow.RGBColor
+---@param t number (0-1) Interpolation factor
+---@return string
+local function blend_color(c1, c2, t)
+	local r = math.floor(c1.r + (c2.r - c1.r) * t + 0.5)
+	local g = math.floor(c1.g + (c2.g - c1.g) * t + 0.5)
+	local b = math.floor(c1.b + (c2.b - c1.b) * t + 0.5)
+	return rgb_to_hex({ r = r, g = g, b = b })
+end
+
+---@param t number (0-1) Interpolation factor
+---@return number
+local function ease_out_quad(t)
+	return 1 - (1 - t) * (1 - t)
+end
+
+---@return string
+local function get_normal_bg()
+	local normal = vim.api.nvim_get_hl(0, { name = "Normal" })
+	if normal.bg then
+		return string.format("#%06X", normal.bg)
+	else
+		return "#000000"
+	end
+end
+
+-- Animate the fadeout of a highlight group from a start color to the Normal background
+---@param bufnr integer Buffer number
+---@param hlgroup string
+---@param start_color UndoGlow.RGBColor
+---@param end_color UndoGlow.RGBColor
+---@param duration integer
+local function animate_fadeout(bufnr, hlgroup, start_color, end_color, duration)
+	local start_time = vim.loop.hrtime()
+	local interval = 16 -- roughly 60 FPS (16ms per frame)
+	local timer = vim.loop.new_timer()
+
+	timer:start(
+		0,
+		interval,
+		vim.schedule_wrap(function()
+			local now = vim.loop.hrtime()
+			local elapsed = (now - start_time) / 1e6 -- convert from ns to ms
+			local t = math.min(elapsed / duration, 1)
+			local eased = ease_out_quad(t)
+			local blended = blend_color(start_color, end_color, eased)
+
+			vim.api.nvim_set_hl(0, hlgroup, { bg = blended })
+
+			if t >= 1 then
+				timer:stop()
+				timer:close()
+				if vim.api.nvim_buf_is_valid(bufnr) then
+					vim.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
+				end
+			end
+		end)
+	)
+end
 
 ---@param name string Highlight name
 ---@param color vim.api.keyset.highlight
@@ -96,16 +182,30 @@ local function highlight_range(bufnr, hlgroup, s_row, s_col, e_row, e_col)
 	})
 end
 
--- Clear highlights after a duration
+-- Animate or clear highlights after a duration
 ---@param bufnr integer Buffer number
 ---@param state{should_detach:boolean,current_hlgroup: string} State
-local function clear_highlights(bufnr, state)
-	vim.defer_fn(function()
-		if vim.api.nvim_buf_is_valid(bufnr) then
-			vim.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
-		end
-		state.should_detach = true
-	end, M.config.duration)
+---@param hlgroup string Unique highlight group name
+---@param start_bg string The starting background color (hex)
+local function clear_highlights(bufnr, state, hlgroup, start_bg)
+	local end_bg = get_normal_bg()
+
+	if M.config.animation then
+		animate_fadeout(
+			bufnr,
+			hlgroup,
+			hex_to_rgb(start_bg),
+			hex_to_rgb(end_bg),
+			M.config.duration
+		)
+	else
+		vim.defer_fn(function()
+			if vim.api.nvim_buf_is_valid(bufnr) then
+				vim.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
+			end
+		end, M.config.duration)
+	end
+	state.should_detach = true
 end
 
 --- Callback to track changes
@@ -157,15 +257,26 @@ local function on_bytes_wrapper(
 
 	vim.schedule(function()
 		if vim.api.nvim_buf_is_valid(bufnr) then
+			counter = counter + 1
+			local unique_hlgroup = state.current_hlgroup .. "_" .. counter
+
+			local init_color = (
+				state.current_hlgroup == M.config.undo_hl
+				and M.config.undo_hl_color
+			) or M.config.redo_hl_color
+
+			set_highlight(unique_hlgroup, init_color)
+
 			highlight_range(
 				bufnr,
-				state.current_hlgroup,
+				unique_hlgroup,
 				s_row,
 				s_col,
 				end_row,
 				end_col
 			)
-			clear_highlights(bufnr, state)
+
+			clear_highlights(bufnr, state, unique_hlgroup, init_color.bg)
 		end
 	end)
 	return false

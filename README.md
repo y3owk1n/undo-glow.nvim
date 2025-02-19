@@ -52,14 +52,16 @@ require("undo-glow").setup({
 Here is the default configuration:
 
 ```lua
----@type UndoGlow.Config
+---@class UndoGlow.Config
 ---@field duration number In ms
+---@field animation boolean
 ---@field undo_hl string
 ---@field redo_hl string
 ---@field undo_hl_color vim.api.keyset.highlight
 ---@field redo_hl_color vim.api.keyset.highlight
 {
  duration = 300, -- in ms
+ animation = true, -- whether to turn on or off for animation
  undo_hl = "UgUndo", -- highlight
  redo_hl = "UgRedo", -- highlight
  undo_hl_color = { bg = "#FF5555", fg = "#000000" }, -- ugly red color, please change it!
