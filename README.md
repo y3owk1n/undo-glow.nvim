@@ -68,14 +68,18 @@ Here is the default configuration:
 ---@field redo_hl string
 ---@field undo_hl_color UndoGlow.HlColor
 ---@field redo_hl_color UndoGlow.HlColor
+
+---@class UndoGlow.HlColor
+---@field bg string Background color
+---@field fg? string Optional for text color (Without this, it will just remain the existing text color as it is)
 {
  duration = 300, -- in ms
  animation = true, -- whether to turn on or off for animation
  fps = 120, -- change the fps, normally either 60 / 120
  undo_hl = "UgUndo", -- highlight
  redo_hl = "UgRedo", -- highlight
- undo_hl_color = { bg = "#FF5555", fg = "#000000" }, -- ugly red color, please change it!
- redo_hl_color = { bg = "#50FA7B", fg = "#000000" }, -- ugly green color, please change it!
+ undo_hl_color = { bg = "#FF5555" }, -- ugly red color, please change it!
+ redo_hl_color = { bg = "#50FA7B" }, -- ugly green color, please change it!
 }
 ```
 
@@ -168,8 +172,8 @@ return {
 
    if has_catppuccin then
     local colors = catppuccin.get_palette()
-    opts.undo_hl_color = { bg = colors.red, fg = colors.base }
-    opts.redo_hl_color = { bg = colors.flamingo, fg = colors.base }
+    opts.undo_hl_color = { bg = colors.red }
+    opts.redo_hl_color = { bg = colors.flamingo }
    end
   end,
   ---@param _ any
