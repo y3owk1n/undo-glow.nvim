@@ -116,13 +116,18 @@ Feel free to send a PR if you think there are some good actions that can be merg
 vim.api.nvim_create_autocmd({ "TextChanged" }, {
  pattern = "*",
  callback = function()
-  -- Provide a list of ignored filetypes
+  -- Either provide a list of ignored filetypes
   local ignored_filetypes = { "mason", "snacks_picker_list", "lazy" }
-
   if vim.tbl_contains(ignored_filetypes, vim.bo.filetype) then
    return
   end
 
+  -- or just use buftype to ignore all other type
+  if vim.bo.buftype ~= "" then
+   return
+  end
+
+  -- then run undo-glow with your desired hlgroup
   vim.schedule(function()
    require("undo-glow").attach_and_run({
     hlgroup = "UgUndo",
