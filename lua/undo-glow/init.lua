@@ -8,9 +8,12 @@ local counter = 0 -- For unique highlight groups
 ---@field animation boolean
 ---@field undo_hl string
 ---@field redo_hl string
----@field undo_hl_color vim.api.keyset.highlight
----@field redo_hl_color vim.api.keyset.highlight
+---@field undo_hl_color UndoGlow.HlColor
+---@field redo_hl_color UndoGlow.HlColor
 
+---@class UndoGlow.HlColor
+---@field bg string
+---@field fg string
 ---@class UndoGlow.State
 ---@field current_hlgroup string
 
@@ -113,7 +116,7 @@ local function animate_fadeout(bufnr, hlgroup, start_color, end_color, duration)
 end
 
 ---@param name string Highlight name
----@param color vim.api.keyset.highlight
+---@param color UndoGlow.HlColor
 local function set_highlight(name, color)
 	if vim.fn.hlexists(name) == 0 then
 		vim.api.nvim_set_hl(0, name, color)
