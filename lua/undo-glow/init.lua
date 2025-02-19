@@ -131,49 +131,56 @@ local function animate_fadeout(
 	end_fg,
 	duration
 )
-	local start_time = vim.loop.hrtime()
+	local start_time = vim.uv.hrtime()
 	local interval = 1000 / M.config.fps
-	local timer = vim.loop.new_timer()
+	local timer = vim.uv.new_timer()
 
-	timer:start(
-		0,
-		interval,
-		vim.schedule_wrap(function()
-			local success, err = pcall(function()
-				local now = vim.loop.hrtime()
-				local elapsed = (now - start_time) / 1e6 -- convert from ns to ms
-				local t = math.min(elapsed / duration, 1)
-				local eased = ease_out_quad(t)
+	if timer then
+		timer:start(
+			0,
+			interval,
+			vim.schedule_wrap(function()
+				local success, err = pcall(function()
+					local now = vim.uv.hrtime()
+					local elapsed = (now - start_time) / 1e6 -- convert from ns to ms
+					local t = math.min(elapsed / duration, 1)
+					local eased = ease_out_quad(t)
 
-				local blended_bg = blend_color(start_bg, end_bg, eased)
-				local blended_fg = start_fg
-						and end_fg
-						and blend_color(start_fg, end_fg, eased)
-					or nil
+					local blended_bg = blend_color(start_bg, end_bg, eased)
+					local blended_fg = start_fg
+							and end_fg
+							and blend_color(start_fg, end_fg, eased)
+						or nil
 
-				local hl_opts = { bg = blended_bg }
-				if blended_fg then
-					hl_opts.fg = blended_fg
-				end
+					local hl_opts = { bg = blended_bg }
+					if blended_fg then
+						hl_opts.fg = blended_fg
+					end
 
-				vim.api.nvim_set_hl(0, hlgroup, hl_opts)
+					vim.api.nvim_set_hl(0, hlgroup, hl_opts)
 
-				if t >= 1 then
+					if t >= 1 then
+						timer:stop()
+						if not vim.uv.is_closing(timer) then
+							timer:close()
+						end
+						if vim.api.nvim_buf_is_valid(bufnr) and extmark_id then
+							vim.api.nvim_buf_del_extmark(bufnr, ns, extmark_id)
+						end
+					end
+				end)
+
+				if not success then
+					vim.notify(
+						"UndoGlow: " .. tostring(err),
+						vim.log.levels.ERROR
+					)
 					timer:stop()
 					timer:close()
-					if vim.api.nvim_buf_is_valid(bufnr) and extmark_id then
-						vim.api.nvim_buf_del_extmark(bufnr, ns, extmark_id)
-					end
 				end
 			end)
-
-			if not success then
-				vim.notify("UndoGlow: " .. tostring(err), vim.log.levels.ERROR)
-				timer:stop()
-				timer:close()
-			end
-		end)
-	)
+		)
+	end
 end
 
 ---@param name string Highlight name
