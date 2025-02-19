@@ -103,6 +103,7 @@ end
 -- Animate the fadeout of a highlight group from a start color to the Normal background
 ---@param bufnr integer Buffer number
 ---@param hlgroup string
+---@param extmark_id integer
 ---@param start_bg UndoGlow.RGBColor
 ---@param end_bg UndoGlow.RGBColor
 ---@param start_fg? UndoGlow.RGBColor
@@ -111,6 +112,7 @@ end
 local function animate_fadeout(
 	bufnr,
 	hlgroup,
+	extmark_id,
 	start_bg,
 	end_bg,
 	start_fg,
@@ -146,8 +148,8 @@ local function animate_fadeout(
 			if t >= 1 then
 				timer:stop()
 				timer:close()
-				if vim.api.nvim_buf_is_valid(bufnr) then
-					vim.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
+				if vim.api.nvim_buf_is_valid(bufnr) and extmark_id then
+					vim.api.nvim_buf_del_extmark(bufnr, ns, extmark_id)
 				end
 			end
 		end)
@@ -222,25 +224,36 @@ end
 ---@param s_col integer Start column
 ---@param e_row integer End row
 ---@param e_col integer End column
+---@return integer
 local function highlight_range(bufnr, hlgroup, s_row, s_col, e_row, e_col)
 	s_row, s_col, e_row, e_col =
 		sanitize_coords(bufnr, s_row, s_col, e_row, e_col)
 
-	vim.api.nvim_buf_set_extmark(bufnr, ns, s_row, s_col, {
+	local extmark_id = vim.api.nvim_buf_set_extmark(bufnr, ns, s_row, s_col, {
 		end_row = e_row,
 		end_col = e_col,
 		hl_group = hlgroup,
 		hl_mode = "combine",
 	})
+
+	return extmark_id
 end
 
 -- Animate or clear highlights after a duration
 ---@param bufnr integer Buffer number
 ---@param state UndoGlow.State State
 ---@param hlgroup string Unique highlight group name
+---@param extmark_id integer
 ---@param start_bg string The starting background color (hex)
 ---@param start_fg? string The starting foreground color (hex)
-local function clear_highlights(bufnr, state, hlgroup, start_bg, start_fg)
+local function clear_highlights(
+	bufnr,
+	state,
+	hlgroup,
+	extmark_id,
+	start_bg,
+	start_fg
+)
 	local end_bg = get_normal_bg()
 	local end_fg = get_normal_fg()
 
@@ -248,6 +261,7 @@ local function clear_highlights(bufnr, state, hlgroup, start_bg, start_fg)
 		animate_fadeout(
 			bufnr,
 			hlgroup,
+			extmark_id,
 			hex_to_rgb(start_bg),
 			hex_to_rgb(end_bg),
 			start_fg and hex_to_rgb(start_fg) or nil,
@@ -257,7 +271,7 @@ local function clear_highlights(bufnr, state, hlgroup, start_bg, start_fg)
 	else
 		vim.defer_fn(function()
 			if vim.api.nvim_buf_is_valid(bufnr) then
-				vim.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
+				vim.api.nvim_buf_del_extmark(bufnr, ns, extmark_id)
 			end
 		end, M.config.duration)
 	end
@@ -342,7 +356,7 @@ local function on_bytes_wrapper(
 
 			set_highlight(unique_hlgroup, init_color)
 
-			highlight_range(
+			local extmark_id = highlight_range(
 				bufnr,
 				unique_hlgroup,
 				s_row,
@@ -355,6 +369,7 @@ local function on_bytes_wrapper(
 				bufnr,
 				state,
 				unique_hlgroup,
+				extmark_id,
 				init_color.bg,
 				init_color.fg
 			)
