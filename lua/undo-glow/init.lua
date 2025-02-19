@@ -81,13 +81,33 @@ local function get_normal_bg()
 	end
 end
 
+---@return string
+local function get_normal_fg()
+	local normal = vim.api.nvim_get_hl(0, { name = "Normal" })
+	if normal.fg then
+		return string.format("#%06X", normal.fg)
+	else
+		return "#FFFFFF"
+	end
+end
+
 -- Animate the fadeout of a highlight group from a start color to the Normal background
 ---@param bufnr integer Buffer number
 ---@param hlgroup string
----@param start_color UndoGlow.RGBColor
----@param end_color UndoGlow.RGBColor
+---@param start_bg UndoGlow.RGBColor
+---@param end_bg UndoGlow.RGBColor
+---@param start_fg UndoGlow.RGBColor
+---@param end_fg UndoGlow.RGBColor
 ---@param duration integer
-local function animate_fadeout(bufnr, hlgroup, start_color, end_color, duration)
+local function animate_fadeout(
+	bufnr,
+	hlgroup,
+	start_bg,
+	end_bg,
+	start_fg,
+	end_fg,
+	duration
+)
 	local start_time = vim.loop.hrtime()
 	local interval = 16 -- roughly 60 FPS (16ms per frame)
 	local timer = vim.loop.new_timer()
@@ -100,9 +120,14 @@ local function animate_fadeout(bufnr, hlgroup, start_color, end_color, duration)
 			local elapsed = (now - start_time) / 1e6 -- convert from ns to ms
 			local t = math.min(elapsed / duration, 1)
 			local eased = ease_out_quad(t)
-			local blended = blend_color(start_color, end_color, eased)
+			local blended_bg = blend_color(start_bg, end_bg, eased)
+			local blended_fg = blend_color(start_fg, end_fg, eased)
 
-			vim.api.nvim_set_hl(0, hlgroup, { bg = blended })
+			vim.api.nvim_set_hl(
+				0,
+				hlgroup,
+				{ bg = blended_bg, fg = blended_fg }
+			)
 
 			if t >= 1 then
 				timer:stop()
@@ -197,10 +222,13 @@ end
 
 -- Animate or clear highlights after a duration
 ---@param bufnr integer Buffer number
+---@param state UndoGlow.State State
 ---@param hlgroup string Unique highlight group name
 ---@param start_bg string The starting background color (hex)
-local function clear_highlights(bufnr, hlgroup, start_bg)
+---@param start_fg string The starting foreground color (hex)
+local function clear_highlights(bufnr, state, hlgroup, start_bg, start_fg)
 	local end_bg = get_normal_bg()
+	local end_fg = get_normal_fg()
 
 	if M.config.animation then
 		animate_fadeout(
@@ -208,6 +236,8 @@ local function clear_highlights(bufnr, hlgroup, start_bg)
 			hlgroup,
 			hex_to_rgb(start_bg),
 			hex_to_rgb(end_bg),
+			hex_to_rgb(start_fg),
+			hex_to_rgb(end_fg),
 			M.config.duration
 		)
 	else
@@ -283,7 +313,13 @@ local function on_bytes_wrapper(
 				end_col
 			)
 
-			clear_highlights(bufnr, unique_hlgroup, init_color.bg)
+			clear_highlights(
+				bufnr,
+				state,
+				unique_hlgroup,
+				init_color.bg,
+				init_color.fg
+			)
 		end
 	end)
 	return false
