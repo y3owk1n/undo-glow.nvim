@@ -373,9 +373,6 @@ end
 ---@param user_config? UndoGlow.Config
 function M.setup(user_config)
 	M.config = vim.tbl_extend("force", M.config, user_config or {})
-
-	set_highlight(M.config.undo_hl, M.config.undo_hl_color)
-	set_highlight(M.config.redo_hl, M.config.redo_hl_color)
 end
 
 return M
