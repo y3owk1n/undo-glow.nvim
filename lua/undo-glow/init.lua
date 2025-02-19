@@ -6,6 +6,7 @@ local counter = 0 -- For unique highlight groups
 ---@class UndoGlow.Config
 ---@field duration number In ms
 ---@field animation boolean
+---@field fps number
 ---@field undo_hl string
 ---@field redo_hl string
 ---@field undo_hl_color UndoGlow.HlColor
@@ -38,6 +39,7 @@ local default_redo = { bg = "#50FA7B", fg = default_bg }
 M.config = {
 	duration = 300,
 	animation = true,
+	fps = 120,
 	undo_hl = "UgUndo",
 	redo_hl = "UgRedo",
 	undo_hl_color = default_undo,
@@ -116,7 +118,7 @@ local function animate_fadeout(
 	duration
 )
 	local start_time = vim.loop.hrtime()
-	local interval = 16 -- roughly 60 FPS (16ms per frame)
+	local interval = 1000 / M.config.fps
 	local timer = vim.loop.new_timer()
 
 	timer:start(

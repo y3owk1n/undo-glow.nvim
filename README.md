@@ -63,6 +63,7 @@ Here is the default configuration:
 ---@class UndoGlow.Config
 ---@field duration number In ms
 ---@field animation boolean
+---@field fps number
 ---@field undo_hl string
 ---@field redo_hl string
 ---@field undo_hl_color UndoGlow.HlColor
@@ -70,6 +71,7 @@ Here is the default configuration:
 {
  duration = 300, -- in ms
  animation = true, -- whether to turn on or off for animation
+ fps = 120, -- change the fps, normally either 60 / 120
  undo_hl = "UgUndo", -- highlight
  redo_hl = "UgRedo", -- highlight
  undo_hl_color = { bg = "#FF5555", fg = "#000000" }, -- ugly red color, please change it!
