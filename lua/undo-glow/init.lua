@@ -3,7 +3,6 @@ local M = {}
 local ns = vim.api.nvim_create_namespace("undo-glow")
 local counter = 0 -- For unique highlight groups
 
--- Default configuration
 ---@class UndoGlow.Config
 ---@field duration number In ms
 ---@field animation boolean
@@ -11,8 +10,21 @@ local counter = 0 -- For unique highlight groups
 ---@field redo_hl string
 ---@field undo_hl_color vim.api.keyset.highlight
 ---@field redo_hl_color vim.api.keyset.highlight
+
 ---@class UndoGlow.State
 ---@field current_hlgroup string
+
+---@class UndoGlow.RGBColor
+---@field r integer Red (0-255)
+---@field g integer Green (0-255)
+---@field b integer Blue (0-255)
+
+---@class UndoGlow.AttachAndRunOpts
+---@field hlgroup string
+---@field cmd? function
+
+-- Default configuration
+---@type UndoGlow.Config
 M.config = {
 	duration = 300,
 	animation = true,
@@ -21,11 +33,6 @@ M.config = {
 	undo_hl_color = { bg = "#FF5555", fg = "#000000" },
 	redo_hl_color = { bg = "#50FA7B", fg = "#000000" },
 }
-
----@class UndoGlow.RGBColor
----@field r integer Red (0-255)
----@field g integer Green (0-255)
----@field b integer Blue (0-255)
 
 -- Utility functions for color manipulation and easing
 ---@param hex string
@@ -119,6 +126,7 @@ end
 ---@param s_col integer Start column
 ---@param e_row integer End row
 ---@param e_col integer End column
+---@return integer, integer, integer, integer
 local function sanitize_coords(bufnr, s_row, s_col, e_row, e_col)
 	local line_count = vim.api.nvim_buf_line_count(bufnr)
 
@@ -277,10 +285,6 @@ local function on_bytes_wrapper(
 	end)
 	return false
 end
-
----@class UndoGlow.AttachAndRunOpts
----@field hlgroup string
----@field cmd? function
 
 -- Helper to attach to a buffer with a local state.
 ---@param opts UndoGlow.AttachAndRunOpts
