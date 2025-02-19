@@ -73,7 +73,7 @@ Here is the default configuration:
 ---@field bg string Background color
 ---@field fg? string Optional for text color (Without this, it will just remain the existing text color as it is)
 {
- duration = 300, -- in ms
+ duration = 500, -- in ms
  animation = true, -- whether to turn on or off for animation
  fps = 120, -- change the fps, normally either 60 / 120
  undo_hl = "UgUndo", -- highlight

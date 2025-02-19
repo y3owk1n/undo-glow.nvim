@@ -37,7 +37,7 @@ local default_redo = { bg = "#50FA7B" }
 -- Default configuration
 ---@type UndoGlow.Config
 M.config = {
-	duration = 300,
+	duration = 500,
 	animation = true,
 	fps = 120,
 	undo_hl = "UgUndo",
