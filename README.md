@@ -116,9 +116,16 @@ Feel free to send a PR if you think there are some good actions that can be merg
 vim.api.nvim_create_autocmd({ "TextChanged" }, {
  pattern = "*",
  callback = function()
+  -- Provide a list of ignored filetypes
+  local ignored_filetypes = { "mason", "snacks_picker_list", "lazy" }
+
+  if vim.tbl_contains(ignored_filetypes, vim.bo.filetype) then
+   return
+  end
+
   vim.schedule(function()
    require("undo-glow").attach_and_run({
-    hlgroup = "UgUndo"
+    hlgroup = "UgUndo",
    })
   end)
  end,
@@ -139,7 +146,7 @@ return {
   ---@param _ any
   ---@param opts UndoGlow.Config
   opts = function(_, opts)
- -- How i set up the colors using catppuccin
+  -- How i set up the colors using catppuccin
    local has_catppuccin, catppuccin = pcall(require, "catppuccin.palettes")
 
    if has_catppuccin then
