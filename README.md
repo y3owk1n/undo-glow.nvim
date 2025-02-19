@@ -129,7 +129,8 @@ Feel free to send a PR if you think there are some good actions that can be merg
 ### Creating an autocmd that will highlight anything when textChanged
 
 ```lua
-vim.api.nvim_create_autocmd({ "TextChanged" }, {
+-- Also add `BufReadPost` so that it will also highlight for first changes
+vim.api.nvim_create_autocmd({ "BufReadPost", "TextChanged" }, {
  pattern = "*",
  callback = function()
   -- Either provide a list of ignored filetypes
