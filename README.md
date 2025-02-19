@@ -6,19 +6,19 @@ Make your undo and redo in neovim glows! This plugin does not setup or hijack th
 
 ### Undo With Animation
 
-https://github.com/user-attachments/assets/b83ca873-3656-4f37-85d8-a04bd64af86f
+<https://github.com/user-attachments/assets/b83ca873-3656-4f37-85d8-a04bd64af86f>
 
 ### Undo Without Animation
 
-https://github.com/user-attachments/assets/f1e08be8-9356-4844-ae3b-a7e9c22a83e0
+<https://github.com/user-attachments/assets/f1e08be8-9356-4844-ae3b-a7e9c22a83e0>
 
 ### Redo With Animation
 
-https://github.com/user-attachments/assets/2cf762d2-dada-4786-a602-d71cdd15c560
+<https://github.com/user-attachments/assets/2cf762d2-dada-4786-a602-d71cdd15c560>
 
 ### Redo Without Animation
 
-https://github.com/user-attachments/assets/13e08e01-0ad2-4907-ab2f-a9e5e203746e
+<https://github.com/user-attachments/assets/13e08e01-0ad2-4907-ab2f-a9e5e203746e>
 
 ## Motivation
 
@@ -65,8 +65,8 @@ Here is the default configuration:
 ---@field animation boolean
 ---@field undo_hl string
 ---@field redo_hl string
----@field undo_hl_color vim.api.keyset.highlight
----@field redo_hl_color vim.api.keyset.highlight
+---@field undo_hl_color UndoGlow.HlColor
+---@field redo_hl_color UndoGlow.HlColor
 {
  duration = 300, -- in ms
  animation = true, -- whether to turn on or off for animation
