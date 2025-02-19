@@ -94,7 +94,7 @@ require("undo-glow").redo() -- Redo command with highlights
 ---@field hlgroup string
 ---@field cmd? function
 ---@param opts UndoGlow.AttachAndRunOpts
-require("undo-glow").attach_and_run(opts) -- API to create custom actions that glows
+require("undo-glow").attach_and_run(opts) -- API to create custom actions that highlights
 ```
 
 You can set it up anywhere you like, I set it up at the keymap level directly.
