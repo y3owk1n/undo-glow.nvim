@@ -14,7 +14,7 @@ local counter = 0 -- For unique highlight groups
 
 ---@class UndoGlow.HlColor
 ---@field bg string
----@field fg string
+---@field fg? string
 
 ---@class UndoGlow.State
 ---@field current_hlgroup string
@@ -31,8 +31,8 @@ local counter = 0 -- For unique highlight groups
 
 local default_bg = "#000000"
 local default_fg = "#FFFFFF"
-local default_undo = { bg = "#FF5555", fg = default_bg }
-local default_redo = { bg = "#50FA7B", fg = default_bg }
+local default_undo = { bg = "#FF5555" }
+local default_redo = { bg = "#50FA7B" }
 
 -- Default configuration
 ---@type UndoGlow.Config
@@ -105,8 +105,8 @@ end
 ---@param hlgroup string
 ---@param start_bg UndoGlow.RGBColor
 ---@param end_bg UndoGlow.RGBColor
----@param start_fg UndoGlow.RGBColor
----@param end_fg UndoGlow.RGBColor
+---@param start_fg? UndoGlow.RGBColor
+---@param end_fg? UndoGlow.RGBColor
 ---@param duration integer
 local function animate_fadeout(
 	bufnr,
@@ -129,14 +129,19 @@ local function animate_fadeout(
 			local elapsed = (now - start_time) / 1e6 -- convert from ns to ms
 			local t = math.min(elapsed / duration, 1)
 			local eased = ease_out_quad(t)
-			local blended_bg = blend_color(start_bg, end_bg, eased)
-			local blended_fg = blend_color(start_fg, end_fg, eased)
 
-			vim.api.nvim_set_hl(
-				0,
-				hlgroup,
-				{ bg = blended_bg, fg = blended_fg }
-			)
+			local blended_bg = blend_color(start_bg, end_bg, eased)
+			local blended_fg = start_fg
+					and end_fg
+					and blend_color(start_fg, end_fg, eased)
+				or nil
+
+			local hl_opts = { bg = blended_bg }
+			if blended_fg then
+				hl_opts.fg = blended_fg
+			end
+
+			vim.api.nvim_set_hl(0, hlgroup, hl_opts)
 
 			if t >= 1 then
 				timer:stop()
@@ -234,7 +239,7 @@ end
 ---@param state UndoGlow.State State
 ---@param hlgroup string Unique highlight group name
 ---@param start_bg string The starting background color (hex)
----@param start_fg string The starting foreground color (hex)
+---@param start_fg? string The starting foreground color (hex)
 local function clear_highlights(bufnr, state, hlgroup, start_bg, start_fg)
 	local end_bg = get_normal_bg()
 	local end_fg = get_normal_fg()
@@ -245,8 +250,8 @@ local function clear_highlights(bufnr, state, hlgroup, start_bg, start_fg)
 			hlgroup,
 			hex_to_rgb(start_bg),
 			hex_to_rgb(end_bg),
-			hex_to_rgb(start_fg),
-			hex_to_rgb(end_fg),
+			start_fg and hex_to_rgb(start_fg) or nil,
+			start_fg and hex_to_rgb(end_fg) or nil,
 			M.config.duration
 		)
 	else
@@ -325,7 +330,7 @@ local function on_bytes_wrapper(
 			end
 
 			if not current_hlgroup_detail.fg then
-				fg = default_undo.fg
+				fg = nil
 			else
 				fg = string.format("#%06X", current_hlgroup_detail.fg)
 			end
