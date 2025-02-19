@@ -100,6 +100,18 @@ local function get_normal_fg()
 	end
 end
 
+---@param base string
+---@return string
+local function get_unique_hlgroup(base)
+	counter = counter + 1
+
+	-- Reset counter if it becomes too high
+	if counter > 1e6 then
+		counter = 1
+	end
+	return base .. "_" .. counter
+end
+
 -- Animate the fadeout of a highlight group from a start color to the Normal background
 ---@param bufnr integer Buffer number
 ---@param hlgroup string
@@ -336,8 +348,7 @@ local function on_bytes_wrapper(
 
 	vim.schedule(function()
 		if vim.api.nvim_buf_is_valid(bufnr) then
-			counter = counter + 1
-			local unique_hlgroup = state.current_hlgroup .. "_" .. counter
+			local unique_hlgroup = get_unique_hlgroup(state.current_hlgroup)
 
 			local current_hlgroup_detail =
 				vim.api.nvim_get_hl(0, { name = state.current_hlgroup })
