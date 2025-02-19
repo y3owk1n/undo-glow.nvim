@@ -11,6 +11,8 @@ local counter = 0 -- For unique highlight groups
 ---@field redo_hl string
 ---@field undo_hl_color vim.api.keyset.highlight
 ---@field redo_hl_color vim.api.keyset.highlight
+---@class UndoGlow.State
+---@field current_hlgroup string
 M.config = {
 	duration = 300,
 	animation = true,
@@ -184,10 +186,9 @@ end
 
 -- Animate or clear highlights after a duration
 ---@param bufnr integer Buffer number
----@param state{should_detach:boolean,current_hlgroup: string} State
 ---@param hlgroup string Unique highlight group name
 ---@param start_bg string The starting background color (hex)
-local function clear_highlights(bufnr, state, hlgroup, start_bg)
+local function clear_highlights(bufnr, hlgroup, start_bg)
 	local end_bg = get_normal_bg()
 
 	if M.config.animation then
@@ -205,11 +206,10 @@ local function clear_highlights(bufnr, state, hlgroup, start_bg)
 			end
 		end, M.config.duration)
 	end
-	state.should_detach = true
 end
 
 --- Callback to track changes
----@param state{should_detach:boolean,current_hlgroup: string} State
+---@param state UndoGlow.State State
 ---@param _err any Error
 ---@param bufnr integer Buffer number
 ---@param _changedtick any Changed tick
@@ -238,10 +238,6 @@ local function on_bytes_wrapper(
 	new_ec,
 	_new_off
 )
-	if state.should_detach then
-		return true
-	end
-
 	-- Calculate the ending position.
 	local end_row, end_col
 	if new_er == 0 then
@@ -276,7 +272,7 @@ local function on_bytes_wrapper(
 				end_col
 			)
 
-			clear_highlights(bufnr, state, unique_hlgroup, init_color.bg)
+			clear_highlights(bufnr, unique_hlgroup, init_color.bg)
 		end
 	end)
 	return false
@@ -291,7 +287,8 @@ end
 function M.attach_and_run(opts)
 	local bufnr = vim.api.nvim_get_current_buf()
 
-	local state = { should_detach = false, current_hlgroup = opts.hlgroup }
+	---@type UndoGlow.State
+	local state = { current_hlgroup = opts.hlgroup }
 
 	vim.api.nvim_buf_attach(bufnr, false, {
 		on_bytes = function(...)
