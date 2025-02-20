@@ -66,8 +66,8 @@ Here is the default configuration:
 ---@field fps number
 ---@field undo_hl string
 ---@field redo_hl string
----@field undo_hl_color UndoGlow.HlColor
----@field redo_hl_color UndoGlow.HlColor
+---@field undo_hl_color? UndoGlow.HlColor
+---@field redo_hl_color? UndoGlow.HlColor
 
 ---@class UndoGlow.HlColor
 ---@field bg string Background color
@@ -76,10 +76,10 @@ Here is the default configuration:
  duration = 500, -- in ms
  animation = true, -- whether to turn on or off for animation
  fps = 120, -- change the fps, normally either 60 / 120
- undo_hl = "UgUndo", -- highlight
- redo_hl = "UgRedo", -- highlight
- undo_hl_color = { bg = "#FF5555" }, -- ugly red color, please change it!
- redo_hl_color = { bg = "#50FA7B" }, -- ugly green color, please change it!
+ undo_hl = "UgUndo", -- This will not set new hlgroup, if it's not "UgUndo", we will try to grab the colors of specified hlgroup and apply to "UgUndo"
+ redo_hl = "UgRedo", -- This will not set new hlgroup, if it's not "UgRedo", we will try to grab the colors of specified hlgroup and apply to "UgRedo"
+ undo_hl_color = { bg = "#FF5555" }, -- Colors from undo_hl will overwrite this, unless undo_hl does not contain the bg or fg. Ugly red color, please change it!
+ redo_hl_color = { bg = "#50FA7B" }, -- -- Colors from undo_hl will overwrite this, unless redo_hl does not contain the bg or fg. Ugly green color, please change it!
 }
 ```
 
