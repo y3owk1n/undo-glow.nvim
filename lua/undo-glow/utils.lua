@@ -32,8 +32,8 @@ function M.sanitize_coords(bufnr, s_row, s_col, e_row, e_col)
 	if s_row < 0 then
 		s_row = 0
 	end
-	if s_row >= line_count then
-		s_row = line_count - 1
+	if s_row > line_count then
+		s_row = line_count
 	end
 
 	-- Clamp s_col
@@ -54,8 +54,8 @@ function M.sanitize_coords(bufnr, s_row, s_col, e_row, e_col)
 	if e_row < s_row then
 		e_row = s_row
 	end
-	if e_row >= line_count then
-		e_row = line_count - 1
+	if e_row > line_count then
+		e_row = line_count
 	end
 
 	-- Clamp e_col
