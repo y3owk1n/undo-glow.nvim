@@ -31,4 +31,15 @@ function M.link_highlight(from, to, color)
 	})
 end
 
+---@param target_hlgroup string
+---@param config_hl string
+---@param config_hl_color UndoGlow.HlColor
+function M.setup_highlight(target_hlgroup, config_hl, config_hl_color)
+	if config_hl ~= target_hlgroup then
+		M.link_highlight(target_hlgroup, config_hl, config_hl_color)
+	else
+		M.set_highlight(config_hl, config_hl_color)
+	end
+end
+
 return M

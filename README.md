@@ -71,8 +71,18 @@ Here is the default configuration:
 ---@field fps? number
 ---@field undo_hl? string
 ---@field redo_hl? string
+---@field yank_hl? string
+---@field paste_below_hl? string
+---@field paste_above_hl? string
+---@field search_next_hl? string
+---@field search_prev_hl? string
 ---@field undo_hl_color? UndoGlow.HlColor
 ---@field redo_hl_color? UndoGlow.HlColor
+---@field yank_hl_color? UndoGlow.HlColor
+---@field paste_below_hl_color? UndoGlow.HlColor
+---@field paste_above_hl_color? UndoGlow.HlColor
+---@field search_next_hl_color? UndoGlow.HlColor
+---@field search_prev_hl_color? UndoGlow.HlColor
 
 ---@class UndoGlow.HlColor
 ---@field bg string Background color
@@ -84,9 +94,19 @@ Here is the default configuration:
  fps = 120, -- change the fps, normally either 60 / 120
  easing = M.easing.ease_in_out_cubic, -- see more at easing section on how to change and create your own
  undo_hl = "UgUndo", -- This will not set new hlgroup, if it's not "UgUndo", we will try to grab the colors of specified hlgroup and apply to "UgUndo"
- redo_hl = "UgRedo", -- This will not set new hlgroup, if it's not "UgRedo", we will try to grab the colors of specified hlgroup and apply to "UgRedo"
+ redo_hl = "UgRedo", -- Same as above
+ yank_hl = "UgYank", -- Same as above
+ paste_below_hl = "UgPasteBelow", -- Same as above
+ paste_above_hl = "UgPasteAbove", -- Same as above
+ search_next_hl = "UgSearchNext", -- Same as above
+ search_prev_hl = "UgSearchPrev", -- Same as above
  undo_hl_color = { bg = "#FF5555" }, -- Colors from undo_hl will overwrite this, unless undo_hl does not contain the bg or fg. Ugly red color, please change it!
- redo_hl_color = { bg = "#50FA7B" }, -- -- Colors from undo_hl will overwrite this, unless redo_hl does not contain the bg or fg. Ugly green color, please change it!
+ redo_hl_color = { bg = "#50FA7B" }, -- -- Same as above
+ yank_hl_color = { bg = "#F1FA8C" }, -- -- Same as above
+ paste_below_hl_color = { bg = "#8BE9FD" }, -- -- Same as above
+ paste_above_hl_color = { bg = "#BD93F9" }, -- -- Same as above
+ search_next_hl_color = { bg = "#FFB86C" }, -- -- Same as above
+ search_prev_hl_color = { bg = "#FF79C6" }, -- -- Same as above
 }
 ```
 
@@ -135,6 +155,16 @@ require("undo-glow").undo() -- Undo command with highlights
 
 require("undo-glow").redo() -- Redo command with highlights
 
+require("undo-glow").yank() -- Yank with highlights. This is not a command, use this in autocmd only
+
+require("undo-glow").paste_below() -- Paste below command with highlights
+
+require("undo-glow").paste_above() -- Paste above command with highlights
+
+require("undo-glow").search_next() -- Search next command with highlights
+
+require("undo-glow").search_prev() -- Search prev command with highlights
+
 ---@class UndoGlow.AttachAndRunOpts
 ---@field hlgroup string
 ---@field cmd? function
@@ -160,6 +190,15 @@ You can set it up anywhere you like, Commonly at the keymap level directly. For 
 ```lua
 vim.keymap.set("n", "u", require("undo-glow").undo, { silent = true })
 vim.keymap.set("n", "<C-r>", require("undo-glow").redo, { silent = true })
+vim.keymap.set("n", "p", require("undo-glow").paste_below, { silent = true })
+vim.keymap.set("n", "P", require("undo-glow").paste_above, { silent = true })
+vim.keymap.set("n", "n", require("undo-glow").search_next, { silent = true })
+vim.keymap.set("n", "N", require("undo-glow").search_prev, { silent = true })
+
+vim.api.nvim_create_autocmd("TextYankPost", {
+ desc = "Highlight when yanking (copying) text",
+ callback = require("undo-glow").yank,
+})
 ```
 
 ### Creating custom command to highlight
