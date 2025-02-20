@@ -56,6 +56,8 @@ function M.animate.fade(opts)
 								opts.extmark_id
 							)
 						end
+
+						vim.cmd("hi clear " .. opts.hlgroup)
 					end
 				end)
 
@@ -68,6 +70,7 @@ function M.animate.fade(opts)
 					if not vim.uv.is_closing(timer) then
 						timer:close()
 					end
+					vim.cmd("hi clear " .. opts.hlgroup)
 				end
 			end)
 		)
@@ -104,6 +107,7 @@ function M.animate.blink(opts)
 								opts.extmark_id
 							)
 						end
+						vim.cmd("hi clear " .. opts.hlgroup)
 						return
 					end
 
@@ -135,6 +139,7 @@ function M.animate.blink(opts)
 					if not vim.uv.is_closing(timer) then
 						timer:close()
 					end
+					vim.cmd("hi clear " .. opts.hlgroup)
 				end
 			end)
 		)
@@ -171,6 +176,7 @@ function M.animate.jitter(opts)
 								opts.extmark_id
 							)
 						end
+						vim.cmd("hi clear " .. opts.hlgroup)
 						return
 					end
 
@@ -207,6 +213,7 @@ function M.animate.jitter(opts)
 					if not vim.uv.is_closing(timer) then
 						timer:close()
 					end
+					vim.cmd("hi clear " .. opts.hlgroup)
 				end
 			end)
 		)
@@ -268,6 +275,7 @@ function M.animate.pulse(opts)
 								opts.extmark_id
 							)
 						end
+						vim.cmd("hi clear " .. opts.hlgroup)
 					end
 				end)
 				if not success then
@@ -279,6 +287,7 @@ function M.animate.pulse(opts)
 					if not vim.uv.is_closing(timer) then
 						timer:close()
 					end
+					vim.cmd("hi clear " .. opts.hlgroup)
 				end
 			end)
 		)
