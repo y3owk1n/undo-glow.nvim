@@ -263,6 +263,8 @@ Feel free to send a PR if you think anything can be improved to better support a
 
 ### Highlight Yank Text
 
+> This is already included as presets, just to show how you can do it yourself
+
 ```lua
 vim.api.nvim_create_autocmd("TextYankPost", {
  desc = "Highlight when yanking (copying) text",
@@ -281,6 +283,8 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 ```
 
 ### Highlight Pasted Text
+
+> This is already included as presets, just to show how you can do it yourself
 
 ```lua
 vim.keymap.set("n", "p", function()
@@ -303,6 +307,8 @@ end, { silent = true })
 ```
 
 ### Highlight search text next and previous
+
+> This is already included as presets, just to show how you can do it yourself
 
 ```lua
 -- Use `n` for next and `N` for previous
