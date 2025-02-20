@@ -32,6 +32,7 @@ For this project, there is no autocmd that being setup, but just pure lua functi
 
 - [Installation](#installation)
 - [Configuration](#configuration)
+- [Easing](#easing)
 - [API](#api)
 - [Contributing](#contributing)
 
@@ -63,6 +64,7 @@ Here is the default configuration:
 ---@class UndoGlow.Config
 ---@field duration number In ms
 ---@field animation boolean
+---@field easing function A function that takes a number (0-1) and returns a number (0-1) for easing.
 ---@field fps number
 ---@field undo_hl string
 ---@field redo_hl string
@@ -76,10 +78,49 @@ Here is the default configuration:
  duration = 500, -- in ms
  animation = true, -- whether to turn on or off for animation
  fps = 120, -- change the fps, normally either 60 / 120
+ easing = M.easing.ease_in_out_cubic, -- see more at easing section on how to change and create your own
  undo_hl = "UgUndo", -- This will not set new hlgroup, if it's not "UgUndo", we will try to grab the colors of specified hlgroup and apply to "UgUndo"
  redo_hl = "UgRedo", -- This will not set new hlgroup, if it's not "UgRedo", we will try to grab the colors of specified hlgroup and apply to "UgRedo"
  undo_hl_color = { bg = "#FF5555" }, -- Colors from undo_hl will overwrite this, unless undo_hl does not contain the bg or fg. Ugly red color, please change it!
  redo_hl_color = { bg = "#50FA7B" }, -- -- Colors from undo_hl will overwrite this, unless redo_hl does not contain the bg or fg. Ugly green color, please change it!
+}
+```
+
+## Easing
+
+### Builtin easing
+
+```lua
+require("undo-glow").easing.ease_in_out_cubic() -- default
+require("undo-glow").easing.ease_out_quad()
+require("undo-glow").easing.ease_out_cubic()
+require("undo-glow").easing.ease_in_sine()
+```
+
+Feel free to send in PR for more interesting easings
+
+### Changing easing from configuration with builtin
+
+```lua
+-- configuration opts
+{
+ ...rest
+ easing = require("undo-glow").easing.ease_in_sine()
+ ...rest
+}
+```
+
+### Changing easing to whatever you like with your own function
+
+```lua
+{
+ ...rest
+---@param t number (0-1) Interpolation factor
+---@return number
+ easing = function(t)
+  return 1 - math.cos((t * math.pi) / 2)
+ end,
+ ...rest
 }
 ```
 
