@@ -7,10 +7,10 @@ local counter = 0 -- For unique highlight groups
 ---@field duration number In ms
 ---@field animation boolean
 ---@field fps number
----@field undo_hl string
----@field redo_hl string
----@field undo_hl_color UndoGlow.HlColor
----@field redo_hl_color UndoGlow.HlColor
+---@field undo_hl string If not "UgUndo" then copy the to color to UgUndo or fallback to default
+---@field redo_hl string If not "UgRedo" then copy the to color to UgRedo or fallback to default
+---@field undo_hl_color? UndoGlow.HlColor
+---@field redo_hl_color? UndoGlow.HlColor
 
 ---@class UndoGlow.HlColor
 ---@field bg string
@@ -189,6 +189,29 @@ local function set_highlight(name, color)
 	if vim.fn.hlexists(name) == 0 then
 		vim.api.nvim_set_hl(0, name, color)
 	end
+end
+
+---@param from string Highlight name
+---@param to string Highlight name
+---@param color UndoGlow.HlColor
+local function link_highlight(from, to, color)
+	local toHl = vim.api.nvim_get_hl(0, { name = to })
+
+	local bg = color.bg
+	local fg = color.fg
+
+	if toHl.bg then
+		bg = string.format("#%06X", toHl.bg)
+	end
+
+	if toHl.fg then
+		fg = string.format("#%06X", toHl.fg)
+	end
+
+	set_highlight(from, {
+		bg = bg,
+		fg = fg,
+	})
 end
 
 -- Sanitize coordinates to prevent out-of-range
@@ -425,7 +448,7 @@ end
 
 function M.undo()
 	M.attach_and_run({
-		hlgroup = M.config.undo_hl,
+		hlgroup = "UgUndo",
 		cmd = function()
 			vim.cmd("undo")
 		end,
@@ -434,7 +457,7 @@ end
 
 function M.redo()
 	M.attach_and_run({
-		hlgroup = M.config.redo_hl,
+		hlgroup = "UgRedo",
 		cmd = function()
 			vim.cmd("redo")
 		end,
@@ -445,8 +468,17 @@ end
 function M.setup(user_config)
 	M.config = vim.tbl_extend("force", M.config, user_config or {})
 
-	set_highlight(M.config.undo_hl, M.config.undo_hl_color)
-	set_highlight(M.config.redo_hl, M.config.redo_hl_color)
+	if M.config.undo_hl ~= "UgUndo" then
+		link_highlight("UgUndo", M.config.undo_hl, M.config.undo_hl_color)
+	else
+		set_highlight(M.config.undo_hl, M.config.undo_hl_color)
+	end
+
+	if M.config.redo_hl ~= "UgRedo" then
+		link_highlight("UgRedo", M.config.redo_hl, M.config.redo_hl_color)
+	else
+		set_highlight(M.config.undo_hl, M.config.undo_hl_color)
+	end
 end
 
 return M
