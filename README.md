@@ -142,13 +142,24 @@ require("undo-glow").redo() -- Redo command with highlights
 
 ---@param opts UndoGlow.AttachAndRunOpts
 require("undo-glow").attach_and_run(opts) -- API to create custom actions that highlights
+
+---@class UndoGlow.HighlightRegion
+---@field hlgroup string
+---@field animation_type? AnimationType -- Overwrites animation_type from config
+---@field s_row integer Start row
+---@field s_col integer Start column
+---@field e_row integer End row
+---@field e_col integer End column
+
+--- @param opts UndoGlow.HighlightRegion Options for highlighting the region:
+require("undo-glow").highlight_region(opts) -- API to highlight certain region without text changes
 ```
 
 You can set it up anywhere you like, Commonly at the keymap level directly. For example:
 
 ```lua
-vim.keymap.set("n", "u", require("undo-glow").undo, { noremap = true, silent = true })
-vim.keymap.set("n", "<C-r>", require("undo-glow").redo, { noremap = true, silent = true })
+vim.keymap.set("n", "u", require("undo-glow").undo, { silent = true })
+vim.keymap.set("n", "<C-r>", require("undo-glow").redo, { silent = true })
 ```
 
 ### Creating custom command to highlight
@@ -210,6 +221,107 @@ vim.api.nvim_create_autocmd({ "BufReadPost", "TextChanged" }, {
 > As per docs for `TextChanged`, `Careful: This is triggered very often, don't do anything that the user does not expect or that is slow.`, so please becareful about this. I have been using this for a while, and everything seems working fine.
 
 Feel free to send a PR if you think anything can be improved to better support autocmd,
+
+### Highlight Yank Text
+
+```lua
+vim.api.nvim_create_autocmd("TextYankPost", {
+ desc = "Highlight when yanking (copying) text",
+ callback = function()
+  local pos = vim.fn.getpos("'[")
+  local pos2 = vim.fn.getpos("']")
+  require("undo-glow").highlight_region({
+   hlgroup = "UgUndo",
+   s_row = pos[2] - 1,
+   s_col = pos[3] - 1,
+   e_row = pos2[2] - 1,
+   e_col = pos2[3],
+  })
+ end,
+})
+```
+
+### Highlight Pasted Text
+
+```lua
+vim.keymap.set("n", "p", function()
+ require("undo-glow").attach_and_run({
+  hlgroup = "UgUndo",
+  cmd = function()
+   vim.cmd("normal! p")
+  end,
+ })
+end, { silent = true })
+
+vim.keymap.set("n", "P", function()
+ require("undo-glow").attach_and_run({
+  hlgroup = "UgUndo",
+  cmd = function()
+   vim.cmd("normal! P")
+  end,
+ })
+end, { silent = true })
+```
+
+### Highlight search text next and previous
+
+```lua
+-- Use `n` for next and `N` for previous
+vim.keymap.set("n", "n", function()
+ vim.cmd("normal! n") -- Use `n` for next and `N` for previous
+ local bufnr = vim.api.nvim_get_current_buf()
+ local cursor = vim.api.nvim_win_get_cursor(0)
+ local row = cursor[1] - 1
+ local col = cursor[2]
+
+ local search_pattern = vim.fn.getreg("/")
+ if search_pattern == "" then
+  return
+ end
+
+ local line = vim.api.nvim_buf_get_lines(bufnr, row, row + 1, false)[1]
+ if not line then
+  return
+ end
+
+ local match_start, match_end
+ local offset = 1
+ while true do
+  local s, e = line:find(search_pattern, offset)
+  if not s then
+   break
+  end
+
+  local s0 = s - 1
+
+  if col >= s0 and col < e then
+   match_start, match_end = s, e
+   break
+  end
+
+  if s0 > col then
+   match_start, match_end = s, e
+   break
+  end
+  offset = e + 1
+ end
+
+ if not match_start or not match_end then
+  match_start, match_end = line:find(search_pattern)
+  if not match_start or not match_end then
+   return
+  end
+ end
+
+ require("undo-glow").highlight_region({
+  hlgroup = "UgUndo",
+  s_row = row,
+  s_col = match_start - 1,
+  e_row = row,
+  e_col = match_end,
+ })
+end, { silent = true })
+```
 
 ### How I set it up?
 

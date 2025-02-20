@@ -4,6 +4,8 @@ local counter = 0 -- For unique highlight groups
 
 M.ns = vim.api.nvim_create_namespace("undo-glow")
 
+local color = require("undo-glow.color")
+
 ---@param base string
 ---@return string
 function M.get_unique_hlgroup(base)
@@ -89,6 +91,60 @@ function M.highlight_range(bufnr, hlgroup, s_row, s_col, e_row, e_col)
 	})
 
 	return extmark_id
+end
+
+---@param opts UndoGlow.HandleHighlight
+function M.handle_highlight(opts)
+	if vim.api.nvim_buf_is_valid(opts.bufnr) then
+		-- If animation is off, use the existing hlgroup else use unique hlgroups.
+		-- Unique hlgroups is needed for animated version, because we will be changing the hlgroup colors during
+		-- animation.
+		local unique_hlgroup = opts.config.animation
+				and M.get_unique_hlgroup(opts.state.current_hlgroup)
+			or opts.state.current_hlgroup
+
+		local current_hlgroup_detail =
+			vim.api.nvim_get_hl(0, { name = opts.state.current_hlgroup })
+
+		local bg = nil
+		local fg = nil
+
+		if not current_hlgroup_detail.bg then
+			bg = color.default_undo.bg
+		else
+			bg = string.format("#%06X", current_hlgroup_detail.bg)
+		end
+
+		if not current_hlgroup_detail.fg then
+			fg = nil
+		else
+			fg = string.format("#%06X", current_hlgroup_detail.fg)
+		end
+
+		local init_color = {
+			bg = bg,
+			fg = fg,
+		}
+
+		local extmark_id = M.highlight_range(
+			opts.bufnr,
+			unique_hlgroup,
+			opts.s_row,
+			opts.s_col,
+			opts.e_row,
+			opts.e_col
+		)
+
+		require("undo-glow.animation").clear_highlights(
+			opts.bufnr,
+			opts.state,
+			unique_hlgroup,
+			extmark_id,
+			init_color.bg,
+			init_color.fg,
+			opts.config
+		)
+	end
 end
 
 return M

@@ -31,6 +31,14 @@ local M = {}
 ---@field cmd? function
 ---@field animation_type? AnimationType
 
+---@class UndoGlow.HighlightRegion
+---@field hlgroup string
+---@field animation_type? AnimationType
+---@field s_row integer Start row
+---@field s_col integer Start column
+---@field e_row integer End row
+---@field e_col integer End column
+
 ---@class UndoGlow.Animation
 ---@field bufnr integer Buffer number
 ---@field hlgroup string
@@ -42,11 +50,21 @@ local M = {}
 ---@field duration integer
 ---@field config UndoGlow.Config
 
+---@class UndoGlow.HandleHighlight
+---@field bufnr integer Buffer number
+---@field config UndoGlow.Config
+---@field state UndoGlow.State State
+---@field s_row integer Start row
+---@field s_col integer Start column
+---@field e_row integer End row
+---@field e_col integer End column
+
 M.config = require("undo-glow.config")
 M.easing = require("undo-glow.easing")
 
 local highlights = require("undo-glow.highlight")
 local callback = require("undo-glow.callback")
+local utils = require("undo-glow.utils")
 
 -- Helper to attach to a buffer with a local state.
 ---@param opts UndoGlow.AttachAndRunOpts
@@ -69,6 +87,36 @@ function M.attach_and_run(opts)
 	if opts.cmd then
 		opts.cmd()
 	end
+end
+
+--- Highlight a specified region in the current buffer.
+--- This API can be used for yanking or any other use case where you want to
+--- temporarily highlight a region without modifying the text.
+--- @param opts UndoGlow.HighlightRegion
+function M.highlight_region(opts)
+	local bufnr = vim.api.nvim_get_current_buf()
+
+	---@type UndoGlow.State
+	local state = {
+		should_detach = false,
+		current_hlgroup = opts.hlgroup,
+		animation_type = opts.animation_type or M.config.animation_type,
+	}
+
+	vim.schedule(function()
+		---@type UndoGlow.HandleHighlight
+		local handle_highlight_opts = {
+			bufnr = bufnr,
+			config = M.config,
+			state = state,
+			s_row = opts.s_row,
+			s_col = opts.s_col,
+			e_row = opts.e_row,
+			e_col = opts.e_col,
+		}
+
+		utils.handle_highlight(handle_highlight_opts)
+	end)
 end
 
 function M.undo()
