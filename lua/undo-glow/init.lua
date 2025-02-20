@@ -1,8 +1,10 @@
 local M = {}
+---@alias AnimationType "fade" | "blink" | "pulse" | "jitter"
 
 ---@class UndoGlow.Config
 ---@field duration? number Highlight duration in ms
 ---@field animation? boolean Turn on or off for animation
+---@field animation_type? AnimationType
 ---@field easing? function A function that takes a number (0-1) and returns a number (0-1) for easing.
 ---@field fps? number Normally either 60 / 120, up to you
 ---@field undo_hl? string If not "UgUndo" then copy the to color to UgUndo or fallback to default
@@ -17,6 +19,7 @@ local M = {}
 ---@class UndoGlow.State
 ---@field current_hlgroup string
 ---@field should_detach boolean
+---@field animation_type? AnimationType
 
 ---@class UndoGlow.RGBColor
 ---@field r integer Red (0-255)
@@ -26,6 +29,18 @@ local M = {}
 ---@class UndoGlow.AttachAndRunOpts
 ---@field hlgroup string
 ---@field cmd? function
+---@field animation_type? AnimationType
+
+---@class UndoGlow.Animation
+---@field bufnr integer Buffer number
+---@field hlgroup string
+---@field extmark_id integer
+---@field start_bg UndoGlow.RGBColor
+---@field end_bg UndoGlow.RGBColor
+---@field start_fg? UndoGlow.RGBColor
+---@field end_fg? UndoGlow.RGBColor
+---@field duration integer
+---@field config UndoGlow.Config
 
 M.config = require("undo-glow.config")
 M.easing = require("undo-glow.easing")
@@ -39,7 +54,11 @@ function M.attach_and_run(opts)
 	local bufnr = vim.api.nvim_get_current_buf()
 
 	---@type UndoGlow.State
-	local state = { should_detach = false, current_hlgroup = opts.hlgroup }
+	local state = {
+		should_detach = false,
+		current_hlgroup = opts.hlgroup,
+		animation_type = opts.animation_type or M.config.animation_type,
+	}
 
 	vim.api.nvim_buf_attach(bufnr, false, {
 		on_bytes = function(...)

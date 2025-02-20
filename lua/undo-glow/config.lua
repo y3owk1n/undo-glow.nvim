@@ -1,6 +1,8 @@
+---@type UndoGlow.Config
 local config = {
 	duration = 500,
 	animation = true,
+	animation_type = "fade",
 	easing = require("undo-glow.easing").ease_in_out_cubic,
 	fps = 120,
 	undo_hl = "UgUndo",
