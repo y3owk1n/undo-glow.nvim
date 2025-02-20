@@ -9,8 +9,18 @@ local M = {}
 ---@field fps? number Normally either 60 / 120, up to you
 ---@field undo_hl? string If not "UgUndo" then copy the to color to UgUndo or fallback to default
 ---@field redo_hl? string If not "UgRedo" then copy the to color to UgRedo or fallback to default
+---@field yank_hl? string If not "UgYank" then copy the to color to UgYank or fallback to default
+---@field paste_below_hl? string If not "UgPasteBelow" then copy the to color to UgPasteBelow or fallback to default
+---@field paste_above_hl? string If not "UgPasteAbove" then copy the to color to UgPasteAbove or fallback to default
+---@field search_next_hl? string If not "UgSearchNext" then copy the to color to UgSearchNext or fallback to default
+---@field search_prev_hl? string If not "UgSearchPrev" then copy the to color to UgSearchPrev or fallback to default
 ---@field undo_hl_color? UndoGlow.HlColor
 ---@field redo_hl_color? UndoGlow.HlColor
+---@field yank_hl_color? UndoGlow.HlColor
+---@field paste_below_hl_color? UndoGlow.HlColor
+---@field paste_above_hl_color? UndoGlow.HlColor
+---@field search_next_hl_color? UndoGlow.HlColor
+---@field search_prev_hl_color? UndoGlow.HlColor
 
 ---@class UndoGlow.HlColor
 ---@field bg string
@@ -31,13 +41,9 @@ local M = {}
 ---@field cmd? function
 ---@field animation_type? AnimationType
 
----@class UndoGlow.HighlightRegion
+---@class UndoGlow.HighlightRegion: UndoGlow.RowCol
 ---@field hlgroup string
 ---@field animation_type? AnimationType
----@field s_row integer Start row
----@field s_col integer Start column
----@field e_row integer End row
----@field e_col integer End column
 
 ---@class UndoGlow.Animation
 ---@field bufnr integer Buffer number
@@ -50,10 +56,12 @@ local M = {}
 ---@field duration integer
 ---@field config UndoGlow.Config
 
----@class UndoGlow.HandleHighlight
+---@class UndoGlow.HandleHighlight : UndoGlow.RowCol
 ---@field bufnr integer Buffer number
 ---@field config UndoGlow.Config
 ---@field state UndoGlow.State State
+
+---@class UndoGlow.RowCol
 ---@field s_row integer Start row
 ---@field s_col integer Start column
 ---@field e_row integer End row
@@ -61,6 +69,14 @@ local M = {}
 
 M.config = require("undo-glow.config")
 M.easing = require("undo-glow.easing")
+
+M.undo = require("undo-glow.commands").undo
+M.redo = require("undo-glow.commands").redo
+M.yank = require("undo-glow.commands").yank
+M.paste_below = require("undo-glow.commands").paste_below
+M.paste_above = require("undo-glow.commands").paste_above
+M.search_next = require("undo-glow.commands").search_next
+M.search_prev = require("undo-glow.commands").search_prev
 
 local highlights = require("undo-glow.highlight")
 local callback = require("undo-glow.callback")
@@ -119,47 +135,45 @@ function M.highlight_region(opts)
 	end)
 end
 
-function M.undo()
-	M.attach_and_run({
-		hlgroup = "UgUndo",
-		cmd = function()
-			vim.cmd("undo")
-		end,
-	})
-end
-
-function M.redo()
-	M.attach_and_run({
-		hlgroup = "UgRedo",
-		cmd = function()
-			vim.cmd("redo")
-		end,
-	})
-end
-
 ---@param user_config? UndoGlow.Config
 function M.setup(user_config)
 	M.config = vim.tbl_extend("force", M.config, user_config or {})
 
-	if M.config.undo_hl ~= "UgUndo" then
-		highlights.link_highlight(
-			"UgUndo",
-			M.config.undo_hl,
-			M.config.undo_hl_color
-		)
-	else
-		highlights.set_highlight(M.config.undo_hl, M.config.undo_hl_color)
-	end
-
-	if M.config.redo_hl ~= "UgRedo" then
-		highlights.link_highlight(
-			"UgRedo",
-			M.config.redo_hl,
-			M.config.redo_hl_color
-		)
-	else
-		highlights.set_highlight(M.config.undo_hl, M.config.undo_hl_color)
-	end
+	highlights.setup_highlight(
+		"UgUndo",
+		M.config.undo_hl,
+		M.config.undo_hl_color
+	)
+	highlights.setup_highlight(
+		"UgRedo",
+		M.config.redo_hl,
+		M.config.redo_hl_color
+	)
+	highlights.setup_highlight(
+		"UgYank",
+		M.config.yank_hl,
+		M.config.yank_hl_color
+	)
+	highlights.setup_highlight(
+		"UgPasteBelow",
+		M.config.paste_below_hl,
+		M.config.paste_below_hl_color
+	)
+	highlights.setup_highlight(
+		"UgPasteAbove",
+		M.config.paste_above_hl,
+		M.config.paste_above_hl_color
+	)
+	highlights.setup_highlight(
+		"UgSearchNext",
+		M.config.search_next_hl,
+		M.config.search_next_hl_color
+	)
+	highlights.setup_highlight(
+		"UgSearchPrev",
+		M.config.search_prev_hl,
+		M.config.search_prev_hl_color
+	)
 end
 
 return M

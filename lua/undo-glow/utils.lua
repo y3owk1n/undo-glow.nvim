@@ -147,4 +147,58 @@ function M.handle_highlight(opts)
 	end
 end
 
+---@return UndoGlow.RowCol | nil
+function M.get_search_region()
+	local bufnr = vim.api.nvim_get_current_buf()
+	local cursor = vim.api.nvim_win_get_cursor(0)
+	local row = cursor[1] - 1
+	local col = cursor[2]
+
+	local search_pattern = vim.fn.getreg("/")
+	if search_pattern == "" then
+		return
+	end
+
+	local line = vim.api.nvim_buf_get_lines(bufnr, row, row + 1, false)[1]
+	if not line then
+		return
+	end
+
+	local match_start, match_end
+	local offset = 1
+	while true do
+		local s, e = line:find(search_pattern, offset)
+		if not s then
+			break
+		end
+
+		local s0 = s - 1
+
+		if col >= s0 and col < e then
+			match_start, match_end = s, e
+			break
+		end
+
+		if s0 > col then
+			match_start, match_end = s, e
+			break
+		end
+		offset = e + 1
+	end
+
+	if not match_start or not match_end then
+		match_start, match_end = line:find(search_pattern)
+		if not match_start or not match_end then
+			return
+		end
+	end
+
+	return {
+		s_row = row,
+		s_col = match_start - 1,
+		e_row = row,
+		e_col = match_end,
+	}
+end
+
 return M
