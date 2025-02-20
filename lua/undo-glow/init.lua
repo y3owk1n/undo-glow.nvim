@@ -1,12 +1,12 @@
 local M = {}
 
 ---@class UndoGlow.Config
----@field duration number In ms
----@field animation boolean
----@field easing function A function that takes a number (0-1) and returns a number (0-1) for easing.
----@field fps number
----@field undo_hl string If not "UgUndo" then copy the to color to UgUndo or fallback to default
----@field redo_hl string If not "UgRedo" then copy the to color to UgRedo or fallback to default
+---@field duration? number Highlight duration in ms
+---@field animation? boolean Turn on or off for animation
+---@field easing? function A function that takes a number (0-1) and returns a number (0-1) for easing.
+---@field fps? number Normally either 60 / 120, up to you
+---@field undo_hl? string If not "UgUndo" then copy the to color to UgUndo or fallback to default
+---@field redo_hl? string If not "UgRedo" then copy the to color to UgRedo or fallback to default
 ---@field undo_hl_color? UndoGlow.HlColor
 ---@field redo_hl_color? UndoGlow.HlColor
 
