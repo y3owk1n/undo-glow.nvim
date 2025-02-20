@@ -333,7 +333,6 @@ function M.clear_highlights(
 			if vim.api.nvim_buf_is_valid(bufnr) then
 				vim.api.nvim_buf_del_extmark(bufnr, utils.ns, extmark_id)
 			end
-			vim.cmd("hi clear " .. hlgroup)
 		end, config.duration)
 	end
 

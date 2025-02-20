@@ -56,8 +56,12 @@ function M.on_bytes_wrapper(
 
 	vim.schedule(function()
 		if vim.api.nvim_buf_is_valid(bufnr) then
-			local unique_hlgroup =
-				utils.get_unique_hlgroup(state.current_hlgroup)
+			-- If animation is off, use the existing hlgroup else use unique hlgroups.
+			-- Unique hlgroups is needed for animated version, because we will be changing the hlgroup colors during
+			-- animation.
+			local unique_hlgroup = config.animation
+					and utils.get_unique_hlgroup(state.current_hlgroup)
+				or state.current_hlgroup
 
 			local current_hlgroup_detail =
 				vim.api.nvim_get_hl(0, { name = state.current_hlgroup })
@@ -81,8 +85,6 @@ function M.on_bytes_wrapper(
 				bg = bg,
 				fg = fg,
 			}
-
-			highlights.set_highlight(unique_hlgroup, init_color)
 
 			local extmark_id = utils.highlight_range(
 				bufnr,
