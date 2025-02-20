@@ -97,13 +97,16 @@ CONFIGURATION                    *undo-glow.nvim-undo-glow.nvim-configuration*
 Here is the default configuration:
 
 >lua
+    ---@alias AnimationType "fade" | "blink" | "pulse" | "jitter"
+    
     ---@class UndoGlow.Config
-    ---@field duration number In ms
-    ---@field animation boolean
-    ---@field easing function A function that takes a number (0-1) and returns a number (0-1) for easing.
-    ---@field fps number
-    ---@field undo_hl string
-    ---@field redo_hl string
+    ---@field duration? number In ms
+    ---@field animation? boolean
+    ---@field animation_type? AnimationType
+    ---@field easing? function A function that takes a number (0-1) and returns a number (0-1) for easing.
+    ---@field fps? number
+    ---@field undo_hl? string
+    ---@field redo_hl? string
     ---@field undo_hl_color? UndoGlow.HlColor
     ---@field redo_hl_color? UndoGlow.HlColor
     
@@ -113,6 +116,7 @@ Here is the default configuration:
     {
      duration = 500, -- in ms
      animation = true, -- whether to turn on or off for animation
+     animation_type = "fade", -- default to "fade"
      fps = 120, -- change the fps, normally either 60 / 120
      easing = M.easing.ease_in_out_cubic, -- see more at easing section on how to change and create your own
      undo_hl = "UgUndo", -- This will not set new hlgroup, if it's not "UgUndo", we will try to grab the colors of specified hlgroup and apply to "UgUndo"
@@ -175,6 +179,7 @@ API                                        *undo-glow.nvim-undo-glow.nvim-api*
     ---@class UndoGlow.AttachAndRunOpts
     ---@field hlgroup string
     ---@field cmd? function
+    ---@field animation_type? AnimationType -- Overwrites animation_type from config
     
     ---@param opts UndoGlow.AttachAndRunOpts
     require("undo-glow").attach_and_run(opts) -- API to create custom actions that highlights
