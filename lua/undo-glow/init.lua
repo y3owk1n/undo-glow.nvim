@@ -6,6 +6,7 @@ local counter = 0 -- For unique highlight groups
 ---@class UndoGlow.Config
 ---@field duration number In ms
 ---@field animation boolean
+---@field easing function A function that takes a number (0-1) and returns a number (0-1) for easing.
 ---@field fps number
 ---@field undo_hl string If not "UgUndo" then copy the to color to UgUndo or fallback to default
 ---@field redo_hl string If not "UgRedo" then copy the to color to UgRedo or fallback to default
@@ -34,11 +35,36 @@ local default_fg = "#FFFFFF"
 local default_undo = { bg = "#FF5555" }
 local default_redo = { bg = "#50FA7B" }
 
+M.easing = {}
+
+---@param t number (0-1) Interpolation factor
+---@return number
+function M.easing.ease_out_quad(t)
+	return 1 - (1 - t) * (1 - t)
+end
+
+function M.easing.ease_in_out_cubic(t)
+	if t < 0.5 then
+		return 4 * t * t * t
+	else
+		return 1 - math.pow(-2 * t + 2, 3) / 2
+	end
+end
+
+function M.easing.ease_out_cubic(t)
+	return 1 - math.pow(1 - t, 3)
+end
+
+function M.easing.ease_in_sine(t)
+	return 1 - math.cos((t * math.pi) / 2)
+end
+
 -- Default configuration
 ---@type UndoGlow.Config
 M.config = {
 	duration = 500,
 	animation = true,
+	easing = M.easing.ease_in_out_cubic,
 	fps = 120,
 	undo_hl = "UgUndo",
 	redo_hl = "UgRedo",
@@ -72,12 +98,6 @@ local function blend_color(c1, c2, t)
 	local g = math.floor(c1.g + (c2.g - c1.g) * t + 0.5)
 	local b = math.floor(c1.b + (c2.b - c1.b) * t + 0.5)
 	return rgb_to_hex({ r = r, g = g, b = b })
-end
-
----@param t number (0-1) Interpolation factor
----@return number
-local function ease_out_quad(t)
-	return 1 - (1 - t) * (1 - t)
 end
 
 ---@return string
@@ -144,7 +164,7 @@ local function animate_fadeout(
 					local now = vim.uv.hrtime()
 					local elapsed = (now - start_time) / 1e6 -- convert from ns to ms
 					local t = math.min(elapsed / duration, 1)
-					local eased = ease_out_quad(t)
+					local eased = M.config.easing(t)
 
 					local blended_bg = blend_color(start_bg, end_bg, eased)
 					local blended_fg = start_fg

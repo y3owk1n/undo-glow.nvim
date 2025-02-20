@@ -9,6 +9,7 @@ Table of Contents                           *undo-glow.nvim-table-of-contents*
   - Contents                          |undo-glow.nvim-undo-glow.nvim-contents|
   - Installation                  |undo-glow.nvim-undo-glow.nvim-installation|
   - Configuration                |undo-glow.nvim-undo-glow.nvim-configuration|
+  - Easing                              |undo-glow.nvim-undo-glow.nvim-easing|
   - API                                    |undo-glow.nvim-undo-glow.nvim-api|
   - Contributing                  |undo-glow.nvim-undo-glow.nvim-contributing|
 
@@ -65,6 +66,7 @@ CONTENTS                              *undo-glow.nvim-undo-glow.nvim-contents*
 
 - |undo-glow.nvim-installation|
 - |undo-glow.nvim-configuration|
+- |undo-glow.nvim-easing|
 - |undo-glow.nvim-api|
 - |undo-glow.nvim-contributing|
 
@@ -98,11 +100,12 @@ Here is the default configuration:
     ---@class UndoGlow.Config
     ---@field duration number In ms
     ---@field animation boolean
+    ---@field easing function A function that takes a number (0-1) and returns a number (0-1) for easing.
     ---@field fps number
     ---@field undo_hl string
     ---@field redo_hl string
-    ---@field undo_hl_color UndoGlow.HlColor
-    ---@field redo_hl_color UndoGlow.HlColor
+    ---@field undo_hl_color? UndoGlow.HlColor
+    ---@field redo_hl_color? UndoGlow.HlColor
     
     ---@class UndoGlow.HlColor
     ---@field bg string Background color
@@ -111,10 +114,53 @@ Here is the default configuration:
      duration = 500, -- in ms
      animation = true, -- whether to turn on or off for animation
      fps = 120, -- change the fps, normally either 60 / 120
-     undo_hl = "UgUndo", -- highlight
-     redo_hl = "UgRedo", -- highlight
-     undo_hl_color = { bg = "#FF5555" }, -- ugly red color, please change it!
-     redo_hl_color = { bg = "#50FA7B" }, -- ugly green color, please change it!
+     easing = M.easing.ease_in_out_cubic, -- see more at easing section on how to change and create your own
+     undo_hl = "UgUndo", -- This will not set new hlgroup, if it's not "UgUndo", we will try to grab the colors of specified hlgroup and apply to "UgUndo"
+     redo_hl = "UgRedo", -- This will not set new hlgroup, if it's not "UgRedo", we will try to grab the colors of specified hlgroup and apply to "UgRedo"
+     undo_hl_color = { bg = "#FF5555" }, -- Colors from undo_hl will overwrite this, unless undo_hl does not contain the bg or fg. Ugly red color, please change it!
+     redo_hl_color = { bg = "#50FA7B" }, -- -- Colors from undo_hl will overwrite this, unless redo_hl does not contain the bg or fg. Ugly green color, please change it!
+    }
+<
+
+
+EASING                                  *undo-glow.nvim-undo-glow.nvim-easing*
+
+
+BUILTIN EASING ~
+
+>lua
+    require("undo-glow").easing.ease_in_out_cubic() -- default
+    require("undo-glow").easing.ease_out_quad()
+    require("undo-glow").easing.ease_out_cubic()
+    require("undo-glow").easing.ease_in_sine()
+<
+
+Feel free to send in PR for more interesting easings
+
+
+CHANGING EASING FROM CONFIGURATION WITH BUILTIN ~
+
+>lua
+    -- configuration opts
+    {
+     ...rest
+     easing = require("undo-glow").easing.ease_in_sine()
+     ...rest
+    }
+<
+
+
+CHANGING EASING TO WHATEVER YOU LIKE WITH YOUR OWN FUNCTION ~
+
+>lua
+    {
+     ...rest
+    ---@param t number (0-1) Interpolation factor
+    ---@return number
+     easing = function(t)
+      return 1 - math.cos((t * math.pi) / 2)
+     end,
+     ...rest
     }
 <
 
