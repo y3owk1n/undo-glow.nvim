@@ -88,7 +88,7 @@ Here is the default configuration:
 
 ## Easing
 
-### Builtin easing
+### Builtin easing API
 
 ```lua
 require("undo-glow").easing.ease_in_out_cubic() -- default
@@ -110,7 +110,7 @@ Feel free to send in PR for more interesting easings
 }
 ```
 
-### Changing easing to whatever you like with your own function
+### Custom easing functions
 
 ```lua
 {
@@ -134,11 +134,17 @@ require("undo-glow").redo() -- Redo command with highlights
 ---@class UndoGlow.AttachAndRunOpts
 ---@field hlgroup string
 ---@field cmd? function
+
 ---@param opts UndoGlow.AttachAndRunOpts
 require("undo-glow").attach_and_run(opts) -- API to create custom actions that highlights
 ```
 
-You can set it up anywhere you like, I set it up at the keymap level directly.
+You can set it up anywhere you like, Commonly at the keymap level directly. For example:
+
+```lua
+vim.keymap.set("n", "u", require("undo-glow").undo, { noremap = true, silent = true })
+vim.keymap.set("n", "<C-r>", require("undo-glow").redo, { noremap = true, silent = true })
+```
 
 ### Creating custom command to highlight
 
@@ -153,11 +159,12 @@ function some_action()
 end
 
 --- then you can use it to bind to anywhere just like before. Undo and redo command are fundamentally doing the same thing.
+vim.keymap.set("n", "key_that_you_like", some_action, { noremap = true, silent = true })
 
 --- Example of undo function
-function M.undo()
- M.attach_and_run({
-  hlgroup = M.config.undo_hl,
+function undo()
+ require("undo-glow").attach_and_run({
+  hlgroup = "UgUndo",
   cmd = function()
    vim.cmd("undo")
   end,
@@ -195,9 +202,9 @@ vim.api.nvim_create_autocmd({ "BufReadPost", "TextChanged" }, {
 })
 ```
 
-> As per docs for `TextChanged`, `Careful: This is triggered very often, don't do anything that the user does not expect or that is slow.`, so please becareful about this. I personnaly do not use autocmd for this purpose.
+> As per docs for `TextChanged`, `Careful: This is triggered very often, don't do anything that the user does not expect or that is slow.`, so please becareful about this. I have been using this for a while, and everything seems working fine.
 
-Feel free to send a PR if you think anything can be improved to better support autocmd
+Feel free to send a PR if you think anything can be improved to better support autocmd,
 
 ### How I set it up?
 
@@ -206,18 +213,12 @@ return {
  {
   "y3owk1n/undo-glow.nvim",
   event = { "VeryLazy" },
-  ---@param _ any
-  ---@param opts UndoGlow.Config
-  opts = function(_, opts)
-  -- How i set up the colors using catppuccin
-   local has_catppuccin, catppuccin = pcall(require, "catppuccin.palettes")
-
-   if has_catppuccin then
-    local colors = catppuccin.get_palette()
-    opts.undo_hl_color = { bg = colors.red }
-    opts.redo_hl_color = { bg = colors.flamingo }
-   end
-  end,
+  ---@type UndoGlow.Config
+  opts = {
+   undo_hl = "DiffDelete",
+   redo_hl = "DiffAdd",
+   duration = 1000,
+  },
   ---@param _ any
   ---@param opts UndoGlow.Config
   config = function(_, opts)
@@ -225,9 +226,24 @@ return {
 
    undo_glow.setup(opts)
 
-   vim.keymap.set("n", "u", undo_glow.undo, { noremap = true, silent = true })
    -- I like to use U to redo instead
-   vim.keymap.set("n", "U", undo_glow.redo, { noremap = true, silent = true })
+   vim.keymap.set("n", "U", "<C-r>", { noremap = true, silent = true })
+
+   -- Highlight everything that changes
+   vim.api.nvim_create_autocmd({ "BufReadPost", "TextChanged" }, {
+    pattern = "*",
+    callback = function()
+     if vim.bo.buftype ~= "" then
+      return
+     end
+
+     vim.schedule(function()
+      undo_glow.attach_and_run({
+       hlgroup = "UgUndo",
+      })
+     end)
+    end,
+   })
   end,
  },
 }
