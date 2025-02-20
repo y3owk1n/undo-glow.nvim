@@ -313,6 +313,8 @@ autocmd,
 
 HIGHLIGHT YANK TEXT ~
 
+
+  This is already included as presets, just to show how you can do it yourself
 >lua
     vim.api.nvim_create_autocmd("TextYankPost", {
      desc = "Highlight when yanking (copying) text",
@@ -333,6 +335,8 @@ HIGHLIGHT YANK TEXT ~
 
 HIGHLIGHT PASTED TEXT ~
 
+
+  This is already included as presets, just to show how you can do it yourself
 >lua
     vim.keymap.set("n", "p", function()
      require("undo-glow").attach_and_run({
@@ -356,6 +360,8 @@ HIGHLIGHT PASTED TEXT ~
 
 HIGHLIGHT SEARCH TEXT NEXT AND PREVIOUS ~
 
+
+  This is already included as presets, just to show how you can do it yourself
 >lua
     -- Use `n` for next and `N` for previous
     vim.keymap.set("n", "n", function()
