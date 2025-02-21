@@ -39,14 +39,6 @@ This project is feature complete at this point. The rest of the commits will be 
 
 <https://github.com/user-attachments/assets/624db7db-6b50-437b-a92c-966ad2246d70>
 
-## Contents
-
-- [Installation](#installation)
-- [Configuration](#configuration)
-- [Easing](#easing)
-- [API](#api)
-- [Contributing](#contributing)
-
 ## 📦 Installation
 
 Using [lazy.nvim](https://github.com/folke/lazy.nvim):

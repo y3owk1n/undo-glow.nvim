@@ -7,7 +7,6 @@ Table of Contents                           *undo-glow.nvim-table-of-contents*
   - ✨ Features             |undo-glow.nvim-🌈-undo-glow.nvim-✨-features|
   - 🔥 Status               |undo-glow.nvim-🌈-undo-glow.nvim-🔥-status|
   - 👀 Previews           |undo-glow.nvim-🌈-undo-glow.nvim-👀-previews|
-  - Contents                     |undo-glow.nvim-🌈-undo-glow.nvim-contents|
   - 📦 Installation   |undo-glow.nvim-🌈-undo-glow.nvim-📦-installation|
   - ⚙️Configuration|undo-glow.nvim-🌈-undo-glow.nvim-⚙️configuration|
   - 💎 Animation Easing|undo-glow.nvim-🌈-undo-glow.nvim-💎-animation-easing|
@@ -73,15 +72,6 @@ COMMENT ~
 
 
 <https://github.com/user-attachments/assets/624db7db-6b50-437b-a92c-966ad2246d70>
-
-
-CONTENTS                         *undo-glow.nvim-🌈-undo-glow.nvim-contents*
-
-- |undo-glow.nvim-installation|
-- |undo-glow.nvim-configuration|
-- |undo-glow.nvim-easing|
-- |undo-glow.nvim-api|
-- |undo-glow.nvim-contributing|
 
 
 П�� INSTALLATION       *undo-glow.nvim-🌈-undo-glow.nvim-📦-installation*
