@@ -92,4 +92,25 @@ function M.search_star()
 	})
 end
 
+function M.comment()
+	require("undo-glow").highlight_changes({
+		hlgroup = "UgComment",
+	})
+	return require("vim._comment").operator()
+end
+
+function M.comment_textobject()
+	require("undo-glow").highlight_changes({
+		hlgroup = "UgComment",
+	})
+	return require("vim._comment").textobject()
+end
+
+function M.comment_line()
+	require("undo-glow").highlight_changes({
+		hlgroup = "UgComment",
+	})
+	return require("vim._comment").operator() .. "_"
+end
+
 return M

@@ -7,7 +7,7 @@ local M = {}
 ---@field animation_type? AnimationType
 ---@field easing? function A function that takes a number (0-1) and returns a number (0-1) for easing.
 ---@field fps? number Normally either 60 / 120, up to you
----@field highlights? table<"undo" | "redo" | "yank" | "paste" | "search", { hl: string, hl_color: UndoGlow.HlColor }>
+---@field highlights? table<"undo" | "redo" | "yank" | "paste" | "search" | "comment", { hl: string, hl_color: UndoGlow.HlColor }>
 
 ---@class UndoGlow.HlColor
 ---@field bg string
@@ -64,6 +64,9 @@ M.paste_above = require("undo-glow.commands").paste_above
 M.search_next = require("undo-glow.commands").search_next
 M.search_prev = require("undo-glow.commands").search_prev
 M.search_star = require("undo-glow.commands").search_star
+M.comment = require("undo-glow.commands").comment
+M.comment_textobject = require("undo-glow.commands").comment_textobject
+M.comment_line = require("undo-glow.commands").comment_line
 
 local highlights = require("undo-glow.highlight")
 local callback = require("undo-glow.callback")
@@ -128,6 +131,7 @@ function M.setup(user_config)
 		yank = true,
 		paste = true,
 		search = true,
+		comment = true,
 	}
 
 	for key in pairs(M.config.highlights) do
@@ -142,6 +146,7 @@ function M.setup(user_config)
 		yank = "UgYank",
 		paste = "UgPaste",
 		search = "UgSearch",
+		comment = "UgComment",
 	}
 
 	for key, highlight in pairs(M.config.highlights) do

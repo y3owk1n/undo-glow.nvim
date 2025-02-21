@@ -26,6 +26,10 @@ local config = {
 			hl = "UgSearch",
 			hl_color = require("undo-glow.color").default_search,
 		},
+		comment = {
+			hl = "UgComment",
+			hl_color = require("undo-glow.color").default_comment,
+		},
 	},
 }
 
