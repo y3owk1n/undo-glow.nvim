@@ -3,18 +3,18 @@
 ==============================================================================
 Table of Contents                           *undo-glow.nvim-table-of-contents*
 
-1. 🌈 undo-glow.nvim                    |undo-glow.nvim-🌈-undo-glow.nvim|
-  - ✨ Features             |undo-glow.nvim-🌈-undo-glow.nvim-✨-features|
-  - 🔥 Status               |undo-glow.nvim-🌈-undo-glow.nvim-🔥-status|
-  - 👀 Previews           |undo-glow.nvim-🌈-undo-glow.nvim-👀-previews|
-  - 📦 Installation   |undo-glow.nvim-🌈-undo-glow.nvim-📦-installation|
-  - ⚙️Configuration|undo-glow.nvim-🌈-undo-glow.nvim-⚙️configuration|
-  - 💎 Animation Easing|undo-glow.nvim-🌈-undo-glow.nvim-💎-animation-easing|
-  - 🌎 API                     |undo-glow.nvim-🌈-undo-glow.nvim-🌎-api|
-  - Contributing             |undo-glow.nvim-🌈-undo-glow.nvim-contributing|
+1. undo-glow.nvim                              |undo-glow.nvim-undo-glow.nvim|
+  - Features                          |undo-glow.nvim-undo-glow.nvim-features|
+  - Status                              |undo-glow.nvim-undo-glow.nvim-status|
+  - Previews                          |undo-glow.nvim-undo-glow.nvim-previews|
+  - Installation                  |undo-glow.nvim-undo-glow.nvim-installation|
+  - Configuration                |undo-glow.nvim-undo-glow.nvim-configuration|
+  - Animation Easing          |undo-glow.nvim-undo-glow.nvim-animation-easing|
+  - API                                    |undo-glow.nvim-undo-glow.nvim-api|
+  - Contributing                  |undo-glow.nvim-undo-glow.nvim-contributing|
 
 ==============================================================================
-1. 🌈 undo-glow.nvim                    *undo-glow.nvim-🌈-undo-glow.nvim*
+1. undo-glow.nvim                              *undo-glow.nvim-undo-glow.nvim*
 
 **undo-glow.nvim** is a Neovim plugin that adds a visual "glow" effect to your
 neovim operations. It highlights the exact region that’s changed, giving you
@@ -25,7 +25,7 @@ non-changing texts!
   [!important] This plugin does not setup or hijack the keymaps but provides api
   for you to hook into anywhere in your config.
 
-� FEATURES                 *undo-glow.nvim-🌈-undo-glow.nvim-✨-features*
+FEATURES                              *undo-glow.nvim-undo-glow.nvim-features*
 
 - **Visual Feedback For Changes:** Highlights the region affected by text changes commands (E.g. undo, redo, comment).
 - **Visual Feedback For Non-changes:** Highlights any region from an operation (E.g. search next, search prev, search star, yank).
@@ -34,14 +34,14 @@ non-changing texts!
 - **Lightweight & Fast:** Uses Neovim’s native APIs for efficient real-time highlighting with zero dependencies.
 
 
-П�� STATUS                   *undo-glow.nvim-🌈-undo-glow.nvim-🔥-status*
+STATUS                                  *undo-glow.nvim-undo-glow.nvim-status*
 
 This project is feature complete at this point. The rest of the commits will be
 focusing on bug fixes, optimizations and additional commands that fits in the
 scope of this project.
 
 
-П�� PREVIEWS               *undo-glow.nvim-🌈-undo-glow.nvim-👀-previews*
+PREVIEWS                              *undo-glow.nvim-undo-glow.nvim-previews*
 
 
 UNDO ~
@@ -74,9 +74,9 @@ COMMENT ~
 <https://github.com/user-attachments/assets/624db7db-6b50-437b-a92c-966ad2246d70>
 
 
-П�� INSTALLATION       *undo-glow.nvim-🌈-undo-glow.nvim-📦-installation*
+INSTALLATION                      *undo-glow.nvim-undo-glow.nvim-installation*
 
-Using lazy.nvim <https://github.com/folke/lazy.nvim>:
+Using lazy.nvim <https://github.com/folke/lazy.nvim>
 
 >lua
     -- undo-glow.lua
@@ -90,7 +90,7 @@ Using lazy.nvim <https://github.com/folke/lazy.nvim>:
     }
 <
 
-If you are using other package managers you need to call `setup`:
+Ifyou are using other package managers you need to call `setup`
 
 >lua
     require("undo-glow").setup({
@@ -99,10 +99,10 @@ If you are using other package managers you need to call `setup`:
 <
 
 
-�ϸ�CONFIGURATION   *undo-glow.nvim-🌈-undo-glow.nvim-⚙️configuration*
+CONFIGURATION                    *undo-glow.nvim-undo-glow.nvim-configuration*
 
 
-  [!important] Make sure to run `:checkhealth undo-glow` if something isn’t
+  [!important] Makesure to run `:checkhealth undo-glow` if something isn’t
   working properly
 **undo-glow.nvim** is highly configurable. Expand to see the list of all the
 default options below.
@@ -219,7 +219,7 @@ My setup in my config ~
 <
 
 
-П�� ANIMATION EASING*undo-glow.nvim-🌈-undo-glow.nvim-💎-animation-easing*
+ANIMATION EASING              *undo-glow.nvim-undo-glow.nvim-animation-easing*
 
 **undo-glow.nvim** comes with 4 default easing options as below. Feel free to
 send PRs for more interesting easings.
@@ -265,7 +265,7 @@ below.
 <
 
 
-П�� API                         *undo-glow.nvim-🌈-undo-glow.nvim-🌎-api*
+API                                        *undo-glow.nvim-undo-glow.nvim-api*
 
 **undo-glow.nvim** comes with simple API and builtin commands for you to hook
 into your config or DIY.
@@ -502,7 +502,7 @@ LAZY MODE: CREATING AN AUTOCMD THAT WILL HIGHLIGHT ANYTHING THAT CHANGED ~
 <
 
 
-CONTRIBUTING                 *undo-glow.nvim-🌈-undo-glow.nvim-contributing*
+CONTRIBUTING                      *undo-glow.nvim-undo-glow.nvim-contributing*
 
 Read the documentation carefully before submitting any issue.
 
