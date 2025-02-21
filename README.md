@@ -69,7 +69,7 @@ Here is the default configuration:
 ---@field animation_type? AnimationType
 ---@field easing? function A function that takes a number (0-1) and returns a number (0-1) for easing.
 ---@field fps? number
----@field highlights? table<"undo" | "redo" | "yank" | "paste" | "search", { hl: string, hl_color: UndoGlow.HlColor }>
+---@field highlights? table<"undo" | "redo" | "yank" | "paste" | "search" | "comment", { hl: string, hl_color: UndoGlow.HlColor }>
 
 ---@class UndoGlow.HlColor
 ---@field bg string Background color
@@ -100,6 +100,10 @@ Here is the default configuration:
   search = {
    hl = "UgSearch", -- Same as above
    hl_color = { bg = "#BD93F9" }, -- Ugly purple color
+  },
+  comment = {
+   hl = "UgComment", -- Same as above
+   hl_color = { bg = "#FFB86C" }, -- Ugly purple color
   },
  },
 }
@@ -162,6 +166,12 @@ require("undo-glow").search_prev() -- Search prev command with highlights
 
 require("undo-glow").search_star() -- Search current word with "*" with highlights
 
+require("undo-glow").comment() -- Comment with `gc` in `n` and `x` mode
+
+require("undo-glow").comment_textobject() -- Comment with `gc` in `o` mode. E.g. gcip, gcap, etc
+
+require("undo-glow").comment_line() -- Comment lines with `gcc`.
+
 ---@class UndoGlow.HighlightChanges
 ---@field hlgroup string
 ---@field animation_type? AnimationType -- Overwrites animation_type from config
@@ -184,13 +194,16 @@ require("undo-glow").highlight_region(opts) -- API to highlight certain region w
 You can set it up anywhere you like, Commonly at the keymap level directly. For example:
 
 ```lua
-vim.keymap.set("n", "u", require("undo-glow").undo, { noremap = true, silent = true })
-vim.keymap.set("n", "<C-r>", require("undo-glow").redo, { noremap = true, silent = true })
-vim.keymap.set("n", "p", require("undo-glow").paste_below, { noremap = true, silent = true })
-vim.keymap.set("n", "P", require("undo-glow").paste_above, { noremap = true, silent = true })
-vim.keymap.set("n", "n", require("undo-glow").search_next, { noremap = true, silent = true })
-vim.keymap.set("n", "N", require("undo-glow").search_prev, { noremap = true, silent = true })
-vim.keymap.set("n", "*", require("undo-glow").search_star, { noremap = true, silent = true })
+vim.keymap.set("n", "u", require("undo-glow").undo, { noremap = true, desc = "Undo with highlight" })
+vim.keymap.set("n", "<C-r>", require("undo-glow").redo, { noremap = true, desc = "Redo with highlight" })
+vim.keymap.set("n", "p", require("undo-glow").paste_below, { noremap = true, desc = "Paste below with highlight" })
+vim.keymap.set("n", "P", require("undo-glow").paste_above, { noremap = true, desc = "Paste above with highlight" })
+vim.keymap.set("n", "n", require("undo-glow").search_next, { noremap = true, desc = "Search next with highlight" })
+vim.keymap.set("n", "N", require("undo-glow").search_prev, { noremap = true, desc = "Search previous with highlight" })
+vim.keymap.set("n", "*", require("undo-glow").search_star, { noremap = true, desc = "Search * with highlight" })
+vim.keymap.set({ "n", "x" }, "gc", require("undo-glow").comment, { expr = true, desc = "Toggle comment with highlight" })
+vim.keymap.set("o", "gc", require("undo-glow").comment_text_object, { expr = true, desc = "Comment textobject with highlight" })
+vim.keymap.set("n", "gcc", require("undo-glow").comment_line, { expr = true, desc = "Toggle comment line with highlight" })
 
 vim.api.nvim_create_autocmd("TextYankPost", {
  desc = "Highlight when yanking (copying) text",
@@ -288,7 +301,7 @@ vim.api.nvim_create_autocmd({ "BufReadPost", "TextChanged" }, {
 
   -- then run undo-glow with your desired hlgroup
   vim.schedule(function()
-   require("undo-glow").attach_and_run({
+   require("undo-glow").highlight_changes({
     hlgroup = "UgUndo",
    })
   end)
@@ -327,22 +340,18 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 
 ```lua
 vim.keymap.set("n", "p", function()
- require("undo-glow").attach_and_run({
+ require("undo-glow").highlight_changes({
   hlgroup = "UgUndo",
-  cmd = function()
-   vim.cmd("normal! p")
-  end,
  })
-end, { silent = true })
+ vim.cmd("normal! p")
+end, { noremap = true })
 
 vim.keymap.set("n", "P", function()
- require("undo-glow").attach_and_run({
+ require("undo-glow").highlight_changes({
   hlgroup = "UgUndo",
-  cmd = function()
-   vim.cmd("normal! P")
-  end,
  })
-end, { silent = true })
+ vim.cmd("normal! P")
+end, { noremap = true })
 ```
 
 ### Highlight search text next and previous
@@ -427,17 +436,14 @@ return {
     yank = {
      hl_color = { bg = "#5A513C" },
     },
-    paste_below = {
+    paste = {
      hl_color = { bg = "#5A496E" },
     },
-    paste_above = {
+    search = {
      hl_color = { bg = "#6D4B5E" },
     },
-    search_next = {
+    comment = {
      hl_color = { bg = "#6D5640" },
-    },
-    search_prev = {
-     hl_color = { bg = "#3E4C63" },
     },
    },
   },
@@ -448,12 +454,18 @@ return {
 
    undo_glow.setup(opts)
 
-   vim.keymap.set("n", "u", require("undo-glow").undo, { noremap = true, silent = true })
-   vim.keymap.set("n", "U", require("undo-glow").redo, { noremap = true, silent = true })
-   vim.keymap.set("n", "p", require("undo-glow").paste_below, { noremap = true, silent = true })
-   vim.keymap.set("n", "P", require("undo-glow").paste_above, { noremap = true, silent = true })
-   vim.keymap.set("n", "n", require("undo-glow").search_next, { noremap = true, silent = true })
-   vim.keymap.set("n", "N", require("undo-glow").search_prev, { noremap = true, silent = true })
+   vim.keymap.set("n", "u", undo_glow.undo, { noremap = true, desc = "Undo with highlight" })
+   vim.keymap.set("n", "U", undo_glow.redo, { noremap = true, desc = "Redo with highlight" })
+   vim.keymap.set("n", "p", undo_glow.paste_below, { noremap = true, desc = "Paste below with highlight" })
+   vim.keymap.set("n", "P", undo_glow.paste_above, { noremap = true, desc = "Paste above with highlight" })
+   vim.keymap.set("n", "n", undo_glow.search_next, { noremap = true, desc = "Search next with highlight" })
+   vim.keymap.set("n", "N", undo_glow.search_prev, { noremap = true, desc = "Search previous with highlight" })
+   vim.keymap.set("n", "*", undo_glow.search_star, { noremap = true, desc = "Search * with highlight" })
+   vim.keymap.set({ "n", "x" }, "gc", undo_glow.comment, { expr = true, noremap = true, desc = "Toggle comment with highlight" })
+
+   vim.keymap.set("o", "gc", undo_glow.comment_textobject, { noremap = true, desc = "Comment textobject with highlight" })
+
+   vim.keymap.set("n", "gcc", undo_glow.comment_line, { expr = true, noremap = true, desc = "Toggle comment line with highlight" })
 
    vim.api.nvim_create_autocmd("TextYankPost", {
     desc = "Highlight when yanking (copying) text",

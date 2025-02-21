@@ -7,6 +7,7 @@ M.default_redo = { bg = "#50FA7B" } -- Green
 M.default_yank = { bg = "#F1FA8C" } -- Yellow
 M.default_paste = { bg = "#8BE9FD" } -- Cyan
 M.default_search = { bg = "#BD93F9" } -- Purple
+M.default_comment = { bg = "#FFB86C" } -- Orange
 
 -- Utility functions for color manipulation and easing
 ---@param hex string
