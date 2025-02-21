@@ -469,21 +469,31 @@ vim.api.nvim_create_autocmd({ "BufReadPost", "TextChanged" }, {
 
 Static highlight and will be cleared after a duration immediately.
 
-#### Fade
+<https://github.com/user-attachments/assets/7ea4b7fb-9c04-445c-a397-914b76c240f1>
+
+#### Fade (Default)
 
 Gradually increases or decreases the opacity of the highlight, creating a smooth fading effect.
+
+<https://github.com/user-attachments/assets/06820af3-1c37-445c-9e3d-946c277d946a>
 
 #### Blink
 
 Toggles the highlight on and off at a fixed interval, similar to a cursor blink.
 
+<https://github.com/user-attachments/assets/8afee494-f9a0-4eef-9c9e-86a5c0c56eae>
+
 #### Pulse
 
 Alternates the highlight intensity in a rhythmic manner, creating a breathing effect.
 
+<https://github.com/user-attachments/assets/57c9f86a-f1e6-424c-a885-caf288b594fc>
+
 #### Jitter
 
 Rapidly moves or shifts the highlight slightly, giving a shaky or vibrating appearance.
+
+<https://github.com/user-attachments/assets/8627ee17-2ac7-4571-a897-3422cebe0e1b>
 
 ### Easing
 
