@@ -4,21 +4,25 @@ Make your undo and redo in neovim glows! This plugin does not setup or hijack th
 
 ## Previews
 
-### Undo With Animation
+### Undo
 
-<https://github.com/user-attachments/assets/b83ca873-3656-4f37-85d8-a04bd64af86f>
+<https://github.com/user-attachments/assets/60d0cb17-78fb-414f-ab7f-870397b13d5e>
 
-### Undo Without Animation
+### Redo
 
-<https://github.com/user-attachments/assets/f1e08be8-9356-4844-ae3b-a7e9c22a83e0>
+<https://github.com/user-attachments/assets/4fd54266-b116-4da3-8fee-186b44baf6a5>
 
-### Redo With Animation
+### Yank
 
-<https://github.com/user-attachments/assets/2cf762d2-dada-4786-a602-d71cdd15c560>
+<https://github.com/user-attachments/assets/1c55324a-1a1a-4bdd-b766-cc7ad4972b1b>
 
-### Redo Without Animation
+### Search
 
-<https://github.com/user-attachments/assets/13e08e01-0ad2-4907-ab2f-a9e5e203746e>
+<https://github.com/user-attachments/assets/9c99e635-e4d7-490a-8ae6-ca2749656f57>
+
+### Comment
+
+<https://github.com/user-attachments/assets/624db7db-6b50-437b-a92c-966ad2246d70>
 
 ## Motivation
 
