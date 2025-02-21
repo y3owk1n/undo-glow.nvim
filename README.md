@@ -69,20 +69,7 @@ Here is the default configuration:
 ---@field animation_type? AnimationType
 ---@field easing? function A function that takes a number (0-1) and returns a number (0-1) for easing.
 ---@field fps? number
----@field undo_hl? string
----@field redo_hl? string
----@field yank_hl? string
----@field paste_below_hl? string
----@field paste_above_hl? string
----@field search_next_hl? string
----@field search_prev_hl? string
----@field undo_hl_color? UndoGlow.HlColor
----@field redo_hl_color? UndoGlow.HlColor
----@field yank_hl_color? UndoGlow.HlColor
----@field paste_below_hl_color? UndoGlow.HlColor
----@field paste_above_hl_color? UndoGlow.HlColor
----@field search_next_hl_color? UndoGlow.HlColor
----@field search_prev_hl_color? UndoGlow.HlColor
+---@field highlights? table<"undo" | "redo" | "yank" | "paste_below" | "paste_above" | "search_next" | "search_prev", { hl: string, hl_color: UndoGlow.HlColor }>
 
 ---@class UndoGlow.HlColor
 ---@field bg string Background color
@@ -93,20 +80,36 @@ Here is the default configuration:
  animation_type = "fade", -- default to "fade"
  fps = 120, -- change the fps, normally either 60 / 120
  easing = M.easing.ease_in_out_cubic, -- see more at easing section on how to change and create your own
- undo_hl = "UgUndo", -- This will not set new hlgroup, if it's not "UgUndo", we will try to grab the colors of specified hlgroup and apply to "UgUndo"
- redo_hl = "UgRedo", -- Same as above
- yank_hl = "UgYank", -- Same as above
- paste_below_hl = "UgPasteBelow", -- Same as above
- paste_above_hl = "UgPasteAbove", -- Same as above
- search_next_hl = "UgSearchNext", -- Same as above
- search_prev_hl = "UgSearchPrev", -- Same as above
- undo_hl_color = { bg = "#FF5555" }, -- Colors from undo_hl will overwrite this, unless undo_hl does not contain the bg or fg. Ugly red color, please change it!
- redo_hl_color = { bg = "#50FA7B" }, -- -- Same as above
- yank_hl_color = { bg = "#F1FA8C" }, -- -- Same as above
- paste_below_hl_color = { bg = "#8BE9FD" }, -- -- Same as above
- paste_above_hl_color = { bg = "#BD93F9" }, -- -- Same as above
- search_next_hl_color = { bg = "#FFB86C" }, -- -- Same as above
- search_prev_hl_color = { bg = "#FF79C6" }, -- -- Same as above
+highlights = { -- Any keys other than these defaults will be ignored and omitted
+ undo = {
+  hl = "UgUndo", -- This will not set new hlgroup, if it's not "UgUndo", we will try to grab the colors of specified hlgroup and apply to "UgUndo"
+  hl_color = { bg = "#FF5555" }, -- Ugly red color
+ },
+ redo = {
+  hl = "UgRedo", -- Same as above
+  hl_color = { bg = "#50FA7B" }, -- Ugly green color
+ },
+ yank = {
+  hl = "UgYank", -- Same as above
+  hl_color = { bg = "#F1FA8C" }, -- Ugly yellow color
+ },
+ paste_below = {
+  hl = "UgPasteBelow", -- Same as above
+  hl_color = { bg = "#8BE9FD" }, -- Ugly cyan color
+ },
+ paste_above = {
+  hl = "UgPasteAbove", -- Same as above
+  hl_color = { bg = "#BD93F9" }, -- Ugly purple color
+ },
+ search_next = {
+  hl = "UgSearchNext", -- Same as above
+  hl_color = { bg = "#FFB86C" }, -- Ugly orange color
+ },
+ search_prev = {
+  hl = "UgSearchPrev", -- Same as above
+  hl_color = { bg = "#FF79C6" }, -- Ugly pink color
+ },
+},
 }
 ```
 
@@ -377,9 +380,30 @@ return {
   event = { "VeryLazy" },
   ---@type UndoGlow.Config
   opts = {
-   undo_hl = "DiffDelete",
-   redo_hl = "DiffAdd",
    duration = 1000,
+   highlights = {
+    undo = {
+     hl_color = { bg = "#48384B" },
+    },
+    redo = {
+     hl_color = { bg = "#3B474A" },
+    },
+    yank = {
+     hl_color = { bg = "#5A513C" },
+    },
+    paste_below = {
+     hl_color = { bg = "#5A496E" },
+    },
+    paste_above = {
+     hl_color = { bg = "#6D4B5E" },
+    },
+    search_next = {
+     hl_color = { bg = "#6D5640" },
+    },
+    search_prev = {
+     hl_color = { bg = "#3E4C63" },
+    },
+   },
   },
   ---@param _ any
   ---@param opts UndoGlow.Config
@@ -388,25 +412,17 @@ return {
 
    undo_glow.setup(opts)
 
-   -- I like to use U to redo instead
-   vim.keymap.set("n", "U", "<C-r>", { noremap = true, silent = true })
+   vim.keymap.set("n", "u", require("undo-glow").undo, { noremap = true, silent = true })
+   vim.keymap.set("n", "U", require("undo-glow").redo, { noremap = true, silent = true })
+   vim.keymap.set("n", "p", require("undo-glow").paste_below, { noremap = true, silent = true })
+   vim.keymap.set("n", "P", require("undo-glow").paste_above, { noremap = true, silent = true })
+   vim.keymap.set("n", "n", require("undo-glow").search_next, { noremap = true, silent = true })
+   vim.keymap.set("n", "N", require("undo-glow").search_prev, { noremap = true, silent = true })
 
-   -- Highlight everything that changes
-   vim.api.nvim_create_autocmd({ "BufReadPost", "TextChanged" }, {
-    pattern = "*",
-    callback = function()
-     if vim.bo.buftype ~= "" then
-      return
-     end
-
-     vim.schedule(function()
-      undo_glow.attach_and_run({
-       hlgroup = "UgUndo",
-      })
-     end)
-    end,
+   vim.api.nvim_create_autocmd("TextYankPost", {
+    desc = "Highlight when yanking (copying) text",
+    callback = require("undo-glow").yank,
    })
-  end,
  },
 }
 ```

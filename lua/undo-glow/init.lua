@@ -7,20 +7,7 @@ local M = {}
 ---@field animation_type? AnimationType
 ---@field easing? function A function that takes a number (0-1) and returns a number (0-1) for easing.
 ---@field fps? number Normally either 60 / 120, up to you
----@field undo_hl? string If not "UgUndo" then copy the to color to UgUndo or fallback to default
----@field redo_hl? string If not "UgRedo" then copy the to color to UgRedo or fallback to default
----@field yank_hl? string If not "UgYank" then copy the to color to UgYank or fallback to default
----@field paste_below_hl? string If not "UgPasteBelow" then copy the to color to UgPasteBelow or fallback to default
----@field paste_above_hl? string If not "UgPasteAbove" then copy the to color to UgPasteAbove or fallback to default
----@field search_next_hl? string If not "UgSearchNext" then copy the to color to UgSearchNext or fallback to default
----@field search_prev_hl? string If not "UgSearchPrev" then copy the to color to UgSearchPrev or fallback to default
----@field undo_hl_color? UndoGlow.HlColor
----@field redo_hl_color? UndoGlow.HlColor
----@field yank_hl_color? UndoGlow.HlColor
----@field paste_below_hl_color? UndoGlow.HlColor
----@field paste_above_hl_color? UndoGlow.HlColor
----@field search_next_hl_color? UndoGlow.HlColor
----@field search_prev_hl_color? UndoGlow.HlColor
+---@field highlights? table<"undo" | "redo" | "yank" | "paste_below" | "paste_above" | "search_next" | "search_prev", { hl: string, hl_color: UndoGlow.HlColor }>
 
 ---@class UndoGlow.HlColor
 ---@field bg string
@@ -137,43 +124,38 @@ end
 
 ---@param user_config? UndoGlow.Config
 function M.setup(user_config)
-	M.config = vim.tbl_extend("force", M.config, user_config or {})
+	M.config = vim.tbl_deep_extend("force", M.config, user_config or {})
 
-	highlights.setup_highlight(
-		"UgUndo",
-		M.config.undo_hl,
-		M.config.undo_hl_color
-	)
-	highlights.setup_highlight(
-		"UgRedo",
-		M.config.redo_hl,
-		M.config.redo_hl_color
-	)
-	highlights.setup_highlight(
-		"UgYank",
-		M.config.yank_hl,
-		M.config.yank_hl_color
-	)
-	highlights.setup_highlight(
-		"UgPasteBelow",
-		M.config.paste_below_hl,
-		M.config.paste_below_hl_color
-	)
-	highlights.setup_highlight(
-		"UgPasteAbove",
-		M.config.paste_above_hl,
-		M.config.paste_above_hl_color
-	)
-	highlights.setup_highlight(
-		"UgSearchNext",
-		M.config.search_next_hl,
-		M.config.search_next_hl_color
-	)
-	highlights.setup_highlight(
-		"UgSearchPrev",
-		M.config.search_prev_hl,
-		M.config.search_prev_hl_color
-	)
+	local valid_keys = {
+		undo = true,
+		redo = true,
+		yank = true,
+		paste_below = true,
+		paste_above = true,
+		search_next = true,
+		search_prev = true,
+	}
+
+	for key in pairs(M.config.highlights) do
+		if not valid_keys[key] then
+			M.config.highlights[key] = nil
+		end
+	end
+
+	local target_map = {
+		undo = "UgUndo",
+		redo = "UgRedo",
+		yank = "UgYank",
+		paste_below = "UgPasteBelow",
+		paste_above = "UgPasteAbove",
+		search_next = "UgSearchNext",
+		search_prev = "UgSearchPrev",
+	}
+
+	for key, highlight in pairs(M.config.highlights) do
+		local target = target_map[key]
+		highlights.setup_highlight(target, highlight.hl, highlight.hl_color)
+	end
 end
 
 return M
