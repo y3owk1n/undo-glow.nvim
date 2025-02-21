@@ -116,36 +116,36 @@ Here is the default configuration:
      animation_type = "fade", -- default to "fade"
      fps = 120, -- change the fps, normally either 60 / 120
      easing = M.easing.ease_in_out_cubic, -- see more at easing section on how to change and create your own
-    highlights = { -- Any keys other than these defaults will be ignored and omitted
-     undo = {
-      hl = "UgUndo", -- This will not set new hlgroup, if it's not "UgUndo", we will try to grab the colors of specified hlgroup and apply to "UgUndo"
-      hl_color = { bg = "#FF5555" }, -- Ugly red color
+     highlights = { -- Any keys other than these defaults will be ignored and omitted
+      undo = {
+       hl = "UgUndo", -- This will not set new hlgroup, if it's not "UgUndo", we will try to grab the colors of specified hlgroup and apply to "UgUndo"
+       hl_color = { bg = "#FF5555" }, -- Ugly red color
+      },
+      redo = {
+       hl = "UgRedo", -- Same as above
+       hl_color = { bg = "#50FA7B" }, -- Ugly green color
+      },
+      yank = {
+       hl = "UgYank", -- Same as above
+       hl_color = { bg = "#F1FA8C" }, -- Ugly yellow color
+      },
+      paste_below = {
+       hl = "UgPasteBelow", -- Same as above
+       hl_color = { bg = "#8BE9FD" }, -- Ugly cyan color
+      },
+      paste_above = {
+       hl = "UgPasteAbove", -- Same as above
+       hl_color = { bg = "#BD93F9" }, -- Ugly purple color
+      },
+      search_next = {
+       hl = "UgSearchNext", -- Same as above
+       hl_color = { bg = "#FFB86C" }, -- Ugly orange color
+      },
+      search_prev = {
+       hl = "UgSearchPrev", -- Same as above
+       hl_color = { bg = "#FF79C6" }, -- Ugly pink color
+      },
      },
-     redo = {
-      hl = "UgRedo", -- Same as above
-      hl_color = { bg = "#50FA7B" }, -- Ugly green color
-     },
-     yank = {
-      hl = "UgYank", -- Same as above
-      hl_color = { bg = "#F1FA8C" }, -- Ugly yellow color
-     },
-     paste_below = {
-      hl = "UgPasteBelow", -- Same as above
-      hl_color = { bg = "#8BE9FD" }, -- Ugly cyan color
-     },
-     paste_above = {
-      hl = "UgPasteAbove", -- Same as above
-      hl_color = { bg = "#BD93F9" }, -- Ugly purple color
-     },
-     search_next = {
-      hl = "UgSearchNext", -- Same as above
-      hl_color = { bg = "#FFB86C" }, -- Ugly orange color
-     },
-     search_prev = {
-      hl = "UgSearchPrev", -- Same as above
-      hl_color = { bg = "#FF79C6" }, -- Ugly pink color
-     },
-    },
     }
 <
 
@@ -209,13 +209,12 @@ API                                        *undo-glow.nvim-undo-glow.nvim-api*
     
     require("undo-glow").search_prev() -- Search prev command with highlights
     
-    ---@class UndoGlow.AttachAndRunOpts
+    ---@class UndoGlow.HighlightChanges
     ---@field hlgroup string
-    ---@field cmd? function
     ---@field animation_type? AnimationType -- Overwrites animation_type from config
     
-    ---@param opts UndoGlow.AttachAndRunOpts
-    require("undo-glow").attach_and_run(opts) -- API to create custom actions that highlights
+    ---@param opts UndoGlow.HighlightChanges
+    require("undo-glow").highlight_changes(opts) -- API to highlight text changes
     
     ---@class UndoGlow.HighlightRegion
     ---@field hlgroup string
@@ -247,28 +246,70 @@ example:
 <
 
 
-CREATING CUSTOM COMMAND TO HIGHLIGHT ~
+CREATING CUSTOM COMMAND TO HIGHLIGHT CHANGES ~
+
+E.g. undo, redo, etc
 
 >lua
     function some_action()
-     require("undo-glow").attach_and_run({
+     require("undo-glow").highlight_changes({
       hlgroup = "hlgroup",
-      cmd = function()
-       do_something_here()
-      end
+     })
+     do_something_here() -- some action that will cause text changes
+    end
+    
+    --- then you can use it to bind to anywhere just like before. Undo and redo command are fundamentally doing the same thing.
+    vim.keymap.set("n", "key_that_you_like", some_action, { silent = true })
+    
+    --- Example of undo function
+    function undo()
+     require("undo-glow").highlight_changes({
+      hlgroup = "UgUndo",
+     })
+     vim.cmd("undo")
+    end
+<
+
+Feel free to send a PR if you think there are some good actions that can be
+merged into the source.
+
+
+CREATING CUSTOM COMMAND THAT HIGHLIGHTS WITHOUT TEXT CHANGES ~
+
+E.g. search next, search previous, yank, etc
+
+>lua
+    function some_action()
+     -- Do some calculation here and get the region coordinates that you want to highlight as below
+     -- s_row integer
+     -- s_col integer
+     -- e_row integer
+     -- e_col integer
+     local region = get_region()
+    
+     -- And then pass those coordinates to the highlight_region function
+     require("undo-glow").highlight_region({
+      hlgroup = "hlgroup",
+      s_row = region.s_row,
+      s_col = region.s_col,
+      e_row = region.e_row,
+      e_col = region.e_col,
      })
     end
     
     --- then you can use it to bind to anywhere just like before. Undo and redo command are fundamentally doing the same thing.
-    vim.keymap.set("n", "key_that_you_like", some_action, { noremap = true, silent = true })
+    vim.keymap.set("n", "key_that_you_like", some_action, { silent = true })
     
-    --- Example of undo function
-    function undo()
-     require("undo-glow").attach_and_run({
-      hlgroup = "UgUndo",
-      cmd = function()
-       vim.cmd("undo")
-      end,
+    --- Example of yank function
+    function yank()
+     local pos = vim.fn.getpos("'[")
+     local pos2 = vim.fn.getpos("']")
+     require("undo-glow").highlight_region({
+      hlgroup = "UgYank",
+      s_row = pos[2] - 1,
+      s_col = pos[3] - 1,
+      e_row = pos2[2] - 1,
+      e_col = pos2[3],
      })
     end
 <
@@ -278,6 +319,8 @@ merged into the source.
 
 
 CREATING AN AUTOCMD THAT WILL HIGHLIGHT ANYTHING WHEN TEXTCHANGED ~
+
+I personally don’t use autocmd for `TextChanged`. Use at your own risk!
 
 >lua
     -- Also add `BufReadPost` so that it will also highlight for first changes

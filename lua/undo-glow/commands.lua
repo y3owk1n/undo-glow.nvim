@@ -1,21 +1,17 @@
 local M = {}
 
 function M.undo()
-	require("undo-glow").attach_and_run({
+	require("undo-glow").highlight_changes({
 		hlgroup = "UgUndo",
-		cmd = function()
-			vim.cmd("undo")
-		end,
 	})
+	vim.cmd("undo")
 end
 
 function M.redo()
-	require("undo-glow").attach_and_run({
+	require("undo-glow").highlight_changes({
 		hlgroup = "UgRedo",
-		cmd = function()
-			vim.cmd("redo")
-		end,
 	})
+	vim.cmd("redo")
 end
 
 --- Helper to use this in autocmds. Do not use this as a command, it does nothing.
@@ -32,21 +28,17 @@ function M.yank()
 end
 
 function M.paste_below()
-	require("undo-glow").attach_and_run({
+	require("undo-glow").highlight_changes({
 		hlgroup = "UgPasteBelow",
-		cmd = function()
-			vim.cmd("normal! p")
-		end,
 	})
+	vim.cmd("normal! p")
 end
 
 function M.paste_above()
-	require("undo-glow").attach_and_run({
+	require("undo-glow").highlight_changes({
 		hlgroup = "UgPasteAbove",
-		cmd = function()
-			vim.cmd("normal! P")
-		end,
 	})
+	vim.cmd("normal! P")
 end
 
 function M.search_next()
