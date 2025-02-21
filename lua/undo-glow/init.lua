@@ -23,9 +23,8 @@ local M = {}
 ---@field g integer Green (0-255)
 ---@field b integer Blue (0-255)
 
----@class UndoGlow.AttachAndRunOpts
+---@class UndoGlow.HighlightChanges
 ---@field hlgroup string
----@field cmd? function
 ---@field animation_type? AnimationType
 
 ---@class UndoGlow.HighlightRegion: UndoGlow.RowCol
@@ -70,8 +69,8 @@ local callback = require("undo-glow.callback")
 local utils = require("undo-glow.utils")
 
 -- Helper to attach to a buffer with a local state.
----@param opts UndoGlow.AttachAndRunOpts
-function M.attach_and_run(opts)
+---@param opts UndoGlow.HighlightChanges
+function M.highlight_changes(opts)
 	local bufnr = vim.api.nvim_get_current_buf()
 
 	---@type UndoGlow.State
@@ -86,10 +85,6 @@ function M.attach_and_run(opts)
 			return callback.on_bytes_wrapper(state, M.config, ...)
 		end,
 	})
-
-	if opts.cmd then
-		opts.cmd()
-	end
 end
 
 --- Highlight a specified region in the current buffer.
