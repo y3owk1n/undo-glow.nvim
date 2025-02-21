@@ -18,21 +18,13 @@ local config = {
 			hl = "UgYank",
 			hl_color = require("undo-glow.color").default_yank,
 		},
-		paste_below = {
-			hl = "UgPasteBelow",
-			hl_color = require("undo-glow.color").default_paste_below,
+		paste = {
+			hl = "UgPaste",
+			hl_color = require("undo-glow.color").default_paste,
 		},
-		paste_above = {
-			hl = "UgPasteAbove",
-			hl_color = require("undo-glow.color").default_paste_above,
-		},
-		search_next = {
-			hl = "UgSearchNext",
-			hl_color = require("undo-glow.color").default_search_next,
-		},
-		search_prev = {
-			hl = "UgSearchPrev",
-			hl_color = require("undo-glow.color").default_search_prev,
+		search = {
+			hl = "UgSearch",
+			hl_color = require("undo-glow.color").default_search,
 		},
 	},
 }

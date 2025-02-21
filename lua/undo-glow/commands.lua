@@ -29,14 +29,14 @@ end
 
 function M.paste_below()
 	require("undo-glow").highlight_changes({
-		hlgroup = "UgPasteBelow",
+		hlgroup = "UgPaste",
 	})
 	vim.cmd("normal! p")
 end
 
 function M.paste_above()
 	require("undo-glow").highlight_changes({
-		hlgroup = "UgPasteAbove",
+		hlgroup = "UgPaste",
 	})
 	vim.cmd("normal! P")
 end
@@ -50,7 +50,7 @@ function M.search_next()
 	end
 
 	require("undo-glow").highlight_region({
-		hlgroup = "UgSearchNext",
+		hlgroup = "UgSearch",
 		s_row = region.s_row,
 		s_col = region.s_col,
 		e_row = region.e_row,
@@ -67,7 +67,7 @@ function M.search_prev()
 	end
 
 	require("undo-glow").highlight_region({
-		hlgroup = "UgSearchPrev",
+		hlgroup = "UgSearch",
 		s_row = region.s_row,
 		s_col = region.s_col,
 		e_row = region.e_row,

@@ -7,7 +7,7 @@ local M = {}
 ---@field animation_type? AnimationType
 ---@field easing? function A function that takes a number (0-1) and returns a number (0-1) for easing.
 ---@field fps? number Normally either 60 / 120, up to you
----@field highlights? table<"undo" | "redo" | "yank" | "paste_below" | "paste_above" | "search_next" | "search_prev", { hl: string, hl_color: UndoGlow.HlColor }>
+---@field highlights? table<"undo" | "redo" | "yank" | "paste" | "search", { hl: string, hl_color: UndoGlow.HlColor }>
 
 ---@class UndoGlow.HlColor
 ---@field bg string
@@ -125,10 +125,8 @@ function M.setup(user_config)
 		undo = true,
 		redo = true,
 		yank = true,
-		paste_below = true,
-		paste_above = true,
-		search_next = true,
-		search_prev = true,
+		paste = true,
+		search = true,
 	}
 
 	for key in pairs(M.config.highlights) do
@@ -141,10 +139,8 @@ function M.setup(user_config)
 		undo = "UgUndo",
 		redo = "UgRedo",
 		yank = "UgYank",
-		paste_below = "UgPasteBelow",
-		paste_above = "UgPasteAbove",
-		search_next = "UgSearchNext",
-		search_prev = "UgSearchPrev",
+		paste = "UgPaste",
+		search = "UgSearch",
 	}
 
 	for key, highlight in pairs(M.config.highlights) do
