@@ -1,2 +1,2 @@
 doc:
-	panvimdoc --project-name undo-glow.nvim --input-file ./README.md
+	panvimdoc --project-name undo-glow.nvim --input-file ./README.md --demojify true
