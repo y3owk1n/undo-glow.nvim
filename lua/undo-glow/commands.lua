@@ -75,4 +75,21 @@ function M.search_prev()
 	})
 end
 
+function M.search_star()
+	vim.cmd("normal! *")
+	local region = require("undo-glow.utils").get_search_star_region()
+
+	if not region then
+		return
+	end
+
+	require("undo-glow").highlight_region({
+		hlgroup = "UgSearch",
+		s_row = region.s_row,
+		s_col = region.s_col,
+		e_row = region.e_row,
+		e_col = region.e_col,
+	})
+end
+
 return M

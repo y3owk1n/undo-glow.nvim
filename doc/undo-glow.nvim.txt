@@ -201,6 +201,8 @@ API                                        *undo-glow.nvim-undo-glow.nvim-api*
     
     require("undo-glow").search_prev() -- Search prev command with highlights
     
+    require("undo-glow").search_star() -- Search current word with "*" with highlights
+    
     ---@class UndoGlow.HighlightChanges
     ---@field hlgroup string
     ---@field animation_type? AnimationType -- Overwrites animation_type from config
@@ -224,12 +226,13 @@ You can set it up anywhere you like, Commonly at the keymap level directly. For
 example:
 
 >lua
-    vim.keymap.set("n", "u", require("undo-glow").undo, { silent = true })
-    vim.keymap.set("n", "<C-r>", require("undo-glow").redo, { silent = true })
-    vim.keymap.set("n", "p", require("undo-glow").paste_below, { silent = true })
-    vim.keymap.set("n", "P", require("undo-glow").paste_above, { silent = true })
-    vim.keymap.set("n", "n", require("undo-glow").search_next, { silent = true })
-    vim.keymap.set("n", "N", require("undo-glow").search_prev, { silent = true })
+    vim.keymap.set("n", "u", require("undo-glow").undo, { noremap = true, silent = true })
+    vim.keymap.set("n", "<C-r>", require("undo-glow").redo, { noremap = true, silent = true })
+    vim.keymap.set("n", "p", require("undo-glow").paste_below, { noremap = true, silent = true })
+    vim.keymap.set("n", "P", require("undo-glow").paste_above, { noremap = true, silent = true })
+    vim.keymap.set("n", "n", require("undo-glow").search_next, { noremap = true, silent = true })
+    vim.keymap.set("n", "N", require("undo-glow").search_prev, { noremap = true, silent = true })
+    vim.keymap.set("n", "*", require("undo-glow").search_star, { noremap = true, silent = true })
     
     vim.api.nvim_create_autocmd("TextYankPost", {
      desc = "Highlight when yanking (copying) text",
