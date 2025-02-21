@@ -1,7 +1,6 @@
 # 🌈 undo-glow.nvim
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-Undo Glow is a Neovim plugin that adds a visual "glow" effect to your neovim operations. It highlights the exact region that’s changed, giving you immediate visual feedback on your edits. You can even enable glow for non-changing texts!
+**undo-glow.nvim** is a Neovim plugin that adds a visual "glow" effect to your neovim operations. It highlights the exact region that’s changed, giving you immediate visual feedback on your edits. You can even enable glow for non-changing texts!
 
 > [!important]
 > This plugin does not setup or hijack the keymaps but provides api for you to hook into anywhere in your config.
