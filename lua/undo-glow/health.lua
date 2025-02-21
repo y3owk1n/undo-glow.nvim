@@ -25,7 +25,7 @@ end
 --- Prints a separator header for a new section.
 --- @param title string The section title.
 local function separator(title)
-	report_status("ok", "===== " .. title .. " =====")
+	vim.health.start(title)
 end
 
 function M.check()
