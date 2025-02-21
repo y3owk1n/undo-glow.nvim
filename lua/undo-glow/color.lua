@@ -2,13 +2,11 @@ local M = {}
 
 M.default_bg = "#000000"
 M.default_fg = "#FFFFFF"
-M.default_undo = { bg = "#FF5555" }
-M.default_redo = { bg = "#50FA7B" }
-M.default_yank = { bg = "#F1FA8C" }
-M.default_paste_below = { bg = "#8BE9FD" }
-M.default_paste_above = { bg = "#BD93F9" }
-M.default_search_next = { bg = "#FFB86C" }
-M.default_search_prev = { bg = "#FF79C6" }
+M.default_undo = { bg = "#FF5555" } -- Red
+M.default_redo = { bg = "#50FA7B" } -- Green
+M.default_yank = { bg = "#F1FA8C" } -- Yellow
+M.default_paste = { bg = "#8BE9FD" } -- Cyan
+M.default_search = { bg = "#BD93F9" } -- Purple
 
 -- Utility functions for color manipulation and easing
 ---@param hex string

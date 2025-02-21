@@ -69,7 +69,7 @@ Here is the default configuration:
 ---@field animation_type? AnimationType
 ---@field easing? function A function that takes a number (0-1) and returns a number (0-1) for easing.
 ---@field fps? number
----@field highlights? table<"undo" | "redo" | "yank" | "paste_below" | "paste_above" | "search_next" | "search_prev", { hl: string, hl_color: UndoGlow.HlColor }>
+---@field highlights? table<"undo" | "redo" | "yank" | "paste" | "search", { hl: string, hl_color: UndoGlow.HlColor }>
 
 ---@class UndoGlow.HlColor
 ---@field bg string Background color
@@ -93,21 +93,13 @@ Here is the default configuration:
    hl = "UgYank", -- Same as above
    hl_color = { bg = "#F1FA8C" }, -- Ugly yellow color
   },
-  paste_below = {
-   hl = "UgPasteBelow", -- Same as above
+  paste = {
+   hl = "UgPaste", -- Same as above
    hl_color = { bg = "#8BE9FD" }, -- Ugly cyan color
   },
-  paste_above = {
-   hl = "UgPasteAbove", -- Same as above
+  search = {
+   hl = "UgSearch", -- Same as above
    hl_color = { bg = "#BD93F9" }, -- Ugly purple color
-  },
-  search_next = {
-   hl = "UgSearchNext", -- Same as above
-   hl_color = { bg = "#FFB86C" }, -- Ugly orange color
-  },
-  search_prev = {
-   hl = "UgSearchPrev", -- Same as above
-   hl_color = { bg = "#FF79C6" }, -- Ugly pink color
   },
  },
 }
