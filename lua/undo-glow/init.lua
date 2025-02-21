@@ -63,6 +63,7 @@ M.paste_below = require("undo-glow.commands").paste_below
 M.paste_above = require("undo-glow.commands").paste_above
 M.search_next = require("undo-glow.commands").search_next
 M.search_prev = require("undo-glow.commands").search_prev
+M.search_star = require("undo-glow.commands").search_star
 
 local highlights = require("undo-glow.highlight")
 local callback = require("undo-glow.callback")

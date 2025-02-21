@@ -201,4 +201,37 @@ function M.get_search_region()
 	}
 end
 
+---@return UndoGlow.RowCol | nil
+function M.get_search_star_region()
+	local bufnr = vim.api.nvim_get_current_buf()
+	local cursor = vim.api.nvim_win_get_cursor(0)
+	local row = cursor[1] - 1
+
+	local search_pattern = vim.fn.getreg("/")
+	if search_pattern == "" then
+		return
+	end
+
+	local line = vim.api.nvim_buf_get_lines(bufnr, row, row + 1, false)[1]
+	if not line then
+		return
+	end
+
+	local reg = vim.regex(search_pattern)
+	local match_start = reg:match_str(line)
+	if match_start == nil then
+		return
+	end
+
+	local matched_text = vim.fn.matchstr(line, search_pattern)
+	local match_end = match_start + #matched_text
+
+	return {
+		s_row = row,
+		s_col = match_start,
+		e_row = row,
+		e_col = match_end,
+	}
+end
+
 return M
