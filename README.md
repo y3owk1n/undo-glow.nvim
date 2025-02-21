@@ -186,46 +186,6 @@ return {
 
 </details>
 
-## 💎 Animation Easing
-
-**undo-glow.nvim** comes with 4 default easing options as below. Feel free to send PRs for more interesting easings.
-
-### Builtin easings
-
-```lua
-require("undo-glow").easing.ease_in_out_cubic() -- default
-require("undo-glow").easing.ease_out_quad()
-require("undo-glow").easing.ease_out_cubic()
-require("undo-glow").easing.ease_in_sine()
-```
-
-### Changing easing from configuration with builtin
-
-```lua
--- configuration opts
-{
- --- rest of configurations
- easing = require("undo-glow").easing.ease_in_sine()
- --- rest of configurations
-}
-```
-
-### Custom easing functions
-
-Other than the defaults, you can also create your own easing function like below.
-
-```lua
-{
- --- rest of configurations
- ---@param t number (0-1) Interpolation factor
- ---@return number
- easing = function(t)
-  return 1 - math.cos((t * math.pi) / 2)
- end,
- --- rest of configurations
-}
-```
-
 ## 🌎 API
 
 **undo-glow.nvim** comes with simple API and builtin commands for you to hook into your config or DIY.
@@ -493,6 +453,76 @@ vim.api.nvim_create_autocmd({ "BufReadPost", "TextChanged" }, {
   end)
  end,
 })
+```
+
+## 💎 Animations & Easings
+
+### Animations
+
+**undo-glow.nvim** comes with 4 default animations out of the box and can be toggled on and off.
+
+```lua
+---@alias AnimationType "fade" | "blink" | "pulse" | "jitter"
+```
+
+#### No Animation
+
+Static highlight and will be cleared after a duration immediately.
+
+#### Fade
+
+Gradually increases or decreases the opacity of the highlight, creating a smooth fading effect.
+
+#### Blink
+
+Toggles the highlight on and off at a fixed interval, similar to a cursor blink.
+
+#### Pulse
+
+Alternates the highlight intensity in a rhythmic manner, creating a breathing effect.
+
+#### Jitter
+
+Rapidly moves or shifts the highlight slightly, giving a shaky or vibrating appearance.
+
+### Easing
+
+**undo-glow.nvim** comes with 4 default easing options as below. Feel free to send PRs for more interesting easings.
+
+#### Builtin easings
+
+```lua
+require("undo-glow").easing.ease_in_out_cubic() -- default
+require("undo-glow").easing.ease_out_quad()
+require("undo-glow").easing.ease_out_cubic()
+require("undo-glow").easing.ease_in_sine()
+```
+
+#### Changing easing from configuration with builtin
+
+```lua
+-- configuration opts
+{
+ --- rest of configurations
+ easing = require("undo-glow").easing.ease_in_sine()
+ --- rest of configurations
+}
+```
+
+#### Custom easing functions
+
+Other than the defaults, you can also create your own easing function like below.
+
+```lua
+{
+ --- rest of configurations
+ ---@param t number (0-1) Interpolation factor
+ ---@return number
+ easing = function(t)
+  return 1 - math.cos((t * math.pi) / 2)
+ end,
+ --- rest of configurations
+}
 ```
 
 ## Contributing
