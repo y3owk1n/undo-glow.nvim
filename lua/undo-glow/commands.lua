@@ -6,6 +6,10 @@ function M.undo(opts)
 	require("undo-glow").highlight_changes({
 		hlgroup = opts.hlgroup or "UgUndo",
 		animation_type = opts.animation_type,
+		animation = opts.animation,
+		duration = opts.duration,
+		easing = opts.easing,
+		fps = opts.fps,
 	})
 	vim.cmd("undo")
 end
@@ -16,6 +20,10 @@ function M.redo(opts)
 	require("undo-glow").highlight_changes({
 		hlgroup = opts.hlgroup or "UgRedo",
 		animation_type = opts.animation_type,
+		animation = opts.animation,
+		duration = opts.duration,
+		easing = opts.easing,
+		fps = opts.fps,
 	})
 	vim.cmd("redo")
 end
@@ -29,6 +37,10 @@ function M.yank(opts)
 	require("undo-glow").highlight_region({
 		hlgroup = opts.hlgroup or "UgYank",
 		animation_type = opts.animation_type,
+		animation = opts.animation,
+		duration = opts.duration,
+		easing = opts.easing,
+		fps = opts.fps,
 		s_row = pos[2] - 1,
 		s_col = pos[3] - 1,
 		e_row = pos2[2] - 1,
@@ -42,6 +54,10 @@ function M.paste_below(opts)
 	require("undo-glow").highlight_changes({
 		hlgroup = opts.hlgroup or "UgPaste",
 		animation_type = opts.animation_type,
+		animation = opts.animation,
+		duration = opts.duration,
+		easing = opts.easing,
+		fps = opts.fps,
 	})
 	vim.cmd("normal! p")
 end
@@ -52,6 +68,10 @@ function M.paste_above(opts)
 	require("undo-glow").highlight_changes({
 		hlgroup = opts.hlgroup or "UgPaste",
 		animation_type = opts.animation_type,
+		animation = opts.animation,
+		duration = opts.duration,
+		easing = opts.easing,
+		fps = opts.fps,
 	})
 	vim.cmd("normal! P")
 end
@@ -70,6 +90,10 @@ function M.search_next(opts)
 	require("undo-glow").highlight_region({
 		hlgroup = opts.hlgroup or "UgSearch",
 		animation_type = opts.animation_type,
+		animation = opts.animation,
+		duration = opts.duration,
+		easing = opts.easing,
+		fps = opts.fps,
 		s_row = region.s_row,
 		s_col = region.s_col,
 		e_row = region.e_row,
@@ -91,6 +115,10 @@ function M.search_prev(opts)
 	require("undo-glow").highlight_region({
 		hlgroup = opts.hlgroup or "UgSearch",
 		animation_type = opts.animation_type,
+		animation = opts.animation,
+		duration = opts.duration,
+		easing = opts.easing,
+		fps = opts.fps,
 		s_row = region.s_row,
 		s_col = region.s_col,
 		e_row = region.e_row,
@@ -112,6 +140,10 @@ function M.search_star(opts)
 	require("undo-glow").highlight_region({
 		hlgroup = opts.hlgroup or "UgSearch",
 		animation_type = opts.animation_type,
+		animation = opts.animation,
+		duration = opts.duration,
+		easing = opts.easing,
+		fps = opts.fps,
 		s_row = region.s_row,
 		s_col = region.s_col,
 		e_row = region.e_row,
@@ -125,6 +157,10 @@ function M.comment(opts)
 	require("undo-glow").highlight_changes({
 		hlgroup = opts.hlgroup or "UgComment",
 		animation_type = opts.animation_type,
+		animation = opts.animation,
+		duration = opts.duration,
+		easing = opts.easing,
+		fps = opts.fps,
 	})
 	return require("vim._comment").operator()
 end
@@ -135,6 +171,10 @@ function M.comment_textobject(opts)
 	require("undo-glow").highlight_changes({
 		hlgroup = opts.hlgroup or "UgComment",
 		animation_type = opts.animation_type,
+		animation = opts.animation,
+		duration = opts.duration,
+		easing = opts.easing,
+		fps = opts.fps,
 	})
 	return require("vim._comment").textobject()
 end
@@ -145,6 +185,10 @@ function M.comment_line(opts)
 	require("undo-glow").highlight_changes({
 		hlgroup = opts.hlgroup or "UgComment",
 		animation_type = opts.animation_type,
+		animation = opts.animation,
+		duration = opts.duration,
+		easing = opts.easing,
+		fps = opts.fps,
 	})
 	return require("vim._comment").operator() .. "_"
 end

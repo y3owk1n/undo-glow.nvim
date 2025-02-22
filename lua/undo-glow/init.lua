@@ -1,31 +1,31 @@
 local M = {}
 ---@alias AnimationType "fade" | "blink" | "pulse" | "jitter"
 
----@class UndoGlow.Config
+---@class UndoGlow.Config : UndoFlow.Config.Animation
+---@field highlights? table<"undo" | "redo" | "yank" | "paste" | "search" | "comment", { hl: string, hl_color: UndoGlow.HlColor }>
+
+---@class UndoFlow.Config.Animation
 ---@field duration? number Highlight duration in ms
 ---@field animation? boolean Turn on or off for animation
 ---@field animation_type? AnimationType
 ---@field easing? function A function that takes a number (0-1) and returns a number (0-1) for easing.
 ---@field fps? number Normally either 60 / 120, up to you
----@field highlights? table<"undo" | "redo" | "yank" | "paste" | "search" | "comment", { hl: string, hl_color: UndoGlow.HlColor }>
 
 ---@class UndoGlow.HlColor
 ---@field bg string
 ---@field fg? string
 
----@class UndoGlow.State
+---@class UndoGlow.State : UndoFlow.Config.Animation
 ---@field current_hlgroup string
 ---@field should_detach boolean
----@field animation_type? AnimationType
 
 ---@class UndoGlow.RGBColor
 ---@field r integer Red (0-255)
 ---@field g integer Green (0-255)
 ---@field b integer Blue (0-255)
 
----@class UndoGlow.CommandOpts
+---@class UndoGlow.CommandOpts : UndoFlow.Config.Animation
 ---@field hlgroup? string
----@field animation_type? AnimationType
 
 ---@class UndoGlow.HighlightChanges : UndoGlow.CommandOpts
 
@@ -41,6 +41,7 @@ local M = {}
 ---@field end_fg? UndoGlow.RGBColor
 ---@field duration integer
 ---@field config UndoGlow.Config
+---@field state UndoGlow.State
 
 ---@class UndoGlow.HandleHighlight : UndoGlow.RowCol
 ---@field bufnr integer Buffer number
@@ -82,6 +83,9 @@ function M.highlight_changes(opts)
 		should_detach = false,
 		current_hlgroup = opts.hlgroup or "UgUndo",
 		animation_type = opts.animation_type or M.config.animation_type,
+		animation = opts.animation,
+		duration = opts.duration,
+		fps = opts.fps,
 	}
 
 	vim.api.nvim_buf_attach(bufnr, false, {
@@ -103,6 +107,10 @@ function M.highlight_region(opts)
 		should_detach = false,
 		current_hlgroup = opts.hlgroup or "UgUndo",
 		animation_type = opts.animation_type or M.config.animation_type,
+		animation = opts.animation,
+		duration = opts.duration,
+		easing = opts.easing,
+		fps = opts.fps,
 	}
 
 	vim.schedule(function()
