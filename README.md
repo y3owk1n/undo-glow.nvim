@@ -467,16 +467,9 @@ vim.keymap.set("n", "key_that_you_like", some_action, { silent = true })
 
 ```lua
 ---@param opts? UndoGlow.CommandOpts
-function undo(opts)
- opts = opts or {}
- require("undo-glow").highlight_changes({
-  hlgroup = opts.hlgroup or "UgUndo",
-  animation_type = opts.animation_type,
-  animation = opts.animation,
-  duration = opts.duration,
-  easing = opts.easing,
-  fps = opts.fps,
- })
+function M.undo(opts)
+ opts = require("undo-glow.utils").merge_command_opts("UgUndo", opts)
+ require("undo-glow").highlight_changes(opts)
  vim.cmd("undo")
 end
 ```
@@ -535,22 +528,19 @@ vim.keymap.set("n", "key_that_you_like", some_action, { silent = true })
 
 ```lua
 ---@param opts? UndoGlow.CommandOpts
-function yank(opts)
- opts = opts or {}
+---@param opts? UndoGlow.CommandOpts
+function M.yank(opts)
+ opts = require("undo-glow.utils").merge_command_opts("UgYank", opts)
+
  local pos = vim.fn.getpos("'[")
  local pos2 = vim.fn.getpos("']")
- require("undo-glow").highlight_region({
-  hlgroup = opts.hlgroup or "UgYank",
-  animation_type = opts.animation_type,
-  animation = opts.animation,
-  duration = opts.duration,
-  easing = opts.easing,
-  fps = opts.fps,
+
+ require("undo-glow").highlight_region(vim.tbl_extend("force", opts, {
   s_row = pos[2] - 1,
   s_col = pos[3] - 1,
   e_row = pos2[2] - 1,
   e_col = pos2[3],
- })
+ }))
 end
 ```
 

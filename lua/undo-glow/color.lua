@@ -57,4 +57,27 @@ function M.get_normal_fg()
 	end
 end
 
+---@param current_hlgroup_detail vim.api.keyset.hl_info
+---@return UndoGlow.HlColor
+function M.init_colors(current_hlgroup_detail)
+	local init_color = {
+		bg = nil,
+		fg = nil,
+	}
+
+	if not current_hlgroup_detail.bg then
+		init_color.bg = M.default_undo.bg
+	else
+		init_color.bg = string.format("#%06X", current_hlgroup_detail.bg)
+	end
+
+	if not current_hlgroup_detail.fg then
+		init_color.fg = nil
+	else
+		init_color.fg = string.format("#%06X", current_hlgroup_detail.fg)
+	end
+
+	return init_color
+end
+
 return M

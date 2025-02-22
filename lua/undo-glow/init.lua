@@ -74,19 +74,11 @@ local callback = require("undo-glow.callback")
 local utils = require("undo-glow.utils")
 
 -- Helper to attach to a buffer with a local state.
----@param opts UndoGlow.HighlightChanges
+---@param opts UndoGlow.HighlightChanges|UndoGlow.CommandOpts
 function M.highlight_changes(opts)
 	local bufnr = vim.api.nvim_get_current_buf()
 
-	---@type UndoGlow.State
-	local state = {
-		should_detach = false,
-		current_hlgroup = opts.hlgroup or "UgUndo",
-		animation_type = opts.animation_type or M.config.animation_type,
-		animation = opts.animation,
-		duration = opts.duration,
-		fps = opts.fps,
-	}
+	local state = utils.create_state(opts, M.config)
 
 	vim.api.nvim_buf_attach(bufnr, false, {
 		on_bytes = function(...)
@@ -102,16 +94,7 @@ end
 function M.highlight_region(opts)
 	local bufnr = vim.api.nvim_get_current_buf()
 
-	---@type UndoGlow.State
-	local state = {
-		should_detach = false,
-		current_hlgroup = opts.hlgroup or "UgUndo",
-		animation_type = opts.animation_type or M.config.animation_type,
-		animation = opts.animation,
-		duration = opts.duration,
-		easing = opts.easing,
-		fps = opts.fps,
-	}
+	local state = utils.create_state(opts, M.config)
 
 	vim.schedule(function()
 		---@type UndoGlow.HandleHighlight
