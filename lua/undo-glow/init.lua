@@ -8,7 +8,7 @@ local M = {}
 ---@field duration? number Highlight duration in ms
 ---@field animation? boolean Turn on or off for animation
 ---@field animation_type? AnimationType
----@field easing? function A function that takes a number (0-1) and returns a number (0-1) for easing.
+---@field easing? fun(t: number) A function that takes a number (0-1) and returns a number (0-1) for easing.
 ---@field fps? number Normally either 60 / 120, up to you
 
 ---@class UndoGlow.HlColor
