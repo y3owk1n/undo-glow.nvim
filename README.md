@@ -283,10 +283,19 @@ Snacks.util.set_hl({ UgYank = { bg = "#CBA6F7", fg = "#11111B" } }, { default = 
 
 ### Commands
 
+Each builtin commands takes in optional `opts` take allows to configure **color** and **animation** type per command. And the opts type as below:
+
+```lua
+---@class UndoGlow.HighlightChanges
+---@field hlgroup? string
+---@field animation_type? AnimationType
+```
+
 #### Undo Highlights
 
 ```lua
-require("undo-glow").undo() -- Undo command with highlights
+---@param opts? UndoGlow.HighlightChanges
+require("undo-glow").undo(opts) -- Undo command with highlights
 ```
 
 <details><summary>Usage Example</summary>
@@ -304,7 +313,8 @@ vim.keymap.set("n", "u", require("undo-glow").undo, { noremap = true, desc = "Un
 #### Redo Highlights
 
 ```lua
-require("undo-glow").redo() -- Redo command with highlights
+---@param opts? UndoGlow.HighlightChanges
+require("undo-glow").redo(opts) -- Redo command with highlights
 ```
 
 <details><summary>Usage Example</summary>
@@ -325,7 +335,8 @@ vim.keymap.set("n", "<C-r>", require("undo-glow").redo, { noremap = true, desc =
 > This is not a command and it is designed to be used in autocmd callback.
 
 ```lua
-require("undo-glow").yank() -- Yank with highlights.
+---@param opts? UndoGlow.HighlightChanges
+require("undo-glow").yank(opts) -- Yank with highlights.
 ```
 
 <details><summary>Usage Example</summary>
@@ -346,8 +357,9 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 #### Paste Highlights
 
 ```lua
-require("undo-glow").paste_below() -- Paste below command with highlights
-require("undo-glow").paste_above() -- Paste above command with highlights
+---@param opts? UndoGlow.HighlightChanges
+require("undo-glow").paste_below(opts) -- Paste below command with highlights
+require("undo-glow").paste_above(opts) -- Paste above command with highlights
 ```
 
 <details><summary>Usage Example</summary>
@@ -366,9 +378,10 @@ vim.keymap.set("n", "P", require("undo-glow").paste_above, { noremap = true, des
 #### Search Highlights
 
 ```lua
-require("undo-glow").search_next() -- Search next command with highlights
-require("undo-glow").search_prev() -- Search prev command with highlights
-require("undo-glow").search_star() -- Search current word with "*" with highlights
+---@param opts? UndoGlow.HighlightChanges
+require("undo-glow").search_next(opts) -- Search next command with highlights
+require("undo-glow").search_prev(opts) -- Search prev command with highlights
+require("undo-glow").search_star(opts) -- Search current word with "*" with highlights
 ```
 
 <details><summary>Usage Example</summary>
@@ -388,9 +401,10 @@ vim.keymap.set("n", "*", require("undo-glow").search_star, { noremap = true, des
 #### Comment Highlights
 
 ```lua
-require("undo-glow").comment() -- Comment with `gc` in `n` and `x` mode
-require("undo-glow").comment_textobject() -- Comment with `gc` in `o` mode. E.g. gcip, gcap, etc
-require("undo-glow").comment_line() -- Comment lines with `gcc`.
+---@param opts? UndoGlow.HighlightChanges
+require("undo-glow").comment(opts) -- Comment with `gc` in `n` and `x` mode
+require("undo-glow").comment_textobject(opts) -- Comment with `gc` in `o` mode. E.g. gcip, gcap, etc
+require("undo-glow").comment_line(opts) -- Comment lines with `gcc`.
 ```
 
 <details><summary>Usage Example</summary>
@@ -415,7 +429,7 @@ vim.keymap.set("n", "gcc", require("undo-glow").comment_line, { expr = true, des
 
 ```lua
 ---@class UndoGlow.HighlightChanges
----@field hlgroup string
+---@field hlgroup? string -- Default to `UgUndo`
 ---@field animation_type? AnimationType -- Overwrites animation_type from config
 
 ---@param opts UndoGlow.HighlightChanges
@@ -441,9 +455,12 @@ vim.keymap.set("n", "key_that_you_like", some_action, { silent = true })
 <!-- config:start -->
 
 ```lua
-function undo()
+---@param opts? UndoGlow.HighlightChanges
+function undo(opts)
+ opts = opts or {}
  require("undo-glow").highlight_changes({
-  hlgroup = "UgUndo",
+  hlgroup = opts.hlgroup or "UgUndo",
+  animation_type = opts.animation_type,
  })
  vim.cmd("undo")
 end
@@ -457,7 +474,7 @@ end
 
 ```lua
 ---@class UndoGlow.HighlightRegion
----@field hlgroup string
+---@field hlgroup? string
 ---@field animation_type? AnimationType -- Overwrites animation_type from config
 ---@field s_row integer Start row
 ---@field s_col integer Start column
@@ -498,11 +515,14 @@ vim.keymap.set("n", "key_that_you_like", some_action, { silent = true })
 <!-- config:start -->
 
 ```lua
-function yank()
+---@param opts? UndoGlow.HighlightChanges
+function yank(opts)
+ opts = opts or {}
  local pos = vim.fn.getpos("'[")
  local pos2 = vim.fn.getpos("']")
  require("undo-glow").highlight_region({
-  hlgroup = "UgYank",
+  hlgroup = opts.hlgroup or "UgYank",
+  animation_type = opts.animation_type,
   s_row = pos[2] - 1,
   s_col = pos[3] - 1,
   e_row = pos2[2] - 1,

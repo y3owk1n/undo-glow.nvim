@@ -24,11 +24,11 @@ local M = {}
 ---@field b integer Blue (0-255)
 
 ---@class UndoGlow.HighlightChanges
----@field hlgroup string
+---@field hlgroup? string
 ---@field animation_type? AnimationType
 
 ---@class UndoGlow.HighlightRegion: UndoGlow.RowCol
----@field hlgroup string
+---@field hlgroup? string
 ---@field animation_type? AnimationType
 
 ---@class UndoGlow.Animation
@@ -80,7 +80,7 @@ function M.highlight_changes(opts)
 	---@type UndoGlow.State
 	local state = {
 		should_detach = false,
-		current_hlgroup = opts.hlgroup,
+		current_hlgroup = opts.hlgroup or "UgUndo",
 		animation_type = opts.animation_type or M.config.animation_type,
 	}
 
@@ -101,7 +101,7 @@ function M.highlight_region(opts)
 	---@type UndoGlow.State
 	local state = {
 		should_detach = false,
-		current_hlgroup = opts.hlgroup,
+		current_hlgroup = opts.hlgroup or "UgUndo",
 		animation_type = opts.animation_type or M.config.animation_type,
 	}
 
