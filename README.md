@@ -134,7 +134,6 @@ return {
   event = { "VeryLazy" },
   ---@type UndoGlow.Config
   opts = {
-   duration = 1000,
    highlights = {
     undo = {
      hl_color = { bg = "#48384B" },
