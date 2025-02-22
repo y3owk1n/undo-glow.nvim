@@ -224,7 +224,7 @@ You can easily override the colors from configuration `opts`. And the types are 
 
 By setting hlgroup name to other value, the plugin will grab the colors of the target hlgroup and apply to it. For example:
 
-! [!note]
+> [!note]
 > If you specify a hl other than the default, you no longer need to specify the hl_color key, as it will be ignored.
 
 ```lua
@@ -285,7 +285,7 @@ Snacks.util.set_hl({ UgYank = { bg = "#CBA6F7", fg = "#11111B" } }, { default = 
 
 Each builtin commands takes in optional `opts` take allows to configure **color** and **animation** type per command. And the opts type as below:
 
-! [!note]
+> [!note]
 > Each animation related options can be configured separately. If you don't, it will fallback to the default from your configuration.
 
 ```lua
