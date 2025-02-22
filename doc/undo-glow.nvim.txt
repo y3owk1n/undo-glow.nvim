@@ -260,9 +260,9 @@ as below:
 By setting hlgroup name to other value, the plugin will grab the colors of the
 target hlgroup and apply to it. For example:
 
-! [!note] > If you specify a hl other than the default, you no longer need to
-specify the hl_color key, as it will be ignored.
 
+  [!note] If you specify a hl other than the default, you no longer need to
+  specify the hl_color key, as it will be ignored.
 >lua
     -- ✅ Valid
     {
@@ -327,9 +327,9 @@ COMMANDS ~
 Each builtin commands takes in optional `opts` take allows to configure
 **color** and **animation** type per command. And the opts type as below:
 
-! [!note] > Each animation related options can be configured separately. If you
-don’t, it will fallback to the default from your configuration.
 
+  [!note] Each animation related options can be configured separately. If you
+  don’t, it will fallback to the default from your configuration.
 >lua
     ---@class UndoGlow.CommandOpts
     ---@field hlgroup? string
