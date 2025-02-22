@@ -78,7 +78,10 @@ end
 
 ---@param opts? UndoGlow.CommandOpts
 function M.search_next(opts)
-	vim.cmd("normal! n")
+	local ok = pcall(vim.cmd, "normal! n")
+	if not ok then
+		return
+	end
 	local region = require("undo-glow.utils").get_search_region()
 
 	if not region then
@@ -103,7 +106,11 @@ end
 
 ---@param opts? UndoGlow.CommandOpts
 function M.search_prev(opts)
-	vim.cmd("normal! N")
+	local ok = pcall(vim.cmd, "normal! N")
+	if not ok then
+		return
+	end
+
 	local region = require("undo-glow.utils").get_search_region()
 
 	if not region then
@@ -128,7 +135,10 @@ end
 
 ---@param opts? UndoGlow.CommandOpts
 function M.search_star(opts)
-	vim.cmd("normal! *")
+	local ok = pcall(vim.cmd, "normal! *")
+	if not ok then
+		return
+	end
 	local region = require("undo-glow.utils").get_search_star_region()
 
 	if not region then
