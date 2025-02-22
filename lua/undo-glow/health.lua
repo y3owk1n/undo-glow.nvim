@@ -29,6 +29,26 @@ local function separator(title)
 end
 
 function M.check()
+	separator("Neovim Version Check")
+	local v = vim.version()
+	if v.major > 0 or (v.major == 0 and v.minor >= 10) then
+		report_status(
+			"ok",
+			"Neovim version is " .. v.major .. "." .. v.minor .. "." .. v.patch
+		)
+	else
+		report_status(
+			"error",
+			"Neovim version is too old: "
+				.. v.major
+				.. "."
+				.. v.minor
+				.. "."
+				.. v.patch
+				.. ". Please upgrade to 0.10 or later."
+		)
+	end
+
 	separator("Neovim API Checks")
 	-- Check for vim.uv API.
 	if not vim.uv then
@@ -58,6 +78,7 @@ function M.check()
 		"undo-glow.easing",
 		"undo-glow.highlight",
 		"undo-glow.utils",
+		"vim._comment",
 	}
 	for _, mod in ipairs(required_modules) do
 		local ok, _ = pcall(require, mod)
@@ -83,7 +104,7 @@ function M.check()
 
 	separator("Highlight Group Test")
 	-- Test setting a highlight group.
-	local test_hl = "UndoGlowHealthTest"
+	local test_hl = "UgHealthTest"
 	local ok, err = pcall(function()
 		vim.api.nvim_set_hl(0, test_hl, { bg = "#000000", fg = "#ffffff" })
 	end)
