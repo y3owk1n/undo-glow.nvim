@@ -138,7 +138,7 @@ function M.handle_highlight(opts)
 			opts.e_col
 		)
 
-		require("undo-glow.animation").clear_highlights(
+		require("undo-glow.utils").animate_or_clear_highlights(
 			opts.bufnr,
 			opts.state,
 			unique_hlgroup,
@@ -235,6 +235,57 @@ function M.get_search_star_region()
 		e_row = row,
 		e_col = match_end,
 	}
+end
+
+-- Animate or clear highlights after a duration
+---@param bufnr integer Buffer number
+---@param state UndoGlow.State State
+---@param hlgroup string Unique highlight group name
+---@param extmark_id integer
+---@param start_bg string The starting background color (hex)
+---@param start_fg? string The starting foreground color (hex)
+---@param config UndoGlow.Config
+function M.animate_or_clear_highlights(
+	bufnr,
+	state,
+	hlgroup,
+	extmark_id,
+	start_bg,
+	start_fg,
+	config
+)
+	local end_bg = color.get_normal_bg()
+	local end_fg = color.get_normal_fg()
+
+	if config.animation then
+		local animation_opts = {
+			bufnr = bufnr,
+			hlgroup = hlgroup,
+			extmark_id = extmark_id,
+			start_bg = color.hex_to_rgb(start_bg),
+			end_bg = color.hex_to_rgb(end_bg),
+			start_fg = start_fg and color.hex_to_rgb(start_fg) or nil,
+			end_fg = start_fg and color.hex_to_rgb(end_fg) or nil,
+			duration = config.duration,
+			config = config,
+		}
+
+		require("undo-glow.animation").animate[state.animation_type](
+			animation_opts
+		)
+	else
+		vim.defer_fn(function()
+			if vim.api.nvim_buf_is_valid(bufnr) then
+				vim.api.nvim_buf_del_extmark(
+					bufnr,
+					require("undo-glow.utils").ns,
+					extmark_id
+				)
+			end
+		end, config.duration)
+	end
+
+	state.should_detach = true
 end
 
 return M
