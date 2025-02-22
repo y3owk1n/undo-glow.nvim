@@ -191,6 +191,92 @@ return {
 
 </details>
 
+## 🎨 Hlgroups
+
+### Existing hlgroups
+
+The default colors are fairly ugly in my opinion, but they are sharp enough for any themes. You should change the color to whatever you like.
+
+<!-- colors:start -->
+
+| Opts Key | Default Group | Color Code (Background) |
+| --- | --- | --- |
+| **undo** | ***UgUndo*** | #FF5555  |
+| **redo** | ***UguRedo*** | #50FA7B |
+| **yank** | ***UgYank*** | #F1FA8C |
+| **paste** | ***UgPaste*** | #8BE9FD |
+| **search** | ***UgSearch*** | #BD93F9 |
+| **comment** | ***UgComment*** | #FFB86C  |
+
+<!-- colors:end -->
+
+### Overiding hlgroups and colors (internally)
+
+You can easily override the colors from configuration `opts`. And the types are as below:
+
+```lua
+---@field highlights? table<"undo" | "redo" | "yank" | "paste" | "search" | "comment", { hl: string, hl_color: UndoGlow.HlColor }>
+
+---@class UndoGlow.HlColor
+---@field bg string Background color
+---@field fg? string Optional for text color (Without this, it will just remain the existing text color as it is)
+```
+
+By setting hlgroup name to other value, the plugin will grab the colors of the target hlgroup and apply to it. For example:
+
+> [!note]
+> If you specify a hl other than the default, you no longer need to specify the hl_color key, as it will be ignored.
+
+```lua
+-- ✅ Valid
+{
+  undo = {
+   hl = "Cursor",
+ }
+}
+
+-- ✅ Valid
+{
+  undo = {
+   hl_color = { bg = "#FF5555" },
+ }
+}
+
+-- ✅ Valid but hl_color with be ignored
+{
+  undo = {
+   hl = "Cursor",
+   hl_color = { bg = "#FF5555" },
+ }
+}
+```
+
+### Overiding hlgroups and colors (externally)
+
+> [!note]
+> It's recommended to set the colors from the configuration table.
+
+The most common way to override the colors externally are with `vim.api.nvim_set_hl`. Note that setting up this way will take precedent than **undo-glow.nvim** configurations.
+
+```lua
+-- Link to other hlgroups
+vim.api.nvim_set_hl(0, "UgYank", { link = "CurSearch" })
+-- Set specific colors directly
+vim.api.nvim_set_hl(0, "UgYank", { bg = "#F4DBD6", fg = "#24273A" })
+```
+
+Or if you're using `snacks.nvim`, you can do as below:
+
+```lua
+-- Link to other hlgroups
+Snacks.util.set_hl({ UgYank = "Cursor" }, { default = true })
+-- Set specific colors directly
+Snacks.util.set_hl({ UgYank = { bg = "#CBA6F7", fg = "#11111B" } }, { default = true })
+```
+
+> [!note]
+> You don't have to set anything for the configuration opts if you're setting it in other places.
+
 ## 🌎 API
 
 **undo-glow.nvim** comes with simple API and builtin commands for you to hook into your config or DIY.
