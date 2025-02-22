@@ -286,7 +286,7 @@ Snacks.util.set_hl({ UgYank = { bg = "#CBA6F7", fg = "#11111B" } }, { default = 
 Each builtin commands takes in optional `opts` take allows to configure **color** and **animation** type per command. And the opts type as below:
 
 ```lua
----@class UndoGlow.HighlightChanges
+---@class UndoGlow.CommandOpts
 ---@field hlgroup? string
 ---@field animation_type? AnimationType
 ```
@@ -294,7 +294,7 @@ Each builtin commands takes in optional `opts` take allows to configure **color*
 #### Undo Highlights
 
 ```lua
----@param opts? UndoGlow.HighlightChanges
+---@param opts? UndoGlow.CommandOpts
 require("undo-glow").undo(opts) -- Undo command with highlights
 ```
 
@@ -313,7 +313,7 @@ vim.keymap.set("n", "u", require("undo-glow").undo, { noremap = true, desc = "Un
 #### Redo Highlights
 
 ```lua
----@param opts? UndoGlow.HighlightChanges
+---@param opts? UndoGlow.CommandOpts
 require("undo-glow").redo(opts) -- Redo command with highlights
 ```
 
@@ -335,7 +335,7 @@ vim.keymap.set("n", "<C-r>", require("undo-glow").redo, { noremap = true, desc =
 > This is not a command and it is designed to be used in autocmd callback.
 
 ```lua
----@param opts? UndoGlow.HighlightChanges
+---@param opts? UndoGlow.CommandOpts
 require("undo-glow").yank(opts) -- Yank with highlights.
 ```
 
@@ -357,7 +357,7 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 #### Paste Highlights
 
 ```lua
----@param opts? UndoGlow.HighlightChanges
+---@param opts? UndoGlow.CommandOpts
 require("undo-glow").paste_below(opts) -- Paste below command with highlights
 require("undo-glow").paste_above(opts) -- Paste above command with highlights
 ```
@@ -378,7 +378,7 @@ vim.keymap.set("n", "P", require("undo-glow").paste_above, { noremap = true, des
 #### Search Highlights
 
 ```lua
----@param opts? UndoGlow.HighlightChanges
+---@param opts? UndoGlow.CommandOpts
 require("undo-glow").search_next(opts) -- Search next command with highlights
 require("undo-glow").search_prev(opts) -- Search prev command with highlights
 require("undo-glow").search_star(opts) -- Search current word with "*" with highlights
@@ -401,7 +401,7 @@ vim.keymap.set("n", "*", require("undo-glow").search_star, { noremap = true, des
 #### Comment Highlights
 
 ```lua
----@param opts? UndoGlow.HighlightChanges
+---@param opts? UndoGlow.CommandOpts
 require("undo-glow").comment(opts) -- Comment with `gc` in `n` and `x` mode
 require("undo-glow").comment_textobject(opts) -- Comment with `gc` in `o` mode. E.g. gcip, gcap, etc
 require("undo-glow").comment_line(opts) -- Comment lines with `gcc`.
@@ -455,7 +455,7 @@ vim.keymap.set("n", "key_that_you_like", some_action, { silent = true })
 <!-- config:start -->
 
 ```lua
----@param opts? UndoGlow.HighlightChanges
+---@param opts? UndoGlow.CommandOpts
 function undo(opts)
  opts = opts or {}
  require("undo-glow").highlight_changes({
@@ -515,7 +515,7 @@ vim.keymap.set("n", "key_that_you_like", some_action, { silent = true })
 <!-- config:start -->
 
 ```lua
----@param opts? UndoGlow.HighlightChanges
+---@param opts? UndoGlow.CommandOpts
 function yank(opts)
  opts = opts or {}
  local pos = vim.fn.getpos("'[")

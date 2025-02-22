@@ -23,13 +23,13 @@ local M = {}
 ---@field g integer Green (0-255)
 ---@field b integer Blue (0-255)
 
----@class UndoGlow.HighlightChanges
+---@class UndoGlow.CommandOpts
 ---@field hlgroup? string
 ---@field animation_type? AnimationType
 
----@class UndoGlow.HighlightRegion: UndoGlow.RowCol
----@field hlgroup? string
----@field animation_type? AnimationType
+---@class UndoGlow.HighlightChanges : UndoGlow.CommandOpts
+
+---@class UndoGlow.HighlightRegion : UndoGlow.CommandOpts,UndoGlow.RowCol
 
 ---@class UndoGlow.Animation
 ---@field bufnr integer Buffer number

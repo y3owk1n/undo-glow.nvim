@@ -1,6 +1,6 @@
 local M = {}
 
----@param opts? UndoGlow.HighlightChanges
+---@param opts? UndoGlow.CommandOpts
 function M.undo(opts)
 	opts = opts or {}
 	require("undo-glow").highlight_changes({
@@ -10,7 +10,7 @@ function M.undo(opts)
 	vim.cmd("undo")
 end
 
----@param opts? UndoGlow.HighlightChanges
+---@param opts? UndoGlow.CommandOpts
 function M.redo(opts)
 	opts = opts or {}
 	require("undo-glow").highlight_changes({
@@ -21,7 +21,7 @@ function M.redo(opts)
 end
 
 --- Helper to use this in autocmds. Do not use this as a command, it does nothing.
----@param opts? UndoGlow.HighlightChanges
+---@param opts? UndoGlow.CommandOpts
 function M.yank(opts)
 	opts = opts or {}
 	local pos = vim.fn.getpos("'[")
@@ -36,7 +36,7 @@ function M.yank(opts)
 	})
 end
 
----@param opts? UndoGlow.HighlightChanges
+---@param opts? UndoGlow.CommandOpts
 function M.paste_below(opts)
 	opts = opts or {}
 	require("undo-glow").highlight_changes({
@@ -46,7 +46,7 @@ function M.paste_below(opts)
 	vim.cmd("normal! p")
 end
 
----@param opts? UndoGlow.HighlightChanges
+---@param opts? UndoGlow.CommandOpts
 function M.paste_above(opts)
 	opts = opts or {}
 	require("undo-glow").highlight_changes({
@@ -56,7 +56,7 @@ function M.paste_above(opts)
 	vim.cmd("normal! P")
 end
 
----@param opts? UndoGlow.HighlightChanges
+---@param opts? UndoGlow.CommandOpts
 function M.search_next(opts)
 	vim.cmd("normal! n")
 	local region = require("undo-glow.utils").get_search_region()
@@ -77,7 +77,7 @@ function M.search_next(opts)
 	})
 end
 
----@param opts? UndoGlow.HighlightChanges
+---@param opts? UndoGlow.CommandOpts
 function M.search_prev(opts)
 	vim.cmd("normal! N")
 	local region = require("undo-glow.utils").get_search_region()
@@ -98,7 +98,7 @@ function M.search_prev(opts)
 	})
 end
 
----@param opts? UndoGlow.HighlightChanges
+---@param opts? UndoGlow.CommandOpts
 function M.search_star(opts)
 	vim.cmd("normal! *")
 	local region = require("undo-glow.utils").get_search_star_region()
@@ -119,7 +119,7 @@ function M.search_star(opts)
 	})
 end
 
----@param opts? UndoGlow.HighlightChanges
+---@param opts? UndoGlow.CommandOpts
 function M.comment(opts)
 	opts = opts or {}
 	require("undo-glow").highlight_changes({
@@ -129,7 +129,7 @@ function M.comment(opts)
 	return require("vim._comment").operator()
 end
 
----@param opts? UndoGlow.HighlightChanges
+---@param opts? UndoGlow.CommandOpts
 function M.comment_textobject(opts)
 	opts = opts or {}
 	require("undo-glow").highlight_changes({
@@ -139,7 +139,7 @@ function M.comment_textobject(opts)
 	return require("vim._comment").textobject()
 end
 
----@param opts? UndoGlow.HighlightChanges
+---@param opts? UndoGlow.CommandOpts
 function M.comment_line(opts)
 	opts = opts or {}
 	require("undo-glow").highlight_changes({
