@@ -258,7 +258,7 @@ as below:
 <
 
 By setting hlgroup name to other value, the plugin will grab the colors of the
-target hlgroup and apply to it. For example.
+target hlgroup and apply to it. For example:
 
 
   [!note] If you specify a hl other than the default, you no longer need to
@@ -324,11 +324,21 @@ into your config or DIY.
 
 COMMANDS ~
 
+Each builtin commands takes in optional `opts` take allows to configure
+**color** and **animation** type per command. And the opts type as below:
+
+>lua
+    ---@class UndoGlow.HighlightChanges
+    ---@field hlgroup? string
+    ---@field animation_type? AnimationType
+<
+
 
 UNDO HIGHLIGHTS
 
 >lua
-    require("undo-glow").undo() -- Undo command with highlights
+    ---@param opts? UndoGlow.HighlightChanges
+    require("undo-glow").undo(opts) -- Undo command with highlights
 <
 
 Usage Example ~
@@ -341,7 +351,8 @@ Usage Example ~
 REDO HIGHLIGHTS
 
 >lua
-    require("undo-glow").redo() -- Redo command with highlights
+    ---@param opts? UndoGlow.HighlightChanges
+    require("undo-glow").redo(opts) -- Redo command with highlights
 <
 
 Usage Example ~
@@ -357,7 +368,8 @@ YANK HIGHLIGHTS
   [!WARNING] This is not a command and it is designed to be used in autocmd
   callback.
 >lua
-    require("undo-glow").yank() -- Yank with highlights.
+    ---@param opts? UndoGlow.HighlightChanges
+    require("undo-glow").yank(opts) -- Yank with highlights.
 <
 
 Usage Example ~
@@ -373,8 +385,9 @@ Usage Example ~
 PASTE HIGHLIGHTS
 
 >lua
-    require("undo-glow").paste_below() -- Paste below command with highlights
-    require("undo-glow").paste_above() -- Paste above command with highlights
+    ---@param opts? UndoGlow.HighlightChanges
+    require("undo-glow").paste_below(opts) -- Paste below command with highlights
+    require("undo-glow").paste_above(opts) -- Paste above command with highlights
 <
 
 Usage Example ~
@@ -388,9 +401,10 @@ Usage Example ~
 SEARCH HIGHLIGHTS
 
 >lua
-    require("undo-glow").search_next() -- Search next command with highlights
-    require("undo-glow").search_prev() -- Search prev command with highlights
-    require("undo-glow").search_star() -- Search current word with "*" with highlights
+    ---@param opts? UndoGlow.HighlightChanges
+    require("undo-glow").search_next(opts) -- Search next command with highlights
+    require("undo-glow").search_prev(opts) -- Search prev command with highlights
+    require("undo-glow").search_star(opts) -- Search current word with "*" with highlights
 <
 
 Usage Example ~
@@ -405,9 +419,10 @@ Usage Example ~
 COMMENT HIGHLIGHTS
 
 >lua
-    require("undo-glow").comment() -- Comment with `gc` in `n` and `x` mode
-    require("undo-glow").comment_textobject() -- Comment with `gc` in `o` mode. E.g. gcip, gcap, etc
-    require("undo-glow").comment_line() -- Comment lines with `gcc`.
+    ---@param opts? UndoGlow.HighlightChanges
+    require("undo-glow").comment(opts) -- Comment with `gc` in `n` and `x` mode
+    require("undo-glow").comment_textobject(opts) -- Comment with `gc` in `o` mode. E.g. gcip, gcap, etc
+    require("undo-glow").comment_line(opts) -- Comment lines with `gcc`.
 <
 
 Usage Example ~
@@ -429,7 +444,7 @@ HIGHLIGHT TEXT CHANGES
 
 >lua
     ---@class UndoGlow.HighlightChanges
-    ---@field hlgroup string
+    ---@field hlgroup? string -- Default to `UgUndo`
     ---@field animation_type? AnimationType -- Overwrites animation_type from config
     
     ---@param opts UndoGlow.HighlightChanges
@@ -454,9 +469,12 @@ USAGE
 Example with undo command ~
 
 >lua
-    function undo()
+    ---@param opts? UndoGlow.HighlightChanges
+    function undo(opts)
+     opts = opts or {}
      require("undo-glow").highlight_changes({
-      hlgroup = "UgUndo",
+      hlgroup = opts.hlgroup or "UgUndo",
+      animation_type = opts.animation_type,
      })
      vim.cmd("undo")
     end
@@ -467,7 +485,7 @@ HIGHLIGHT ANY REGION OF YOUR CHOICE
 
 >lua
     ---@class UndoGlow.HighlightRegion
-    ---@field hlgroup string
+    ---@field hlgroup? string
     ---@field animation_type? AnimationType -- Overwrites animation_type from config
     ---@field s_row integer Start row
     ---@field s_col integer Start column
@@ -507,11 +525,14 @@ USAGE EXAMPLE
 Example with yank ~
 
 >lua
-    function yank()
+    ---@param opts? UndoGlow.HighlightChanges
+    function yank(opts)
+     opts = opts or {}
      local pos = vim.fn.getpos("'[")
      local pos2 = vim.fn.getpos("']")
      require("undo-glow").highlight_region({
-      hlgroup = "UgYank",
+      hlgroup = opts.hlgroup or "UgYank",
+      animation_type = opts.animation_type,
       s_row = pos[2] - 1,
       s_col = pos[3] - 1,
       e_row = pos2[2] - 1,

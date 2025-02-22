@@ -1,25 +1,34 @@
 local M = {}
 
-function M.undo()
+---@param opts? UndoGlow.HighlightChanges
+function M.undo(opts)
+	opts = opts or {}
 	require("undo-glow").highlight_changes({
-		hlgroup = "UgUndo",
+		hlgroup = opts.hlgroup or "UgUndo",
+		animation_type = opts.animation_type,
 	})
 	vim.cmd("undo")
 end
 
-function M.redo()
+---@param opts? UndoGlow.HighlightChanges
+function M.redo(opts)
+	opts = opts or {}
 	require("undo-glow").highlight_changes({
-		hlgroup = "UgRedo",
+		hlgroup = opts.hlgroup or "UgRedo",
+		animation_type = opts.animation_type,
 	})
 	vim.cmd("redo")
 end
 
 --- Helper to use this in autocmds. Do not use this as a command, it does nothing.
-function M.yank()
+---@param opts? UndoGlow.HighlightChanges
+function M.yank(opts)
+	opts = opts or {}
 	local pos = vim.fn.getpos("'[")
 	local pos2 = vim.fn.getpos("']")
 	require("undo-glow").highlight_region({
-		hlgroup = "UgYank",
+		hlgroup = opts.hlgroup or "UgYank",
+		animation_type = opts.animation_type,
 		s_row = pos[2] - 1,
 		s_col = pos[3] - 1,
 		e_row = pos2[2] - 1,
@@ -27,21 +36,28 @@ function M.yank()
 	})
 end
 
-function M.paste_below()
+---@param opts? UndoGlow.HighlightChanges
+function M.paste_below(opts)
+	opts = opts or {}
 	require("undo-glow").highlight_changes({
-		hlgroup = "UgPaste",
+		hlgroup = opts.hlgroup or "UgPaste",
+		animation_type = opts.animation_type,
 	})
 	vim.cmd("normal! p")
 end
 
-function M.paste_above()
+---@param opts? UndoGlow.HighlightChanges
+function M.paste_above(opts)
+	opts = opts or {}
 	require("undo-glow").highlight_changes({
-		hlgroup = "UgPaste",
+		hlgroup = opts.hlgroup or "UgPaste",
+		animation_type = opts.animation_type,
 	})
 	vim.cmd("normal! P")
 end
 
-function M.search_next()
+---@param opts? UndoGlow.HighlightChanges
+function M.search_next(opts)
 	vim.cmd("normal! n")
 	local region = require("undo-glow.utils").get_search_region()
 
@@ -49,8 +65,11 @@ function M.search_next()
 		return
 	end
 
+	opts = opts or {}
+
 	require("undo-glow").highlight_region({
-		hlgroup = "UgSearch",
+		hlgroup = opts.hlgroup or "UgSearch",
+		animation_type = opts.animation_type,
 		s_row = region.s_row,
 		s_col = region.s_col,
 		e_row = region.e_row,
@@ -58,7 +77,8 @@ function M.search_next()
 	})
 end
 
-function M.search_prev()
+---@param opts? UndoGlow.HighlightChanges
+function M.search_prev(opts)
 	vim.cmd("normal! N")
 	local region = require("undo-glow.utils").get_search_region()
 
@@ -66,8 +86,11 @@ function M.search_prev()
 		return
 	end
 
+	opts = opts or {}
+
 	require("undo-glow").highlight_region({
-		hlgroup = "UgSearch",
+		hlgroup = opts.hlgroup or "UgSearch",
+		animation_type = opts.animation_type,
 		s_row = region.s_row,
 		s_col = region.s_col,
 		e_row = region.e_row,
@@ -75,7 +98,8 @@ function M.search_prev()
 	})
 end
 
-function M.search_star()
+---@param opts? UndoGlow.HighlightChanges
+function M.search_star(opts)
 	vim.cmd("normal! *")
 	local region = require("undo-glow.utils").get_search_star_region()
 
@@ -83,8 +107,11 @@ function M.search_star()
 		return
 	end
 
+	opts = opts or {}
+
 	require("undo-glow").highlight_region({
-		hlgroup = "UgSearch",
+		hlgroup = opts.hlgroup or "UgSearch",
+		animation_type = opts.animation_type,
 		s_row = region.s_row,
 		s_col = region.s_col,
 		e_row = region.e_row,
@@ -92,23 +119,32 @@ function M.search_star()
 	})
 end
 
-function M.comment()
+---@param opts? UndoGlow.HighlightChanges
+function M.comment(opts)
+	opts = opts or {}
 	require("undo-glow").highlight_changes({
-		hlgroup = "UgComment",
+		hlgroup = opts.hlgroup or "UgComment",
+		animation_type = opts.animation_type,
 	})
 	return require("vim._comment").operator()
 end
 
-function M.comment_textobject()
+---@param opts? UndoGlow.HighlightChanges
+function M.comment_textobject(opts)
+	opts = opts or {}
 	require("undo-glow").highlight_changes({
-		hlgroup = "UgComment",
+		hlgroup = opts.hlgroup or "UgComment",
+		animation_type = opts.animation_type,
 	})
 	return require("vim._comment").textobject()
 end
 
-function M.comment_line()
+---@param opts? UndoGlow.HighlightChanges
+function M.comment_line(opts)
+	opts = opts or {}
 	require("undo-glow").highlight_changes({
-		hlgroup = "UgComment",
+		hlgroup = opts.hlgroup or "UgComment",
+		animation_type = opts.animation_type,
 	})
 	return require("vim._comment").operator() .. "_"
 end
