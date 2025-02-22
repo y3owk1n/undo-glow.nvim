@@ -5,6 +5,7 @@ local counter = 0 -- For unique highlight groups
 M.ns = vim.api.nvim_create_namespace("undo-glow")
 
 local color = require("undo-glow.color")
+local highlight = require("undo-glow.highlight")
 
 ---@param base string
 ---@return string
@@ -103,8 +104,10 @@ function M.handle_highlight(opts)
 				and M.get_unique_hlgroup(opts.state.current_hlgroup)
 			or opts.state.current_hlgroup
 
+		-- TODO: Think of any other way that don't need to follow links or faster
+		-- Follow links if exists and get the actual color code for bg and fg
 		local current_hlgroup_detail =
-			vim.api.nvim_get_hl(0, { name = opts.state.current_hlgroup })
+			highlight.resolve_hlgroup(opts.state.current_hlgroup)
 
 		local bg = nil
 		local fg = nil

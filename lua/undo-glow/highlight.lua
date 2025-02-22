@@ -42,4 +42,23 @@ function M.setup_highlight(target_hlgroup, config_hl, config_hl_color)
 	end
 end
 
+---@param hlgroup string
+---@return vim.api.keyset.hl_info
+function M.resolve_hlgroup(hlgroup)
+	local seen = {}
+	while hlgroup do
+		if seen[hlgroup] then
+			break
+		end
+		seen[hlgroup] = true
+
+		local hl = vim.api.nvim_get_hl(0, { name = hlgroup })
+		if not hl.link then
+			return hl
+		end
+		hlgroup = hl.link
+	end
+	return {}
+end
+
 return M
