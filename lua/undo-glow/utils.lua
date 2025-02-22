@@ -97,10 +97,30 @@ end
 ---@param opts UndoGlow.HandleHighlight
 function M.handle_highlight(opts)
 	if vim.api.nvim_buf_is_valid(opts.bufnr) then
+		-- Check animation status and fallback to global
+		if type(opts.state.animation) ~= "boolean" then
+			opts.state.animation = opts.config.animation
+		end
+
+		-- Check duration and fallback to global
+		if not opts.state.duration then
+			opts.state.duration = opts.config.duration
+		end
+
+		-- Check easing and fallback to global
+		if not opts.state.easing then
+			opts.state.easing = opts.config.easing
+		end
+
+		-- Check fps and fallback to global
+		if not opts.state.fps then
+			opts.state.fps = opts.config.fps
+		end
+
 		-- If animation is off, use the existing hlgroup else use unique hlgroups.
 		-- Unique hlgroups is needed for animated version, because we will be changing the hlgroup colors during
 		-- animation.
-		local unique_hlgroup = opts.config.animation
+		local unique_hlgroup = opts.state.animation
 				and M.get_unique_hlgroup(opts.state.current_hlgroup)
 			or opts.state.current_hlgroup
 
@@ -138,7 +158,7 @@ function M.handle_highlight(opts)
 			opts.e_col
 		)
 
-		require("undo-glow.utils").animate_or_clear_highlights(
+		M.animate_or_clear_highlights(
 			opts.bufnr,
 			opts.state,
 			unique_hlgroup,
@@ -257,7 +277,8 @@ function M.animate_or_clear_highlights(
 	local end_bg = color.get_normal_bg()
 	local end_fg = color.get_normal_fg()
 
-	if config.animation then
+	if state.animation then
+		---@type UndoGlow.Animation
 		local animation_opts = {
 			bufnr = bufnr,
 			hlgroup = hlgroup,
@@ -266,8 +287,9 @@ function M.animate_or_clear_highlights(
 			end_bg = color.hex_to_rgb(end_bg),
 			start_fg = start_fg and color.hex_to_rgb(start_fg) or nil,
 			end_fg = start_fg and color.hex_to_rgb(end_fg) or nil,
-			duration = config.duration,
+			duration = state.duration,
 			config = config,
+			state = state,
 		}
 
 		require("undo-glow.animation").animate[state.animation_type](
@@ -282,7 +304,7 @@ function M.animate_or_clear_highlights(
 					extmark_id
 				)
 			end
-		end, config.duration)
+		end, state.duration)
 	end
 
 	state.should_detach = true

@@ -81,11 +81,11 @@ require("undo-glow").setup({
 ---@alias AnimationType "fade" | "blink" | "pulse" | "jitter"
 
 ---@class UndoGlow.Config
----@field duration? number In ms
----@field animation? boolean
+---@field duration? number Highlight duration in ms
+---@field animation? boolean Turn on or off for animation
 ---@field animation_type? AnimationType
 ---@field easing? function A function that takes a number (0-1) and returns a number (0-1) for easing.
----@field fps? number
+---@field fps? number Normally either 60 / 120, up to you
 ---@field highlights? table<"undo" | "redo" | "yank" | "paste" | "search" | "comment", { hl: string, hl_color: UndoGlow.HlColor }>
 
 ---@class UndoGlow.HlColor
@@ -96,7 +96,7 @@ require("undo-glow").setup({
  animation = true, -- whether to turn on or off for animation
  animation_type = "fade", -- default to "fade"
  fps = 120, -- change the fps, normally either 60 / 120, but it can be whatever number
- easing = M.easing.ease_in_out_cubic, -- see more at easing section on how to change and create your own
+ easing = require("undo-glow").easing.ease_in_out_cubic, -- see more at easing section on how to change and create your own
  highlights = { -- Any keys other than these defaults will be ignored and omitted
   undo = {
    hl = "UgUndo", -- This will not set new hlgroup, if it's not "UgUndo", we will try to grab the colors of specified hlgroup and apply to "UgUndo"
@@ -285,10 +285,17 @@ Snacks.util.set_hl({ UgYank = { bg = "#CBA6F7", fg = "#11111B" } }, { default = 
 
 Each builtin commands takes in optional `opts` take allows to configure **color** and **animation** type per command. And the opts type as below:
 
+! [!note]
+> Each animation related options can be configured separately. If you don't, it will fallback to the default from your configuration.
+
 ```lua
 ---@class UndoGlow.CommandOpts
 ---@field hlgroup? string
+---@field duration? number Highlight duration in ms
+---@field animation? boolean Turn on or off for animation
 ---@field animation_type? AnimationType
+---@field easing? function A function that takes a number (0-1) and returns a number (0-1) for easing.
+---@field fps? number Normally either 60 / 120, up to you
 ```
 
 #### Undo Highlights
@@ -430,7 +437,11 @@ vim.keymap.set("n", "gcc", require("undo-glow").comment_line, { expr = true, des
 ```lua
 ---@class UndoGlow.HighlightChanges
 ---@field hlgroup? string -- Default to `UgUndo`
----@field animation_type? AnimationType -- Overwrites animation_type from config
+---@field duration? number Highlight duration in ms
+---@field animation? boolean Turn on or off for animation
+---@field animation_type? AnimationType
+---@field easing? function A function that takes a number (0-1) and returns a number (0-1) for easing.
+---@field fps? number Normally either 60 / 120, up to you
 
 ---@param opts UndoGlow.HighlightChanges
 require("undo-glow").highlight_changes(opts) -- API to highlight text changes
@@ -461,6 +472,10 @@ function undo(opts)
  require("undo-glow").highlight_changes({
   hlgroup = opts.hlgroup or "UgUndo",
   animation_type = opts.animation_type,
+  animation = opts.animation,
+  duration = opts.duration,
+  easing = opts.easing,
+  fps = opts.fps,
  })
  vim.cmd("undo")
 end
@@ -475,7 +490,11 @@ end
 ```lua
 ---@class UndoGlow.HighlightRegion
 ---@field hlgroup? string
----@field animation_type? AnimationType -- Overwrites animation_type from config
+---@field duration? number Highlight duration in ms
+---@field animation? boolean Turn on or off for animation
+---@field animation_type? AnimationType
+---@field easing? function A function that takes a number (0-1) and returns a number (0-1) for easing.
+---@field fps? number Normally either 60 / 120, up to you
 ---@field s_row integer Start row
 ---@field s_col integer Start column
 ---@field e_row integer End row
@@ -523,6 +542,10 @@ function yank(opts)
  require("undo-glow").highlight_region({
   hlgroup = opts.hlgroup or "UgYank",
   animation_type = opts.animation_type,
+  animation = opts.animation,
+  duration = opts.duration,
+  easing = opts.easing,
+  fps = opts.fps,
   s_row = pos[2] - 1,
   s_col = pos[3] - 1,
   e_row = pos2[2] - 1,
@@ -570,7 +593,7 @@ vim.api.nvim_create_autocmd({ "BufReadPost", "TextChanged" }, {
 
 ### Animations
 
-**undo-glow.nvim** comes with 4 default animations out of the box and can be toggled on and off.
+**undo-glow.nvim** comes with 4 default animations out of the box and can be toggled on and off and swap globally or per action (incuding your custom one). If you wish to, every different action can have different animation configurations.
 
 ```lua
 ---@alias AnimationType "fade" | "blink" | "pulse" | "jitter"
