@@ -62,6 +62,12 @@ YANK ~
 <https://github.com/user-attachments/assets/1c55324a-1a1a-4bdd-b766-cc7ad4972b1b>
 
 
+PASTE ~
+
+
+<https://github.com/user-attachments/assets/cc32dfa7-1c00-4f07-885a-7ca4c9ae6649>
+
+
 SEARCH ~
 
 
