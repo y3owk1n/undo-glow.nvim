@@ -31,6 +31,10 @@ This project is feature complete at this point. The rest of the commits will be 
 
 <https://github.com/user-attachments/assets/1c55324a-1a1a-4bdd-b766-cc7ad4972b1b>
 
+### Paste
+
+<https://github.com/user-attachments/assets/cc32dfa7-1c00-4f07-885a-7ca4c9ae6649>
+
 ### Search
 
 <https://github.com/user-attachments/assets/9c99e635-e4d7-490a-8ae6-ca2749656f57>
