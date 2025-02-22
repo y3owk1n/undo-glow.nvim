@@ -1,4 +1,4 @@
-*undo-glow.nvim.txt*     For Neovim >= 0.10.0    Last change: 2025 February 22
+*undo-glow.nvim.txt*     For Neovim >= 0.10.0    Last change: 2025 February 23
 
 ==============================================================================
 Table of Contents                           *undo-glow.nvim-table-of-contents*
@@ -260,9 +260,9 @@ as below:
 By setting hlgroup name to other value, the plugin will grab the colors of the
 target hlgroup and apply to it. For example:
 
+! [!note] > If you specify a hl other than the default, you no longer need to
+specify the hl_color key, as it will be ignored.
 
-  [!note] If you specify a hl other than the default, you no longer need to
-  specify the hl_color key, as it will be ignored.
 >lua
     -- ✅ Valid
     {
@@ -668,7 +668,7 @@ CHANGING EASING FROM CONFIGURATION WITH BUILTIN
     -- configuration opts
     {
      --- rest of configurations
-     easing = require("undo-glow").easing.ease_in_sine()
+     easing = require("undo-glow").easing.ease_in_sine
      --- rest of configurations
     }
 <

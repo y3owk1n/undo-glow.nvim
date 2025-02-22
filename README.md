@@ -224,7 +224,7 @@ You can easily override the colors from configuration `opts`. And the types are 
 
 By setting hlgroup name to other value, the plugin will grab the colors of the target hlgroup and apply to it. For example:
 
-> [!note]
+! [!note]
 > If you specify a hl other than the default, you no longer need to specify the hl_color key, as it will be ignored.
 
 ```lua
@@ -638,7 +638,7 @@ require("undo-glow").easing.ease_in_sine()
 -- configuration opts
 {
  --- rest of configurations
- easing = require("undo-glow").easing.ease_in_sine()
+ easing = require("undo-glow").easing.ease_in_sine
  --- rest of configurations
 }
 ```
