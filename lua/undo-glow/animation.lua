@@ -202,49 +202,4 @@ function M.animate.pulse(opts)
 	end)
 end
 
--- Animate or clear highlights after a duration
----@param bufnr integer Buffer number
----@param state UndoGlow.State State
----@param hlgroup string Unique highlight group name
----@param extmark_id integer
----@param start_bg string The starting background color (hex)
----@param start_fg? string The starting foreground color (hex)
----@param config UndoGlow.Config
-function M.clear_highlights(
-	bufnr,
-	state,
-	hlgroup,
-	extmark_id,
-	start_bg,
-	start_fg,
-	config
-)
-	local end_bg = colors.get_normal_bg()
-	local end_fg = colors.get_normal_fg()
-
-	if config.animation then
-		local animation_opts = {
-			bufnr = bufnr,
-			hlgroup = hlgroup,
-			extmark_id = extmark_id,
-			start_bg = colors.hex_to_rgb(start_bg),
-			end_bg = colors.hex_to_rgb(end_bg),
-			start_fg = start_fg and colors.hex_to_rgb(start_fg) or nil,
-			end_fg = start_fg and colors.hex_to_rgb(end_fg) or nil,
-			duration = config.duration,
-			config = config,
-		}
-
-		M.animate[state.animation_type](animation_opts)
-	else
-		vim.defer_fn(function()
-			if vim.api.nvim_buf_is_valid(bufnr) then
-				vim.api.nvim_buf_del_extmark(bufnr, utils.ns, extmark_id)
-			end
-		end, config.duration)
-	end
-
-	state.should_detach = true
-end
-
 return M
