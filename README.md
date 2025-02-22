@@ -64,7 +64,7 @@ require("undo-glow").setup({
 })
 ```
 
-## ⚙️Configuration
+## ⚙️ Configuration
 
 > [!important]
 > Make sure to run `:checkhealth undo-glow` if something isn't working properly
@@ -536,7 +536,7 @@ Other than the defaults, you can also create your own easing function like below
 }
 ```
 
-## Contributing
+## 🤝 Contributing
 
 Read the documentation carefully before submitting any issue.
 

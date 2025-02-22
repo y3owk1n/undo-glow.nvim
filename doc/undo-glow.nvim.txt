@@ -103,7 +103,7 @@ Ifyou are using other package managers you need to call `setup`
 CONFIGURATION                    *undo-glow.nvim-undo-glow.nvim-configuration*
 
 
-  [!important] Makesure to run `:checkhealth undo-glow` if something isn’t
+  [!important] Make sure to run `:checkhealth undo-glow` if something isn’t
   working properly
 **undo-glow.nvim** is highly configurable. Expand to see the list of all the
 default options below.
