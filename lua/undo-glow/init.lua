@@ -4,11 +4,20 @@ local M = {}
 ---@class UndoGlow.Config : UndoFlow.Config.Animation
 ---@field highlights? table<"undo" | "redo" | "yank" | "paste" | "search" | "comment", { hl: string, hl_color: UndoGlow.HlColor }>
 
+---@class UndoGlow.EasingOpts
+---@field time integer Elapsed time
+---@field begin? integer Begin
+---@field change? integer Change == ending - beginning
+---@field duration? integer Duration (total time)
+---@field amplitude? integer Amplitude
+---@field period? integer Period
+---@field overshoot? integer Overshoot
+
 ---@class UndoFlow.Config.Animation
 ---@field duration? number Highlight duration in ms
 ---@field animation? boolean Turn on or off for animation
 ---@field animation_type? AnimationType
----@field easing? fun(t: number) A function that takes a number (0-1) and returns a number (0-1) for easing.
+---@field easing? fun(opts: UndoGlow.EasingOpts): integer A function that computes easing.
 ---@field fps? number Normally either 60 / 120, up to you
 
 ---@class UndoGlow.HlColor

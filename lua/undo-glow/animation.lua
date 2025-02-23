@@ -44,7 +44,12 @@ function M.animate.fade(opts)
 		local now = vim.uv.hrtime()
 		local elapsed = (now - start_time) / 1e6 -- convert from ns to ms
 		local t = math.min(elapsed / opts.duration, 1)
-		local eased = opts.state.easing(t)
+		local eased = opts.state.easing({
+			time = t,
+			begin = 0,
+			change = 1,
+			duration = 1,
+		})
 
 		local blended_bg = colors.blend_color(opts.start_bg, opts.end_bg, eased)
 		local blended_fg = opts.start_fg
@@ -169,7 +174,12 @@ function M.animate.pulse(opts)
 		local now = vim.uv.hrtime()
 		local elapsed = (now - start_time) / 1e6 -- convert ns to ms
 		local t = 0.5 * (1 - math.cos(2 * math.pi * (elapsed / opts.duration)))
-		local eased = opts.state.easing(t)
+		local eased = opts.state.easing({
+			time = t,
+			begin = 0,
+			change = 1,
+			duration = 1,
+		})
 
 		local blended_bg = colors.blend_color(opts.start_bg, opts.end_bg, eased)
 		local blended_fg = opts.start_fg
