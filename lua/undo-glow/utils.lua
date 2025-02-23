@@ -102,7 +102,7 @@ function M.handle_highlight(opts)
 		-- If animation is off, use the existing hlgroup else use unique hlgroups.
 		-- Unique hlgroups is needed for animated version, because we will be changing the hlgroup colors during
 		-- animation.
-		local unique_hlgroup = opts.state.animation
+		local unique_hlgroup = opts.state.animation.enabled
 				and M.get_unique_hlgroup(opts.state.current_hlgroup)
 			or opts.state.current_hlgroup
 
@@ -241,7 +241,7 @@ function M.animate_or_clear_highlights(
 	local end_bg = color.get_normal_bg()
 	local end_fg = color.get_normal_fg()
 
-	if state.animation then
+	if state.animation.enabled then
 		---@type UndoGlow.Animation
 		local animation_opts = {
 			bufnr = bufnr,
@@ -251,12 +251,12 @@ function M.animate_or_clear_highlights(
 			end_bg = color.hex_to_rgb(end_bg),
 			start_fg = start_fg and color.hex_to_rgb(start_fg) or nil,
 			end_fg = start_fg and color.hex_to_rgb(end_fg) or nil,
-			duration = state.duration,
+			duration = state.animation.duration,
 			config = config,
 			state = state,
 		}
 
-		require("undo-glow.animation").animate[state.animation_type](
+		require("undo-glow.animation").animate[state.animation.animation_type](
 			animation_opts
 		)
 	else
@@ -268,7 +268,7 @@ function M.animate_or_clear_highlights(
 					extmark_id
 				)
 			end
-		end, state.duration)
+		end, state.animation.duration)
 	end
 
 	state.should_detach = true
@@ -280,11 +280,13 @@ end
 function M.merge_command_opts(hlgroup, opts)
 	opts = vim.tbl_extend("force", {
 		hlgroup = hlgroup,
-		animation_type = nil,
-		animation = nil,
-		duration = nil,
-		easing = nil,
-		fps = nil,
+		animation = {
+			enabled = nil,
+			animation_type = nil,
+			duration = nil,
+			easing = nil,
+			fps = nil,
+		},
 	}, opts or {})
 
 	return opts
@@ -297,11 +299,14 @@ function M.create_state(opts, config)
 	return {
 		should_detach = false,
 		current_hlgroup = opts.hlgroup or "UgUndo",
-		animation_type = opts.animation_type or config.animation_type,
-		animation = opts.animation,
-		duration = opts.duration,
-		easing = opts.easing,
-		fps = opts.fps,
+		animation = {
+			animation_type = opts.animation.animation_type
+				or config.animation.animation_type,
+			enabled = opts.animation.enabled,
+			duration = opts.animation.duration,
+			easing = opts.animation.easing,
+			fps = opts.animation.fps,
+		},
 	}
 end
 
@@ -309,23 +314,23 @@ end
 ---@return UndoGlow.HandleHighlight
 function M.validate_state_for_highlight(opts)
 	-- Check animation status and fallback to global
-	if type(opts.state.animation) ~= "boolean" then
-		opts.state.animation = opts.config.animation
+	if type(opts.state.animation.enabled) ~= "boolean" then
+		opts.state.animation.enabled = opts.config.animation.enabled
 	end
 
 	-- Check duration and fallback to global
-	if not opts.state.duration then
-		opts.state.duration = opts.config.duration
+	if not opts.state.animation.duration then
+		opts.state.animation.duration = opts.config.animation.duration
 	end
 
 	-- Check easing and fallback to global
-	if not opts.state.easing then
-		opts.state.easing = opts.config.easing
+	if not opts.state.animation.easing then
+		opts.state.animation.easing = opts.config.animation.easing
 	end
 
 	-- Check fps and fallback to global
-	if not opts.state.fps then
-		opts.state.fps = opts.config.fps
+	if not opts.state.animation.fps then
+		opts.state.animation.fps = opts.config.animation.fps
 	end
 
 	return opts

@@ -1,7 +1,8 @@
 local M = {}
 ---@alias AnimationType "fade" | "blink" | "pulse" | "jitter"
 
----@class UndoGlow.Config : UndoFlow.Config.Animation
+---@class UndoGlow.Config
+---@field animation? UndoGlow.Config.Animation
 ---@field highlights? table<"undo" | "redo" | "yank" | "paste" | "search" | "comment", { hl: string, hl_color: UndoGlow.HlColor }>
 
 ---@class UndoGlow.EasingOpts
@@ -13,9 +14,9 @@ local M = {}
 ---@field period? integer Period
 ---@field overshoot? integer Overshoot
 
----@class UndoFlow.Config.Animation
+---@class UndoGlow.Config.Animation
+---@field enabled? boolean Turn on or off for animation
 ---@field duration? number Highlight duration in ms
----@field animation? boolean Turn on or off for animation
 ---@field animation_type? AnimationType
 ---@field easing? fun(opts: UndoGlow.EasingOpts): integer A function that computes easing.
 ---@field fps? number Normally either 60 / 120, up to you
@@ -24,17 +25,19 @@ local M = {}
 ---@field bg string
 ---@field fg? string
 
----@class UndoGlow.State : UndoFlow.Config.Animation
+---@class UndoGlow.State
 ---@field current_hlgroup string
 ---@field should_detach boolean
+---@field animation? UndoGlow.Config.Animation
 
 ---@class UndoGlow.RGBColor
 ---@field r integer Red (0-255)
 ---@field g integer Green (0-255)
 ---@field b integer Blue (0-255)
 
----@class UndoGlow.CommandOpts : UndoFlow.Config.Animation
+---@class UndoGlow.CommandOpts
 ---@field hlgroup? string
+---@field animation? UndoGlow.Config.Animation
 
 ---@class UndoGlow.HighlightChanges : UndoGlow.CommandOpts
 

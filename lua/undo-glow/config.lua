@@ -1,10 +1,12 @@
 ---@type UndoGlow.Config
 local config = {
-	duration = 500,
-	animation = true,
-	animation_type = "fade",
-	easing = require("undo-glow.easing").in_out_cubic,
-	fps = 120,
+	animation = {
+		enabled = false,
+		duration = 100,
+		animation_type = "fade",
+		fps = 120,
+		easing = require("undo-glow.easing").in_out_cubic,
+	},
 	highlights = {
 		undo = {
 			hl = "UgUndo",
