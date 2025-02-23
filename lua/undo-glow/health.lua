@@ -157,6 +157,38 @@ function M.check()
 			"No interfering TextYankPost autocmd found (excluding those that use undo-glow)."
 		)
 	end
+
+	separator("Config Checks")
+	local config = require("undo-glow").config
+
+	if config.animation.enabled then
+		report_status("ok", "Animation is enabled in the configuration.")
+	else
+		report_status("warn", "Animation is disabled in the configuration.")
+	end
+
+	if config.animation.enabled and config.animation.duration < 300 then
+		report_status(
+			"warn",
+			"Duration is less than 300, it might be too fast for an animation"
+		)
+	elseif
+		config.animation.enabled == false
+		and config.animation.duration > 300
+	then
+		report_status(
+			"warn",
+			"Duration is more than 300, the highlights might be too slow!"
+		)
+	else
+		report_status("ok", "Animation duration seems reasonable")
+	end
+
+	if config.animation.enabled and config.animation.fps < 30 then
+		report_status("warn", "FPS less than 30 might be visually unappealling")
+	elseif config.animation.enabled and config.animation.fps > 30 then
+		report_status("ok", "FPS is reasonably set")
+	end
 end
 
 return M
