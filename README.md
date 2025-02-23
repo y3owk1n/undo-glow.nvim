@@ -2,8 +2,8 @@
 
 **undo-glow.nvim** is a Neovim plugin that adds a visual "glow" effect to your neovim operations. It highlights the exact region that’s changed, giving you immediate visual feedback on your edits. You can even enable glow for non-changing texts!
 
-> [!important]
-> This plugin does not setup or hijack the keymaps but provides api for you to hook into anywhere in your config.
+> [!note]
+> This plugin does not do anything on installation, no keymaps or autocmd are created by default. You need to do it your own.
 
 ## ✨ Features
 
@@ -11,11 +11,21 @@
 - **Visual Feedback For Non-changes:** Highlights any region from an operation (E.g. search next, search prev, search star, yank).
 - **Simple API For Custom Highlights:** Simple API to create and attach your own commands that glows.
 - **Customizable Appearance:** Easily change the glow duration, highlight colors and animations.
-- **Lightweight & Fast:** Uses Neovim's native APIs for efficient real-time highlighting with zero dependencies.
+- **Zero Dependencies:** Uses Neovim's native APIs for efficient real-time highlighting with zero dependencies.
 
 ## 🔥 Status
 
 This project is feature complete at this point. The rest of the commits will be focusing on bug fixes, optimizations and additional commands that fits in the scope of this project.
+
+## 📝 Differences from other similar plugins
+
+There are alot of similars plugins that you can simply find from github. The main differences of **undo-glow.nvim** from the rest are:
+
+- Configurable animation and colors everywhere (Globally or per action, including your custom actions)
+- Expose APIs for you to even create your own actions that can highlight
+- Create custom easings if the builtin easings are not enough for you
+- Do not hijack your keymaps and silently creates autocmd (Do it your own in your config)
+- You can use it as a library to create other plugins, since we are exposing the core APIs that are handling highlights
 
 ## 👀 Previews
 
