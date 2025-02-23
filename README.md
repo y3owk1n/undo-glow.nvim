@@ -322,8 +322,8 @@ Each builtin commands takes in optional `opts` take allows to configure **color*
 ---@field animation? UndoGlow.Config.Animation
 
 ---@class UndoGlow.Config.Animation
+---@field enabled? boolean Turn on or off for animation
 ---@field duration? number Highlight duration in ms
----@field animation? boolean Turn on or off for animation
 ---@field animation_type? AnimationType
 ---@field easing? fun(opts: UndoGlow.EasingOpts): integer A function that computes easing.
 ---@field fps? number Normally either 60 / 120, up to you
