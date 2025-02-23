@@ -86,7 +86,7 @@ local callback = require("undo-glow.callback")
 local utils = require("undo-glow.utils")
 
 -- Helper to attach to a buffer with a local state.
----@param opts UndoGlow.HighlightChanges|UndoGlow.CommandOpts
+---@param opts? UndoGlow.HighlightChanges|UndoGlow.CommandOpts
 function M.highlight_changes(opts)
 	local bufnr = vim.api.nvim_get_current_buf()
 

@@ -292,10 +292,11 @@ function M.merge_command_opts(hlgroup, opts)
 	return opts
 end
 
----@param opts UndoGlow.CommandOpts
+---@param opts? UndoGlow.CommandOpts
 ---@param config UndoGlow.Config
 ---@return UndoGlow.State
 function M.create_state(opts, config)
+	opts = opts or { animation = {} }
 	return {
 		should_detach = false,
 		current_hlgroup = opts.hlgroup or "UgUndo",
