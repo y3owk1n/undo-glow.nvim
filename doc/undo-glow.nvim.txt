@@ -125,9 +125,18 @@ DEFAULT OPTIONS ~
     ---@field duration? number Highlight duration in ms
     ---@field animation? boolean Turn on or off for animation
     ---@field animation_type? AnimationType
-    ---@field easing? function A function that takes a number (0-1) and returns a number (0-1) for easing.
+    ---@field easing? fun(opts: UndoGlow.EasingOpts): integer A function that computes easing.
     ---@field fps? number Normally either 60 / 120, up to you
     ---@field highlights? table<"undo" | "redo" | "yank" | "paste" | "search" | "comment", { hl: string, hl_color: UndoGlow.HlColor }>
+    
+    ---@class UndoGlow.EasingOpts
+    ---@field time integer Elapsed time
+    ---@field begin? integer Begin
+    ---@field change? integer Change == ending - beginning
+    ---@field duration? integer Duration (total time)
+    ---@field amplitude? integer Amplitude
+    ---@field period? integer Period
+    ---@field overshoot? integer Overshoot
     
     ---@class UndoGlow.HlColor
     ---@field bg string Background color
@@ -137,7 +146,7 @@ DEFAULT OPTIONS ~
      animation = true, -- whether to turn on or off for animation
      animation_type = "fade", -- default to "fade"
      fps = 120, -- change the fps, normally either 60 / 120, but it can be whatever number
-     easing = require("undo-glow").easing.ease_in_out_cubic, -- see more at easing section on how to change and create your own
+     easing = require("undo-glow").easing.in_out_cubic, -- see more at easing section on how to change and create your own
      highlights = { -- Any keys other than these defaults will be ignored and omitted
       undo = {
        hl = "UgUndo", -- This will not set new hlgroup, if it's not "UgUndo", we will try to grab the colors of specified hlgroup and apply to "UgUndo"
@@ -336,7 +345,7 @@ Each builtin commands takes in optional `opts` take allows to configure
     ---@field duration? number Highlight duration in ms
     ---@field animation? boolean Turn on or off for animation
     ---@field animation_type? AnimationType
-    ---@field easing? function A function that takes a number (0-1) and returns a number (0-1) for easing.
+    ---@field easing? fun(opts: UndoGlow.EasingOpts): integer A function that computes easing.
     ---@field fps? number Normally either 60 / 120, up to you
 <
 
@@ -455,7 +464,7 @@ HIGHLIGHT TEXT CHANGES
     ---@field duration? number Highlight duration in ms
     ---@field animation? boolean Turn on or off for animation
     ---@field animation_type? AnimationType
-    ---@field easing? function A function that takes a number (0-1) and returns a number (0-1) for easing.
+    ---@field easing? fun(opts: UndoGlow.EasingOpts): integer A function that computes easing.
     ---@field fps? number Normally either 60 / 120, up to you
     
     ---@param opts UndoGlow.HighlightChanges
@@ -497,7 +506,7 @@ HIGHLIGHT ANY REGION OF YOUR CHOICE
     ---@field duration? number Highlight duration in ms
     ---@field animation? boolean Turn on or off for animation
     ---@field animation_type? AnimationType
-    ---@field easing? function A function that takes a number (0-1) and returns a number (0-1) for easing.
+    ---@field easing? fun(opts: UndoGlow.EasingOpts): integer A function that computes easing.
     ---@field fps? number Normally either 60 / 120, up to you
     ---@field s_row integer Start row
     ---@field s_col integer Start column
@@ -648,17 +657,59 @@ appearance.
 
 EASING ~
 
-**undo-glow.nvim** comes with 4 default easing options as below. Feel free to
-send PRs for more interesting easings.
+**undo-glow.nvim** comes with a handful of default easing options as below
+(Thanks to EmmanuelOga/easing) <https://github.com/EmmanuelOga/easing>. Feel
+free to send PRs for more interesting easings.
 
+
+  [!note] Not all animation supports easing. Only `pulse` and `fade (default)`
+  supports easing. If you use other animation and set easing, it will just get
+  ignored.
 
 BUILTIN EASINGS
 
 >lua
-    require("undo-glow").easing.ease_in_out_cubic() -- default
-    require("undo-glow").easing.ease_out_quad()
-    require("undo-glow").easing.ease_out_cubic()
-    require("undo-glow").easing.ease_in_sine()
+    require("undo-glow").easing.linear
+    require("undo-glow").easing.in_quad
+    require("undo-glow").easing.out_quad
+    require("undo-glow").easing.in_out_quad
+    require("undo-glow").easing.out_in_quad
+    require("undo-glow").easing.in_cubic
+    require("undo-glow").easing.out_cubic
+    require("undo-glow").easing.in_out_cubic -- default
+    require("undo-glow").easing.out_in_cubic
+    require("undo-glow").easing.in_quart
+    require("undo-glow").easing.out_quart
+    require("undo-glow").easing.in_out_quart
+    require("undo-glow").easing.out_in_quart
+    require("undo-glow").easing.in_quint
+    require("undo-glow").easing.out_quint
+    require("undo-glow").easing.in_out_quint
+    require("undo-glow").easing.out_in_quint
+    require("undo-glow").easing.in_sine
+    require("undo-glow").easing.out_sine
+    require("undo-glow").easing.in_out_sine
+    require("undo-glow").easing.out_in_sine
+    require("undo-glow").easing.in_expo
+    require("undo-glow").easing.out_expo
+    require("undo-glow").easing.in_out_expo
+    require("undo-glow").easing.out_in_expo
+    require("undo-glow").easing.in_circ
+    require("undo-glow").easing.out_circ
+    require("undo-glow").easing.in_out_circ
+    require("undo-glow").easing.out_in_circ
+    require("undo-glow").easing.in_elastic
+    require("undo-glow").easing.out_elastic
+    require("undo-glow").easing.in_out_elastic
+    require("undo-glow").easing.out_in_elastic
+    require("undo-glow").easing.in_back
+    require("undo-glow").easing.out_back
+    require("undo-glow").easing.in_out_back
+    require("undo-glow").easing.out_in_back
+    require("undo-glow").easing.out_bounce
+    require("undo-glow").easing.in_bounce
+    require("undo-glow").easing.in_out_bounce
+    require("undo-glow").easing.out_in_bounce
 <
 
 
@@ -674,21 +725,69 @@ CHANGING EASING FROM CONFIGURATION WITH BUILTIN
 <
 
 
+  [!warning] Due to how lazy loading works, you might not be able to import
+  `easing` functions from **undo-glow.nvim** at opts. If that’s the case, you
+  can try to import them at the `config` key before calling the `setup` function.
+  See below.
+>lua
+    {
+     "y3owk1n/undo-glow.nvim",
+     version = "*",
+     event = { "VeryLazy" },
+     ---@type UndoGlow.Config
+     opts = {},
+     ---@param _ any
+     ---@param opts UndoGlow.Config
+     config = function(_, opts)
+      local undo_glow = require("undo-glow")
+      opts.easing = require("undo-glow").easing.ease_in_sine -- Set the easing function here
+      undo_glow.setup(opts)
+     end
+    },
+<
+
+
+OVERRIDING EASING PROPERTIES
+
+
+  [!note] The easing function should always return an integer!
+>lua
+    ---@class UndoGlow.EasingOpts
+    ---@field time integer Elapsed time
+    ---@field begin? integer Begin
+    ---@field change? integer Change == ending - beginning
+    ---@field duration? integer Duration (total time)
+    ---@field amplitude? integer Amplitude
+    ---@field period? integer Period
+    ---@field overshoot? integer Overshoot
+    
+    ---@param easing_opts UndoGlow.EasingOpts
+    ---@return integer
+    opts.easing = function(easing_opts)
+     -- Override any properties you like
+     -- You can refer to the source code of what opts are taking in from each easing function.
+     easing_opts.duration = 2
+     -- Then pass the `easing_opts` back to the function
+     return require("undo-glow").easing.in_back(easing_opts)
+    end
+<
+
+
 CUSTOM EASING FUNCTIONS
 
 Other than the defaults, you can also create your own easing function like
 below.
 
 >lua
-    {
-     --- rest of configurations
-     ---@param t number (0-1) Interpolation factor
-     ---@return number
-     easing = function(t)
-      return 1 - math.cos((t * math.pi) / 2)
-     end,
-     --- rest of configurations
-    }
+    ---@param easing_opts UndoGlow.EasingOpts
+    ---@return integer
+    function my_custom_easing(easing_opts)
+     easing_opts.begin = 0
+     easing_opts.change = 1
+     easing_opts.duration = 1
+    
+     return easing_opts.change * easing_opts.time / easing_opts.duration + easing_opts.begin
+    end
 <
 
 
