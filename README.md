@@ -81,12 +81,15 @@ require("undo-glow").setup({
 ---@alias AnimationType "fade" | "blink" | "pulse" | "jitter"
 
 ---@class UndoGlow.Config
+---@field animation? UndoGlow.Config.Animation
+---@field highlights? table<"undo" | "redo" | "yank" | "paste" | "search" | "comment", { hl: string, hl_color: UndoGlow.HlColor }>
+
+---@class UndoGlow.Config.Animation
+---@field enabled? boolean Turn on or off for animation
 ---@field duration? number Highlight duration in ms
----@field animation? boolean Turn on or off for animation
 ---@field animation_type? AnimationType
 ---@field easing? fun(opts: UndoGlow.EasingOpts): integer A function that computes easing.
 ---@field fps? number Normally either 60 / 120, up to you
----@field highlights? table<"undo" | "redo" | "yank" | "paste" | "search" | "comment", { hl: string, hl_color: UndoGlow.HlColor }>
 
 ---@class UndoGlow.EasingOpts
 ---@field time integer Elapsed time
@@ -101,11 +104,13 @@ require("undo-glow").setup({
 ---@field bg string Background color
 ---@field fg? string Optional for text color (Without this, it will just remain the existing text color as it is)
 {
- duration = 500, -- in ms
- animation = true, -- whether to turn on or off for animation
- animation_type = "fade", -- default to "fade"
- fps = 120, -- change the fps, normally either 60 / 120, but it can be whatever number
- easing = require("undo-glow").easing.in_out_cubic, -- see more at easing section on how to change and create your own
+ animation = {
+  animation = false, -- whether to turn on or off for animation
+  duration = 100, -- in ms
+  animation_type = "fade", -- default to "fade"
+  fps = 120, -- change the fps, normally either 60 / 120, but it can be whatever number
+  easing = require("undo-glow").easing.in_out_cubic, -- see more at easing section on how to change and create your own
+ },
  highlights = { -- Any keys other than these defaults will be ignored and omitted
   undo = {
    hl = "UgUndo", -- This will not set new hlgroup, if it's not "UgUndo", we will try to grab the colors of specified hlgroup and apply to "UgUndo"
@@ -147,6 +152,10 @@ return {
   event = { "VeryLazy" },
   ---@type UndoGlow.Config
   opts = {
+   animation = {
+    enabled = true,
+    duration = 500,
+   },
    highlights = {
     undo = {
      hl_color = { bg = "#48384B" },
@@ -300,6 +309,9 @@ Each builtin commands takes in optional `opts` take allows to configure **color*
 ```lua
 ---@class UndoGlow.CommandOpts
 ---@field hlgroup? string
+---@field animation? UndoGlow.Config.Animation
+
+---@class UndoGlow.Config.Animation
 ---@field duration? number Highlight duration in ms
 ---@field animation? boolean Turn on or off for animation
 ---@field animation_type? AnimationType
@@ -446,8 +458,11 @@ vim.keymap.set("n", "gcc", require("undo-glow").comment_line, { expr = true, des
 ```lua
 ---@class UndoGlow.HighlightChanges
 ---@field hlgroup? string -- Default to `UgUndo`
+---@field animation? UndoGlow.Config.Animation
+
+---@class UndoGlow.Config.Animation
+---@field enabled? boolean Turn on or off for animation
 ---@field duration? number Highlight duration in ms
----@field animation? boolean Turn on or off for animation
 ---@field animation_type? AnimationType
 ---@field easing? fun(opts: UndoGlow.EasingOpts): integer A function that computes easing.
 ---@field fps? number Normally either 60 / 120, up to you
@@ -492,15 +507,18 @@ end
 ```lua
 ---@class UndoGlow.HighlightRegion
 ---@field hlgroup? string
----@field duration? number Highlight duration in ms
----@field animation? boolean Turn on or off for animation
----@field animation_type? AnimationType
----@field easing? fun(opts: UndoGlow.EasingOpts): integer A function that computes easing.
----@field fps? number Normally either 60 / 120, up to you
+---@field animation? UndoGlow.Config.Animation
 ---@field s_row integer Start row
 ---@field s_col integer Start column
 ---@field e_row integer End row
 ---@field e_col integer End column
+
+---@class UndoGlow.Config.Animation
+---@field enabled? boolean Turn on or off for animation
+---@field duration? number Highlight duration in ms
+---@field animation_type? AnimationType
+---@field easing? fun(opts: UndoGlow.EasingOpts): integer A function that computes easing.
+---@field fps? number Normally either 60 / 120, up to you
 
 --- @param opts UndoGlow.HighlightRegion Options for highlighting the region:
 require("undo-glow").highlight_region(opts) -- API to highlight certain region without text changes
@@ -592,7 +610,13 @@ vim.api.nvim_create_autocmd({ "BufReadPost", "TextChanged" }, {
 
 ### Animations
 
-**undo-glow.nvim** comes with 4 default animations out of the box and can be toggled on and off and swap globally or per action (incuding your custom one). If you wish to, every different action can have different animation configurations.
+> [!note]
+> Animation is `off` by default. You can turn it on in your config with `animation.enabled = true`.
+
+**undo-glow.nvim** comes with 4 default animations out of the box and can be toggled on and off and swap globally or per action (incuding your custom actions).
+
+> [!note]
+> If you wish to, every different action can have different animation configurations.
 
 ```lua
 ---@alias AnimationType "fade" | "blink" | "pulse" | "jitter"
@@ -634,6 +658,9 @@ Rapidly moves or shifts the highlight slightly, giving a shaky or vibrating appe
 
 > [!note]
 > Not all animation supports easing. Only `pulse` and `fade (default)` supports easing. If you use other animation and set easing, it will just get ignored.
+
+> [!warning]
+> Easing wil be ignored if `animation.enabled` is `off`. Make sure you turn it on if you want easing.
 
 #### Builtin easings
 
@@ -695,6 +722,27 @@ require("undo-glow").easing.out_in_bounce
 > [!warning]
 > Due to how lazy loading works, you might not be able to import `easing` functions from **undo-glow.nvim** at opts.
 > If that's the case, you can try to import them at the `config` key before calling the `setup` function. See below.
+
+##### Method 1: Set it in opts with function
+
+```lua
+{
+ "y3owk1n/undo-glow.nvim",
+ version = "*",
+ event = { "VeryLazy" },
+ ---@param _ any
+ ---@param opts UndoGlow.Config
+ opts = function(_, opts)
+  return {
+   animation = {
+    easing = require("undo-glow").easing.out_in_elastic,
+   },
+  }
+ end,
+},
+```
+
+##### Method 2: Set it in config
 
 ```lua
 {

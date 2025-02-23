@@ -9,7 +9,7 @@ M.animate = {}
 ---@param animateFn function
 local function animate_wrapper(opts, animateFn)
 	local start_time = vim.uv.hrtime()
-	local interval = 1000 / opts.state.fps
+	local interval = 1000 / opts.state.animation.fps
 	local timer = vim.uv.new_timer()
 
 	if timer then
@@ -44,7 +44,7 @@ function M.animate.fade(opts)
 		local now = vim.uv.hrtime()
 		local elapsed = (now - start_time) / 1e6 -- convert from ns to ms
 		local t = math.min(elapsed / opts.duration, 1)
-		local eased = opts.state.easing({
+		local eased = opts.state.animation.easing({
 			time = t,
 			begin = 0,
 			change = 1,
@@ -174,7 +174,7 @@ function M.animate.pulse(opts)
 		local now = vim.uv.hrtime()
 		local elapsed = (now - start_time) / 1e6 -- convert ns to ms
 		local t = 0.5 * (1 - math.cos(2 * math.pi * (elapsed / opts.duration)))
-		local eased = opts.state.easing({
+		local eased = opts.state.animation.easing({
 			time = t,
 			begin = 0,
 			change = 1,
