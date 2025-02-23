@@ -619,11 +619,16 @@ ANIMATIONS & EASINGS      *undo-glow.nvim-undo-glow.nvim-animations-&-easings*
 
 ANIMATIONS ~
 
-**undo-glow.nvim** comes with 4 default animations out of the box and can be
-toggled on and off and swap globally or per action (incuding your custom one).
-If you wish to, every different action can have different animation
-configurations.
 
+  [!note] Animation is `off` by default. You can turn it on in your config with
+  `animation.enabled = true`.
+**undo-glow.nvim** comes with 4 default animations out of the box and can be
+toggled on and off and swap globally or per action (incuding your custom
+actions).
+
+
+  [!note] If you wish to, every different action can have different animation
+  configurations.
 >lua
     ---@alias AnimationType "fade" | "blink" | "pulse" | "jitter"
 <
@@ -683,6 +688,9 @@ free to send PRs for more interesting easings.
   [!note] Not all animation supports easing. Only `pulse` and `fade (default)`
   supports easing. If you use other animation and set easing, it will just get
   ignored.
+
+  [!warning] Easing wil be ignored if `animation.enabled` is `off`. Make sure you
+  turn it on if you want easing.
 
 BUILTIN EASINGS
 
