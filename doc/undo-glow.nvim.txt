@@ -159,7 +159,7 @@ DEFAULT OPTIONS ~
     ---@field fg? string Optional for text color (Without this, it will just remain the existing text color as it is)
     {
      animation = {
-      animation = false, -- whether to turn on or off for animation
+      enabled = false, -- whether to turn on or off for animation
       duration = 100, -- in ms
       animation_type = "fade", -- default to "fade"
       fps = 120, -- change the fps, normally either 60 / 120, but it can be whatever number
