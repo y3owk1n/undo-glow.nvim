@@ -477,7 +477,7 @@ vim.keymap.set("n", "gcc", require("undo-glow").comment_line, { expr = true, des
 ---@field easing? fun(opts: UndoGlow.EasingOpts): integer A function that computes easing.
 ---@field fps? number Normally either 60 / 120, up to you
 
----@param opts UndoGlow.HighlightChanges
+---@param opts? UndoGlow.HighlightChanges
 require("undo-glow").highlight_changes(opts) -- API to highlight text changes
 ```
 
