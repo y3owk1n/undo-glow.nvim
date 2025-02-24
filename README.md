@@ -201,7 +201,15 @@ return {
    vim.keymap.set("n", "n", undo_glow.search_next, { noremap = true, desc = "Search next with highlight" })
    vim.keymap.set("n", "N", undo_glow.search_prev, { noremap = true, desc = "Search previous with highlight" })
    vim.keymap.set("n", "*", undo_glow.search_star, { noremap = true, desc = "Search * with highlight" })
-   vim.keymap.set({ "n", "x" }, "gc", undo_glow.comment, { expr = true, noremap = true, desc = "Toggle comment with highlight" })
+
+   vim.keymap.set({ "n", "x" }, "gc", function()
+    -- Restore cursor after comment
+    local pos = vim.fn.getpos(".")
+    vim.schedule(function()
+     vim.fn.setpos(".", pos)
+    end)
+    return undo_glow.comment()
+   end, { expr = true, noremap = true, desc = "Toggle comment with highlight" })
 
    vim.keymap.set("o", "gc", undo_glow.comment_textobject, { noremap = true, desc = "Comment textobject with highlight" })
 
