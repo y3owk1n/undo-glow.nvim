@@ -4,9 +4,6 @@ local counter = 0 -- For unique highlight groups
 
 M.ns = vim.api.nvim_create_namespace("undo-glow")
 
-local color = require("undo-glow.color")
-local highlight = require("undo-glow.highlight")
-
 ---@param base string
 ---@return string
 function M.get_unique_hlgroup(base)
@@ -109,9 +106,12 @@ function M.handle_highlight(opts)
 		-- TODO: Think of any other way that don't need to follow links or faster
 		-- Follow links if exists and get the actual color code for bg and fg
 		local current_hlgroup_detail =
-			highlight.resolve_hlgroup(opts.state.current_hlgroup)
+			require("undo-glow.highlight").resolve_hlgroup(
+				opts.state.current_hlgroup
+			)
 
-		local init_color = color.init_colors(current_hlgroup_detail)
+		local init_color =
+			require("undo-glow.color").init_colors(current_hlgroup_detail)
 
 		local extmark_id = M.highlight_range(
 			opts.bufnr,
@@ -238,8 +238,8 @@ function M.animate_or_clear_highlights(
 	start_fg,
 	config
 )
-	local end_bg = color.get_normal_bg()
-	local end_fg = color.get_normal_fg()
+	local end_bg = require("undo-glow.color").get_normal_bg()
+	local end_fg = require("undo-glow.color").get_normal_fg()
 
 	if state.animation.enabled then
 		---@type UndoGlow.Animation
@@ -247,10 +247,13 @@ function M.animate_or_clear_highlights(
 			bufnr = bufnr,
 			hlgroup = hlgroup,
 			extmark_id = extmark_id,
-			start_bg = color.hex_to_rgb(start_bg),
-			end_bg = color.hex_to_rgb(end_bg),
-			start_fg = start_fg and color.hex_to_rgb(start_fg) or nil,
-			end_fg = start_fg and color.hex_to_rgb(end_fg) or nil,
+			start_bg = require("undo-glow.color").hex_to_rgb(start_bg),
+			end_bg = require("undo-glow.color").hex_to_rgb(end_bg),
+			start_fg = start_fg and require("undo-glow.color").hex_to_rgb(
+				start_fg
+			) or nil,
+			end_fg = start_fg and require("undo-glow.color").hex_to_rgb(end_fg)
+				or nil,
 			duration = state.animation.duration,
 			config = config,
 			state = state,

@@ -99,7 +99,11 @@ function M.setup(user_config)
 
 	for key, highlight in pairs(M.config.highlights) do
 		local target = target_map[key]
-		highlights.setup_highlight(target, highlight.hl, highlight.hl_color)
+		require("undo-glow.highlight").setup_highlight(
+			target,
+			highlight.hl,
+			highlight.hl_color
+		)
 	end
 end
 

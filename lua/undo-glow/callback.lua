@@ -1,5 +1,3 @@
-local utils = require("undo-glow.utils")
-
 local M = {}
 
 --- Callback to track changes
@@ -63,7 +61,7 @@ function M.on_bytes_wrapper(
 			e_col = end_col,
 		}
 
-		utils.handle_highlight(opts)
+		require("undo-glow.utils").handle_highlight(opts)
 	end)
 	return false
 end
