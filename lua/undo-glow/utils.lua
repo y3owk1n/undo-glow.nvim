@@ -296,17 +296,18 @@ end
 ---@param config UndoGlow.Config
 ---@return UndoGlow.State
 function M.create_state(opts, config)
-	opts = opts or { animation = {} }
+	opts = opts or {}
+	opts.animation = opts.animation or {}
 	return {
 		should_detach = false,
 		current_hlgroup = opts.hlgroup or "UgUndo",
 		animation = {
 			animation_type = opts.animation.animation_type
 				or config.animation.animation_type,
-			enabled = opts.animation.enabled,
-			duration = opts.animation.duration,
-			easing = opts.animation.easing,
-			fps = opts.animation.fps,
+			enabled = opts.animation.enabled or nil,
+			duration = opts.animation.duration or nil,
+			easing = opts.animation.easing or nil,
+			fps = opts.animation.fps or nil,
 		},
 	}
 end
