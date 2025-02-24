@@ -1,6 +1,3 @@
-local colors = require("undo-glow.color")
-local utils = require("undo-glow.utils")
-
 local M = {}
 
 M.animate = {}
@@ -51,10 +48,18 @@ function M.animate.fade(opts)
 			duration = 1,
 		})
 
-		local blended_bg = colors.blend_color(opts.start_bg, opts.end_bg, eased)
+		local blended_bg = require("undo-glow.color").blend_color(
+			opts.start_bg,
+			opts.end_bg,
+			eased
+		)
 		local blended_fg = opts.start_fg
 				and opts.end_fg
-				and colors.blend_color(opts.start_fg, opts.end_fg, eased)
+				and require("undo-glow.color").blend_color(
+					opts.start_fg,
+					opts.end_fg,
+					eased
+				)
 			or nil
 
 		local hl_opts = { bg = blended_bg }
@@ -72,7 +77,7 @@ function M.animate.fade(opts)
 			if vim.api.nvim_buf_is_valid(opts.bufnr) and opts.extmark_id then
 				vim.api.nvim_buf_del_extmark(
 					opts.bufnr,
-					utils.ns,
+					require("undo-glow.utils").ns,
 					opts.extmark_id
 				)
 			end
@@ -96,7 +101,7 @@ function M.animate.blink(opts)
 			if vim.api.nvim_buf_is_valid(opts.bufnr) and opts.extmark_id then
 				vim.api.nvim_buf_del_extmark(
 					opts.bufnr,
-					utils.ns,
+					require("undo-glow.utils").ns,
 					opts.extmark_id
 				)
 			end
@@ -108,15 +113,18 @@ function M.animate.blink(opts)
 		local phase = (elapsed % blink_period) < (blink_period / 2)
 
 		if phase then
-			local hl_opts = { bg = colors.rgb_to_hex(opts.start_bg) }
+			local hl_opts =
+				{ bg = require("undo-glow.color").rgb_to_hex(opts.start_bg) }
 			if opts.start_fg then
-				hl_opts.fg = colors.rgb_to_hex(opts.start_fg)
+				hl_opts.fg =
+					require("undo-glow.color").rgb_to_hex(opts.start_fg)
 			end
 			vim.api.nvim_set_hl(0, opts.hlgroup, hl_opts)
 		else
-			local hl_opts = { bg = colors.rgb_to_hex(opts.end_bg) }
+			local hl_opts =
+				{ bg = require("undo-glow.color").rgb_to_hex(opts.end_bg) }
 			if opts.start_fg then
-				hl_opts.fg = colors.rgb_to_hex(opts.end_fg)
+				hl_opts.fg = require("undo-glow.color").rgb_to_hex(opts.end_fg)
 			end
 			vim.api.nvim_set_hl(0, opts.hlgroup, hl_opts)
 		end
@@ -137,7 +145,7 @@ function M.animate.jitter(opts)
 			if vim.api.nvim_buf_is_valid(opts.bufnr) and opts.extmark_id then
 				vim.api.nvim_buf_del_extmark(
 					opts.bufnr,
-					utils.ns,
+					require("undo-glow.utils").ns,
 					opts.extmark_id
 				)
 			end
@@ -159,9 +167,10 @@ function M.animate.jitter(opts)
 		local jitter_bg = jitter_color(opts.start_bg)
 		local jitter_fg = opts.start_fg and jitter_color(opts.start_fg) or nil
 
-		local hl_opts = { bg = colors.rgb_to_hex(jitter_bg) }
+		local hl_opts =
+			{ bg = require("undo-glow.color").rgb_to_hex(jitter_bg) }
 		if jitter_fg then
-			hl_opts.fg = colors.rgb_to_hex(jitter_fg)
+			hl_opts.fg = require("undo-glow.color").rgb_to_hex(jitter_fg)
 		end
 
 		vim.api.nvim_set_hl(0, opts.hlgroup, hl_opts)
@@ -181,10 +190,18 @@ function M.animate.pulse(opts)
 			duration = 1,
 		})
 
-		local blended_bg = colors.blend_color(opts.start_bg, opts.end_bg, eased)
+		local blended_bg = require("undo-glow.color").blend_color(
+			opts.start_bg,
+			opts.end_bg,
+			eased
+		)
 		local blended_fg = opts.start_fg
 				and opts.end_fg
-				and colors.blend_color(opts.start_fg, opts.end_fg, eased)
+				and require("undo-glow.color").blend_color(
+					opts.start_fg,
+					opts.end_fg,
+					eased
+				)
 			or nil
 
 		local hl_opts = { bg = blended_bg }
@@ -203,7 +220,7 @@ function M.animate.pulse(opts)
 			if vim.api.nvim_buf_is_valid(opts.bufnr) and opts.extmark_id then
 				vim.api.nvim_buf_del_extmark(
 					opts.bufnr,
-					utils.ns,
+					require("undo-glow.utils").ns,
 					opts.extmark_id
 				)
 			end
