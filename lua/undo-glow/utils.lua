@@ -301,6 +301,7 @@ end
 function M.create_state(opts, config)
 	opts = opts or {}
 	opts.animation = opts.animation or {}
+
 	return {
 		should_detach = false,
 		current_hlgroup = opts.hlgroup or "UgUndo",
@@ -309,7 +310,7 @@ function M.create_state(opts, config)
 				or config.animation.animation_type,
 			enabled = opts.animation.enabled or nil,
 			duration = opts.animation.duration or nil,
-			easing = opts.animation.easing or nil,
+			easing = M.get_easing(opts.animation.easing) or nil,
 			fps = opts.animation.fps or nil,
 		},
 	}
@@ -330,7 +331,7 @@ function M.validate_state_for_highlight(opts)
 
 	-- Check easing and fallback to global
 	if not opts.state.animation.easing then
-		opts.state.animation.easing = opts.config.animation.easing
+		opts.state.animation.easing = M.get_easing(opts.config.animation.easing)
 	end
 
 	-- Check fps and fallback to global
@@ -339,6 +340,19 @@ function M.validate_state_for_highlight(opts)
 	end
 
 	return opts
+end
+
+---@param easing? UndoGlow.EasingString|UndoGlow.EasingFn
+---@return UndoGlow.EasingFn|nil
+function M.get_easing(easing)
+	if type(easing) == "function" then
+		return easing
+	end
+	if type(easing) == "string" then
+		return require("undo-glow.easing")[easing]
+	end
+
+	return nil
 end
 
 return M

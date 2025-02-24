@@ -1,5 +1,7 @@
 local M = {}
----@alias AnimationType "fade" | "blink" | "pulse" | "jitter"
+---@alias UndoGlow.AnimationType "fade" | "blink" | "pulse" | "jitter"
+---@alias UndoGlow.EasingString "linear" | "in_quad" | "out_quad" | "in_out_quad" | "out_in_quad" | "in_cubic" | "out_cubic" | "in_out_cubic" | "out_in_cubic" | "in_quart" | "out_quart" | "in_out_quart" | "out_in_quart" | "in_quint" | "out_quint" | "in_out_quint" | "out_in_quint" | "in_sine" | "out_sine" | "in_out_sine" | "out_in_sine" | "in_expo" | "out_expo" | "in_out_expo" | "out_in_expo" | "in_circ" | "out_circ" | "in_out_circ" | "out_in_circ" | "in_elastic" | "out_elastic" | "in_out_elastic" | "out_in_elastic" | "in_back" | "out_back" | "in_out_back" | "out_in_back" | "in_bounce" | "out_bounce" | "in_out_bounce" | "out_in_bounce"
+---@alias UndoGlow.EasingFn fun(opts: UndoGlow.EasingOpts): integer
 
 ---@class UndoGlow.Config
 ---@field animation? UndoGlow.Config.Animation
@@ -17,8 +19,8 @@ local M = {}
 ---@class UndoGlow.Config.Animation
 ---@field enabled? boolean Turn on or off for animation
 ---@field duration? number Highlight duration in ms
----@field animation_type? AnimationType
----@field easing? fun(opts: UndoGlow.EasingOpts): integer A function that computes easing.
+---@field animation_type? UndoGlow.AnimationType
+---@field easing? UndoGlow.EasingString | UndoGlow.EasingFn A easing string or function that computes easing.
 ---@field fps? number Normally either 60 / 120, up to you
 
 ---@class UndoGlow.HlColor

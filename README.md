@@ -91,7 +91,9 @@ require("undo-glow").setup({
 ### Default Options
 
 ```lua
----@alias AnimationType "fade" | "blink" | "pulse" | "jitter"
+---@alias UndoGlow.AnimationType "fade" | "blink" | "pulse" | "jitter"
+---@alias UndoGlow.EasingString "linear" | "in_quad" | "out_quad" | "in_out_quad" | "out_in_quad" | "in_cubic" | "out_cubic" | "in_out_cubic" | "out_in_cubic" | "in_quart" | "out_quart" | "in_out_quart" | "out_in_quart" | "in_quint" | "out_quint" | "in_out_quint" | "out_in_quint" | "in_sine" | "out_sine" | "in_out_sine" | "out_in_sine" | "in_expo" | "out_expo" | "in_out_expo" | "out_in_expo" | "in_circ" | "out_circ" | "in_out_circ" | "out_in_circ" | "in_elastic" | "out_elastic" | "in_out_elastic" | "out_in_elastic" | "in_back" | "out_back" | "in_out_back" | "out_in_back" | "in_bounce" | "out_bounce" | "in_out_bounce" | "out_in_bounce"
+---@alias UndoGlow.EasingFn fun(opts: UndoGlow.EasingOpts): integer
 
 ---@class UndoGlow.Config
 ---@field animation? UndoGlow.Config.Animation
@@ -100,8 +102,8 @@ require("undo-glow").setup({
 ---@class UndoGlow.Config.Animation
 ---@field enabled? boolean Turn on or off for animation
 ---@field duration? number Highlight duration in ms
----@field animation_type? AnimationType
----@field easing? fun(opts: UndoGlow.EasingOpts): integer A function that computes easing.
+---@field animation_type? UndoGlow.AnimationType
+---@field easing? UndoGlow.EasingString | UndoGlow.EasingFn A easing string or function that computes easing.
 ---@field fps? number Normally either 60 / 120, up to you
 
 ---@class UndoGlow.EasingOpts
@@ -122,7 +124,7 @@ require("undo-glow").setup({
   duration = 100, -- in ms
   animation_type = "fade", -- default to "fade"
   fps = 120, -- change the fps, normally either 60 / 120, but it can be whatever number
-  easing = require("undo-glow").easing.in_out_cubic, -- see more at easing section on how to change and create your own
+  easing = "in_out_cubic", -- see more at easing section on how to change and create your own
  },
  highlights = { -- Any keys other than these defaults will be ignored and omitted
   undo = {
@@ -335,8 +337,8 @@ Each builtin commands takes in optional `opts` take allows to configure **color*
 ---@class UndoGlow.Config.Animation
 ---@field enabled? boolean Turn on or off for animation
 ---@field duration? number Highlight duration in ms
----@field animation_type? AnimationType
----@field easing? fun(opts: UndoGlow.EasingOpts): integer A function that computes easing.
+---@field animation_type? UndoGlow.AnimationType
+---@field easing? UndoGlow.EasingString | UndoGlow.EasingFn A easing string or function that computes easing.
 ---@field fps? number Normally either 60 / 120, up to you
 ```
 
@@ -484,8 +486,8 @@ vim.keymap.set("n", "gcc", require("undo-glow").comment_line, { expr = true, nor
 ---@class UndoGlow.Config.Animation
 ---@field enabled? boolean Turn on or off for animation
 ---@field duration? number Highlight duration in ms
----@field animation_type? AnimationType
----@field easing? fun(opts: UndoGlow.EasingOpts): integer A function that computes easing.
+---@field animation_type? UndoGlow.AnimationType
+---@field easing? UndoGlow.EasingString | UndoGlow.EasingFn A easing string or function that computes easing.
 ---@field fps? number Normally either 60 / 120, up to you
 
 ---@param opts? UndoGlow.HighlightChanges
@@ -537,8 +539,8 @@ end
 ---@class UndoGlow.Config.Animation
 ---@field enabled? boolean Turn on or off for animation
 ---@field duration? number Highlight duration in ms
----@field animation_type? AnimationType
----@field easing? fun(opts: UndoGlow.EasingOpts): integer A function that computes easing.
+---@field animation_type? UndoGlow.AnimationType
+---@field easing? UndoGlow.EasingString | UndoGlow.EasingFn A easing string or function that computes easing.
 ---@field fps? number Normally either 60 / 120, up to you
 
 --- @param opts UndoGlow.HighlightRegion Options for highlighting the region:
@@ -575,7 +577,6 @@ vim.keymap.set("n", "key_that_you_like", some_action, { silent = true })
 <!-- config:start -->
 
 ```lua
----@param opts? UndoGlow.CommandOpts
 ---@param opts? UndoGlow.CommandOpts
 function M.yank(opts)
  opts = require("undo-glow.utils").merge_command_opts("UgYank", opts)
@@ -686,6 +687,8 @@ Rapidly moves or shifts the highlight slightly, giving a shaky or vibrating appe
 #### Builtin easings
 
 ```lua
+---@alias UndoGlow.EasingString "linear" | "in_quad" | "out_quad" | "in_out_quad" | "out_in_quad" | "in_cubic" | "out_cubic" | "in_out_cubic" | "out_in_cubic" | "in_quart" | "out_quart" | "in_out_quart" | "out_in_quart" | "in_quint" | "out_quint" | "in_out_quint" | "out_in_quint" | "in_sine" | "out_sine" | "in_out_sine" | "out_in_sine" | "in_expo" | "out_expo" | "in_out_expo" | "out_in_expo" | "in_circ" | "out_circ" | "in_out_circ" | "out_in_circ" | "in_elastic" | "out_elastic" | "in_out_elastic" | "out_in_elastic" | "in_back" | "out_back" | "in_out_back" | "out_in_back" | "in_bounce" | "out_bounce" | "in_out_bounce" | "out_in_bounce"
+
 require("undo-glow").easing.linear
 require("undo-glow").easing.in_quad
 require("undo-glow").easing.out_quad
@@ -735,51 +738,9 @@ require("undo-glow").easing.out_in_bounce
 -- configuration opts
 {
  --- rest of configurations
- easing = require("undo-glow").easing.ease_in_sine
+ easing = "ease_in_sine"
  --- rest of configurations
 }
-```
-
-> [!warning]
-> Due to how lazy loading works, you might not be able to import `easing` functions from **undo-glow.nvim** at opts.
-> If that's the case, you can try to import them at the `config` key before calling the `setup` function. See below.
-
-##### Method 1: Set it in opts with function
-
-```lua
-{
- "y3owk1n/undo-glow.nvim",
- version = "*",
- event = { "VeryLazy" },
- ---@param _ any
- ---@param opts UndoGlow.Config
- opts = function(_, opts)
-  return {
-   animation = {
-    easing = require("undo-glow").easing.out_in_elastic,
-   },
-  }
- end,
-},
-```
-
-##### Method 2: Set it in config
-
-```lua
-{
- "y3owk1n/undo-glow.nvim",
- version = "*",
- event = { "VeryLazy" },
- ---@type UndoGlow.Config
- opts = {},
- ---@param _ any
- ---@param opts UndoGlow.Config
- config = function(_, opts)
-  local undo_glow = require("undo-glow")
-  opts.easing = require("undo-glow").easing.ease_in_sine -- Set the easing function here
-  undo_glow.setup(opts)
- end
-},
 ```
 
 #### Overriding easing properties

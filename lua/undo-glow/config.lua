@@ -5,7 +5,7 @@ local config = {
 		duration = 100,
 		animation_type = "fade",
 		fps = 120,
-		easing = require("undo-glow.easing").in_out_cubic,
+		easing = "in_out_cubic",
 	},
 	highlights = {
 		undo = {

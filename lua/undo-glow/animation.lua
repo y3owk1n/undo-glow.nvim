@@ -3,7 +3,7 @@ local M = {}
 M.animate = {}
 
 ---@param opts UndoGlow.Animation
----@param animateFn function
+---@param animateFn fun(timer: uv.uv_timer_t, start_time: number)
 local function animate_wrapper(opts, animateFn)
 	local start_time = vim.uv.hrtime()
 	local interval = 1000 / opts.state.animation.fps
