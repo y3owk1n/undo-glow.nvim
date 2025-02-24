@@ -4,14 +4,14 @@ local M = {}
 function M.undo(opts)
 	opts = require("undo-glow.utils").merge_command_opts("UgUndo", opts)
 	require("undo-glow").highlight_changes(opts)
-	vim.cmd("undo")
+	pcall(vim.cmd, "undo")
 end
 
 ---@param opts? UndoGlow.CommandOpts
 function M.redo(opts)
 	opts = require("undo-glow.utils").merge_command_opts("UgRedo", opts)
 	require("undo-glow").highlight_changes(opts)
-	vim.cmd("redo")
+	pcall(vim.cmd, "redo")
 end
 
 --- Helper to use this in autocmds. Do not use this as a command, it does nothing.
@@ -34,14 +34,16 @@ end
 function M.paste_below(opts)
 	opts = require("undo-glow.utils").merge_command_opts("UgPaste", opts)
 	require("undo-glow").highlight_changes(opts)
-	vim.cmd("normal! p")
+	local register = vim.v.register
+	pcall(vim.cmd, string.format('normal! "%sp"', register))
 end
 
 ---@param opts? UndoGlow.CommandOpts
 function M.paste_above(opts)
 	opts = require("undo-glow.utils").merge_command_opts("UgPaste", opts)
 	require("undo-glow").highlight_changes(opts)
-	vim.cmd("normal! P")
+	local register = vim.v.register
+	pcall(vim.cmd, string.format('normal! "%sP"', register))
 end
 
 ---@param opts? UndoGlow.CommandOpts
