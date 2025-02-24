@@ -43,6 +43,11 @@ focusing on bug fixes, optimizations and additional commands that fits in the
 scope of this project.
 
 
+  [!note] I am mainly daily driving this plugin, and all commits are tested
+  automatically, but tested based on how i use my editor. If there’s anything
+  that are not working based on your workflow, and it should fall under the scope
+  of this plugin, please raise an issue or even better, send in a PR for fix.
+
 DIFFERENCES FROM OTHER SIMILAR PLUGINS*undo-glow.nvim-undo-glow.nvim-differences-from-other-similar-plugins*
 
 There are alot of similars plugins that you can simply find from github. The
