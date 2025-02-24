@@ -160,11 +160,13 @@ require("undo-glow").setup({
 <!-- config:start -->
 
 ```lua
+---@type LazySpec
 return {
  {
   "y3owk1n/undo-glow.nvim",
-  version = "*",
+  -- dir = "~/Dev/undo-glow.nvim", -- Your path
   event = { "VeryLazy" },
+  ---@module 'undo-glow'
   ---@type UndoGlow.Config
   opts = {
    animation = {
@@ -181,9 +183,6 @@ return {
     yank = {
      hl_color = { bg = "#5A513C" },
     },
-    paste = {
-     hl_color = { bg = "#5A496E" },
-    },
     search = {
      hl_color = { bg = "#6D4B5E" },
     },
@@ -192,38 +191,110 @@ return {
     },
    },
   },
-  ---@param _ any
-  ---@param opts UndoGlow.Config
-  config = function(_, opts)
-   local undo_glow = require("undo-glow")
-
-   undo_glow.setup(opts)
-
-   vim.keymap.set("n", "u", undo_glow.undo, { noremap = true, desc = "Undo with highlight" })
-   vim.keymap.set("n", "U", undo_glow.redo, { noremap = true, desc = "Redo with highlight" })
-   vim.keymap.set("n", "p", undo_glow.paste_below, { noremap = true, desc = "Paste below with highlight" })
-   vim.keymap.set("n", "P", undo_glow.paste_above, { noremap = true, desc = "Paste above with highlight" })
-   vim.keymap.set("n", "n", undo_glow.search_next, { noremap = true, desc = "Search next with highlight" })
-   vim.keymap.set("n", "N", undo_glow.search_prev, { noremap = true, desc = "Search previous with highlight" })
-   vim.keymap.set("n", "*", undo_glow.search_star, { noremap = true, desc = "Search * with highlight" })
-
-   vim.keymap.set({ "n", "x" }, "gc", function()
-    -- Restore cursor after comment
-    local pos = vim.fn.getpos(".")
-    vim.schedule(function()
-     vim.fn.setpos(".", pos)
-    end)
-    return undo_glow.comment()
-   end, { expr = true, noremap = true, desc = "Toggle comment with highlight" })
-
-   vim.keymap.set("o", "gc", undo_glow.comment_textobject, { noremap = true, desc = "Comment textobject with highlight" })
-
-   vim.keymap.set("n", "gcc", undo_glow.comment_line, { expr = true, noremap = true, desc = "Toggle comment line with highlight" })
-
+  keys = {
+   {
+    "u",
+    function()
+     require("undo-glow").undo()
+    end,
+    mode = "n",
+    desc = "Undo with highlight",
+    noremap = true,
+   },
+   {
+    "U",
+    function()
+     require("undo-glow").redo()
+    end,
+    mode = "n",
+    desc = "Redo with highlight",
+    noremap = true,
+   },
+   {
+    "p",
+    function()
+     require("undo-glow").paste_below()
+    end,
+    mode = "n",
+    desc = "Paste below with highlight",
+    noremap = true,
+   },
+   {
+    "P",
+    function()
+     require("undo-glow").paste_above()
+    end,
+    mode = "n",
+    desc = "Paste above with highlight",
+    noremap = true,
+   },
+   {
+    "n",
+    function()
+     require("undo-glow").search_next()
+    end,
+    mode = "n",
+    desc = "Search next with highlight",
+    noremap = true,
+   },
+   {
+    "N",
+    function()
+     require("undo-glow").search_prev()
+    end,
+    mode = "n",
+    desc = "Search prev with highlight",
+    noremap = true,
+   },
+   {
+    "*",
+    function()
+     require("undo-glow").search_star()
+    end,
+    mode = "n",
+    desc = "Search star with highlight",
+    noremap = true,
+   },
+   {
+    "gc",
+    function()
+     local pos = vim.fn.getpos(".")
+     vim.schedule(function()
+      vim.fn.setpos(".", pos)
+     end)
+     return require("undo-glow").comment()
+    end,
+    mode = { "n", "x" },
+    desc = "Toggle comment with highlight",
+    expr = true,
+    noremap = true,
+   },
+   {
+    "gc",
+    function()
+     require("undo-glow").comment_textobject()
+    end,
+    mode = "o",
+    desc = "Comment textobject with highlight",
+    noremap = true,
+   },
+   {
+    "gcc",
+    function()
+     return require("undo-glow").comment_line()
+    end,
+    mode = "n",
+    desc = "Toggle comment line with highlight",
+    expr = true,
+    noremap = true,
+   },
+  },
+  init = function()
    vim.api.nvim_create_autocmd("TextYankPost", {
     desc = "Highlight when yanking (copying) text",
     callback = require("undo-glow").yank,
    })
+  end,
  },
 }
 ```
@@ -737,9 +808,11 @@ require("undo-glow").easing.out_in_bounce
 ```lua
 -- configuration opts
 {
- --- rest of configurations
- easing = "ease_in_sine"
- --- rest of configurations
+ animation = {
+  --- rest of configurations
+  easing = "ease_in_sine"
+  --- rest of configurations
+ }
 }
 ```
 
@@ -760,7 +833,7 @@ require("undo-glow").easing.out_in_bounce
 
 ---@param easing_opts UndoGlow.EasingOpts
 ---@return integer
-opts.easing = function(easing_opts)
+easing = function(easing_opts)
  -- Override any properties you like
  -- You can refer to the source code of what opts are taking in from each easing function.
  easing_opts.duration = 2
