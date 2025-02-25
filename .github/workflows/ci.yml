@@ -36,9 +36,6 @@ jobs:
               with:
                   token: ${{ secrets.PAT }}
 
-            - name: Git Pull
-              run: git pull
-
             - name: Create /doc
               run: mkdir -p doc
 
@@ -51,7 +48,6 @@ jobs:
                   demojify: true
                   treesitter: true
 
-            - run: git pull
             - name: Push changes
               uses: stefanzweifel/git-auto-commit-action@v5
               with:
