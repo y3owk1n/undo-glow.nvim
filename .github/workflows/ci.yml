@@ -42,7 +42,7 @@ jobs:
             - name: panvimdoc
               uses: kdheepak/panvimdoc@main
               with:
-                  vimdoc: ${{ inputs.plugin }}
+                  vimdoc: ${{ github.event.repository.name }}
                   version: "Neovim >= 0.10.0"
                   pandoc: "README.md"
                   demojify: true
