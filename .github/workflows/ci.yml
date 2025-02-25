@@ -54,4 +54,4 @@ jobs:
                   commit_message: |
                       chore(build): auto-generate docs from readme
 
-                      This is an automated commit. [ci skip]
+                      This is an automated commit.
