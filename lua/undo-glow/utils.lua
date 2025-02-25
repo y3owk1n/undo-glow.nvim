@@ -296,9 +296,8 @@ function M.merge_command_opts(hlgroup, opts)
 end
 
 ---@param opts? UndoGlow.CommandOpts
----@param config UndoGlow.Config
 ---@return UndoGlow.State
-function M.create_state(opts, config)
+function M.create_state(opts)
 	opts = opts or {}
 	opts.animation = opts.animation or {}
 
@@ -306,8 +305,7 @@ function M.create_state(opts, config)
 		should_detach = false,
 		current_hlgroup = opts.hlgroup or "UgUndo",
 		animation = {
-			animation_type = opts.animation.animation_type
-				or config.animation.animation_type,
+			animation_type = opts.animation.animation_type or nil,
 			enabled = opts.animation.enabled or nil,
 			duration = opts.animation.duration or nil,
 			easing = M.get_easing(opts.animation.easing) or nil,
@@ -322,6 +320,12 @@ function M.validate_state_for_highlight(opts)
 	-- Check animation status and fallback to global
 	if type(opts.state.animation.enabled) ~= "boolean" then
 		opts.state.animation.enabled = opts.config.animation.enabled
+	end
+
+	-- Check animation_type and fallback to global
+	if not opts.state.animation.animation_type then
+		opts.state.animation.animation_type =
+			opts.config.animation.animation_type
 	end
 
 	-- Check duration and fallback to global
