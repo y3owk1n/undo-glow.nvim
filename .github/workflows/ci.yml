@@ -1,0 +1,58 @@
+name: CI
+
+on:
+    pull_request:
+        branches: [main]
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+        timeout-minutes: 10
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Install Neovim
+              uses: folke/github/neovim@main
+
+            - name: Install Just
+              uses: extractions/setup-just@v2
+
+            - name: Test Cache
+              uses: actions/cache@v4
+              with:
+                  path: .tests
+                  key: ${{ runner.os }}-tests-${{ hashFiles('tests/minit.lua') }}
+
+            - name: Run tests
+              run: just test
+
+    doc:
+        runs-on: ubuntu-latest
+        timeout-minutes: 5
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+              with:
+                  token: ${{ secrets.PAT }}
+
+            - name: Create /doc
+              run: mkdir -p doc
+
+            - name: panvimdoc
+              uses: kdheepak/panvimdoc@main
+              with:
+                  vimdoc: ${{ github.event.repository.name }}
+                  version: "Neovim >= 0.10.0"
+                  pandoc: "README.md"
+                  demojify: true
+                  treesitter: true
+
+            - name: Push changes
+              uses: stefanzweifel/git-auto-commit-action@v5
+              with:
+                  commit_message: |
+                      chore(build): auto-generate docs from readme
+
+
+                      skip-checks: true
