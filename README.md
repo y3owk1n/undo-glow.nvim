@@ -84,9 +84,9 @@ require("undo-glow").setup({
 ## ⚙️ Configuration
 
 > [!important]
-> Make sure to run `:checkhealth undo-glow` if something isn't working properly
+> Make sure to run `:checkhealth undo-glow` if something isn't working properly.
 
-**undo-glow.nvim** is highly configurable. Expand to see the list of all the default options below.
+**undo-glow.nvim** is highly configurable. And the default configurations are as below.
 
 ### Default Options
 
@@ -805,12 +805,30 @@ require("undo-glow").easing.out_in_bounce
 
 #### Changing easing from configuration with builtin
 
+##### Easing in string
+
 ```lua
 -- configuration opts
 {
  animation = {
   --- rest of configurations
   easing = "ease_in_sine"
+  --- rest of configurations
+ }
+}
+```
+
+##### Easing in function
+
+```lua
+-- configuration opts
+{
+ animation = {
+  --- rest of configurations
+  easing = function(easing_opts)
+   -- do some calculation
+   return integer
+  end
   --- rest of configurations
  }
 }
