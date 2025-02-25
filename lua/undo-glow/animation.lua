@@ -20,8 +20,8 @@ local function animate_clear(opts, timer)
 end
 
 ---@param opts UndoGlow.Animation
----@param animateFn fun(timer: uv.uv_timer_t, elapsed: number)
-local function animate_wrapper(opts, animateFn)
+---@param animate_fn fun(timer: uv.uv_timer_t, elapsed: number)
+local function animate_start(opts, animate_fn)
 	local start_time = vim.uv.hrtime()
 	local interval = 1000 / opts.state.animation.fps
 	local timer = vim.uv.new_timer()
@@ -34,7 +34,7 @@ local function animate_wrapper(opts, animateFn)
 				local success, err = pcall(function()
 					local now = vim.uv.hrtime()
 					local elapsed = (now - start_time) / 1e6 -- convert from ns to ms
-					animateFn(timer, elapsed)
+					animate_fn(timer, elapsed)
 				end)
 
 				if not success then
@@ -56,7 +56,7 @@ end
 -- Animate the fadeout of a highlight group from a start color to the Normal background
 ---@param opts UndoGlow.Animation
 function M.animate.fade(opts)
-	animate_wrapper(opts, function(timer, elapsed)
+	animate_start(opts, function(timer, elapsed)
 		local t = math.min(elapsed / opts.duration, 1)
 		local eased = opts.state.animation.easing({
 			time = t,
@@ -94,7 +94,7 @@ end
 
 ---@param opts UndoGlow.Animation
 function M.animate.blink(opts)
-	animate_wrapper(opts, function(timer, elapsed)
+	animate_start(opts, function(timer, elapsed)
 		if elapsed >= opts.duration then
 			animate_clear(opts, timer)
 			return
@@ -124,7 +124,7 @@ end
 
 ---@param opts UndoGlow.Animation
 function M.animate.jitter(opts)
-	animate_wrapper(opts, function(timer, elapsed)
+	animate_start(opts, function(timer, elapsed)
 		if elapsed >= opts.duration then
 			animate_clear(opts, timer)
 			return
@@ -156,7 +156,7 @@ end
 
 ---@param opts UndoGlow.Animation
 function M.animate.pulse(opts)
-	animate_wrapper(opts, function(timer, elapsed)
+	animate_start(opts, function(timer, elapsed)
 		local t = 0.5 * (1 - math.cos(2 * math.pi * (elapsed / opts.duration)))
 		local eased = opts.state.animation.easing({
 			time = t,
