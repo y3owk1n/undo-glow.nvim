@@ -3,7 +3,24 @@ local M = {}
 M.animate = {}
 
 ---@param opts UndoGlow.Animation
----@param animateFn fun(timer: uv.uv_timer_t, start_time: number)
+---@param timer uv.uv_timer_t
+local function animate_clear(opts, timer)
+	timer:stop()
+	if not vim.uv.is_closing(timer) then
+		timer:close()
+	end
+	if vim.api.nvim_buf_is_valid(opts.bufnr) and opts.extmark_id then
+		vim.api.nvim_buf_del_extmark(
+			opts.bufnr,
+			require("undo-glow.utils").ns,
+			opts.extmark_id
+		)
+	end
+	vim.cmd("hi clear " .. opts.hlgroup)
+end
+
+---@param opts UndoGlow.Animation
+---@param animateFn fun(timer: uv.uv_timer_t, elapsed: number)
 local function animate_wrapper(opts, animateFn)
 	local start_time = vim.uv.hrtime()
 	local interval = 1000 / opts.state.animation.fps
@@ -15,7 +32,9 @@ local function animate_wrapper(opts, animateFn)
 			interval,
 			vim.schedule_wrap(function()
 				local success, err = pcall(function()
-					animateFn(timer, start_time)
+					local now = vim.uv.hrtime()
+					local elapsed = (now - start_time) / 1e6 -- convert from ns to ms
+					animateFn(timer, elapsed)
 				end)
 
 				if not success then
@@ -37,9 +56,7 @@ end
 -- Animate the fadeout of a highlight group from a start color to the Normal background
 ---@param opts UndoGlow.Animation
 function M.animate.fade(opts)
-	animate_wrapper(opts, function(timer, start_time)
-		local now = vim.uv.hrtime()
-		local elapsed = (now - start_time) / 1e6 -- convert from ns to ms
+	animate_wrapper(opts, function(timer, elapsed)
 		local t = math.min(elapsed / opts.duration, 1)
 		local eased = opts.state.animation.easing({
 			time = t,
@@ -70,42 +87,16 @@ function M.animate.fade(opts)
 		vim.api.nvim_set_hl(0, opts.hlgroup, hl_opts)
 
 		if t >= 1 then
-			timer:stop()
-			if not vim.uv.is_closing(timer) then
-				timer:close()
-			end
-			if vim.api.nvim_buf_is_valid(opts.bufnr) and opts.extmark_id then
-				vim.api.nvim_buf_del_extmark(
-					opts.bufnr,
-					require("undo-glow.utils").ns,
-					opts.extmark_id
-				)
-			end
-
-			vim.cmd("hi clear " .. opts.hlgroup)
+			animate_clear(opts, timer)
 		end
 	end)
 end
 
 ---@param opts UndoGlow.Animation
 function M.animate.blink(opts)
-	animate_wrapper(opts, function(timer, start_time)
-		local now = vim.uv.hrtime()
-		local elapsed = (now - start_time) / 1e6 -- in ms
-
+	animate_wrapper(opts, function(timer, elapsed)
 		if elapsed >= opts.duration then
-			timer:stop()
-			if not vim.uv.is_closing(timer) then
-				timer:close()
-			end
-			if vim.api.nvim_buf_is_valid(opts.bufnr) and opts.extmark_id then
-				vim.api.nvim_buf_del_extmark(
-					opts.bufnr,
-					require("undo-glow.utils").ns,
-					opts.extmark_id
-				)
-			end
-			vim.cmd("hi clear " .. opts.hlgroup)
+			animate_clear(opts, timer)
 			return
 		end
 
@@ -133,23 +124,9 @@ end
 
 ---@param opts UndoGlow.Animation
 function M.animate.jitter(opts)
-	animate_wrapper(opts, function(timer, start_time)
-		local now = vim.uv.hrtime()
-		local elapsed = (now - start_time) / 1e6 -- in ms
-
+	animate_wrapper(opts, function(timer, elapsed)
 		if elapsed >= opts.duration then
-			timer:stop()
-			if not vim.uv.is_closing(timer) then
-				timer:close()
-			end
-			if vim.api.nvim_buf_is_valid(opts.bufnr) and opts.extmark_id then
-				vim.api.nvim_buf_del_extmark(
-					opts.bufnr,
-					require("undo-glow.utils").ns,
-					opts.extmark_id
-				)
-			end
-			vim.cmd("hi clear " .. opts.hlgroup)
+			animate_clear(opts, timer)
 			return
 		end
 
@@ -179,9 +156,7 @@ end
 
 ---@param opts UndoGlow.Animation
 function M.animate.pulse(opts)
-	animate_wrapper(opts, function(timer, start_time)
-		local now = vim.uv.hrtime()
-		local elapsed = (now - start_time) / 1e6 -- convert ns to ms
+	animate_wrapper(opts, function(timer, elapsed)
 		local t = 0.5 * (1 - math.cos(2 * math.pi * (elapsed / opts.duration)))
 		local eased = opts.state.animation.easing({
 			time = t,
@@ -213,18 +188,7 @@ function M.animate.pulse(opts)
 
 		-- Stop after total duration has elapsed
 		if elapsed >= opts.duration then
-			timer:stop()
-			if not vim.uv.is_closing(timer) then
-				timer:close()
-			end
-			if vim.api.nvim_buf_is_valid(opts.bufnr) and opts.extmark_id then
-				vim.api.nvim_buf_del_extmark(
-					opts.bufnr,
-					require("undo-glow.utils").ns,
-					opts.extmark_id
-				)
-			end
-			vim.cmd("hi clear " .. opts.hlgroup)
+			animate_clear(opts, timer)
 		end
 	end)
 end
