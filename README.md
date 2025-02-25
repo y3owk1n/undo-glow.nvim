@@ -18,7 +18,7 @@
 This project is feature complete at this point. The rest of the commits will be focusing on bug fixes, optimizations and additional commands that fits in the scope of this project.
 
 > [!note]
-> I am mainly daily driving this plugin, and all commits are not tested perfectly through CI, but tested based on how I use my editor. If there's anything that are not working based on your workflow, and it should fall under the scope of this plugin, please raise an issue or even better, send in a PR for fix.
+> I am mainly daily driving this plugin, and all commits are tested in CI (But not 100% coverage). If there's anything that are not working based on your workflow, and it should fall under the scope of this plugin, please raise an issue or even better, send in a PR for fix.
 
 ## 📝 Differences from other similar plugins
 
