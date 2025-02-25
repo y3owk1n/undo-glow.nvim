@@ -196,7 +196,7 @@ end
 function M.highlight_changes(opts)
 	local bufnr = vim.api.nvim_get_current_buf()
 
-	local state = require("undo-glow.utils").create_state(opts, M.config)
+	local state = require("undo-glow.utils").create_state(opts)
 
 	vim.api.nvim_buf_attach(bufnr, false, {
 		on_bytes = function(...)
@@ -214,7 +214,7 @@ end
 function M.highlight_region(opts)
 	local bufnr = vim.api.nvim_get_current_buf()
 
-	local state = require("undo-glow.utils").create_state(opts, M.config)
+	local state = require("undo-glow.utils").create_state(opts)
 
 	vim.schedule(function()
 		---@type UndoGlow.HandleHighlight

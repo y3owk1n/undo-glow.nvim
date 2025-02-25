@@ -329,21 +329,12 @@ describe("undo-glow.utils", function()
 				hlgroup = "CustomHL",
 				animation = { enabled = true, duration = 200 },
 			}
-			local config = {
-				animation = {
-					animation_type = "blink",
-					enabled = false,
-					duration = 100,
-					easing = function() end,
-					fps = 60,
-				},
-			}
-			local state = utils.create_state(opts, config)
+			local state = utils.create_state(opts)
 			assert.equals("CustomHL", state.current_hlgroup)
 			assert.equals(true, state.animation.enabled)
 			assert.equals(200, state.animation.duration)
 			-- animation_type falls back to config if not provided in opts.animation.
-			assert.equals("blink", state.animation.animation_type)
+			-- assert.equals("blink", state.animation.animation_type)
 		end)
 
 		it("should substitute easing string to function", function()
@@ -355,17 +346,21 @@ describe("undo-glow.utils", function()
 					easing = "out_in_cubic",
 				},
 			}
-			local config = {
-				animation = {
-					animation_type = "blink",
-					enabled = false,
-					duration = 100,
-					easing = "linear",
-					fps = 60,
-				},
-			}
-			local state = utils.create_state(opts, config)
+			local state = utils.create_state(opts)
 			assert.is_function(state.animation.easing)
+		end)
+
+		it("should set non configured to nil", function()
+			local opts = {
+				hlgroup = "CustomHL",
+				animation = {},
+			}
+			local state = utils.create_state(opts)
+			assert.is_nil(state.animation.enabled)
+			assert.is_nil(state.animation.animation_type)
+			assert.is_nil(state.animation.duration)
+			assert.is_nil(state.animation.easing)
+			assert.is_nil(state.animation.fps)
 		end)
 	end)
 
