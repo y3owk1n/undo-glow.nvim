@@ -129,9 +129,9 @@ CONFIGURATION                    *undo-glow.nvim-undo-glow.nvim-configuration*
 
 
   [!important] Make sure to run `:checkhealth undo-glow` if something isn’t
-  working properly
-**undo-glow.nvim** is highly configurable. Expand to see the list of all the
-default options below.
+  working properly.
+**undo-glow.nvim** is highly configurable. And the default configurations are
+as below.
 
 
 DEFAULT OPTIONS ~
@@ -841,12 +841,32 @@ BUILTIN EASINGS
 
 CHANGING EASING FROM CONFIGURATION WITH BUILTIN
 
+
+EASING IN STRING
+
 >lua
     -- configuration opts
     {
      animation = {
       --- rest of configurations
       easing = "ease_in_sine"
+      --- rest of configurations
+     }
+    }
+<
+
+
+EASING IN FUNCTION
+
+>lua
+    -- configuration opts
+    {
+     animation = {
+      --- rest of configurations
+      easing = function(easing_opts)
+       -- do some calculation
+       return integer
+      end
       --- rest of configurations
      }
     }
