@@ -134,4 +134,42 @@ function M.comment_line(opts)
 	return require("vim._comment").operator() .. "_"
 end
 
+---@param opts? UndoGlow.CommandOpts
+function M.cursor_moved(opts)
+	opts = require("undo-glow.utils").merge_command_opts("UgCursor", opts)
+
+	local current_buf = vim.api.nvim_get_current_buf()
+	local current_win = vim.api.nvim_get_current_win()
+
+	if not vim.api.nvim_buf_is_loaded(current_buf) then
+		return
+	end
+
+	local current_row, current_col = unpack(vim.api.nvim_win_get_cursor(0))
+
+	local prev_buf = vim.g.ug_prev_buf or current_buf
+	local prev_row = vim.g.ug_prev_cursor or current_row
+	local prev_win = vim.g.ug_prev_win or current_win
+
+	local diff = math.abs(current_row - prev_row)
+	local new_buffer = (prev_buf ~= current_buf)
+	local new_window = (prev_win ~= current_win)
+
+	if diff > 10 or new_buffer or new_window then
+		local cur_line = vim.api.nvim_get_current_line()
+		local cur_line_length = #cur_line
+		require("undo-glow").highlight_region(vim.tbl_extend("force", opts, {
+			s_row = current_row - 1,
+			s_col = current_col,
+			e_row = current_row - 1,
+			e_col = cur_line_length,
+			force_edge = true,
+		}))
+	end
+
+	vim.g.ug_prev_cursor = current_row
+	vim.g.ug_prev_buf = current_buf
+	vim.g.ug_prev_win = current_win
+end
+
 return M

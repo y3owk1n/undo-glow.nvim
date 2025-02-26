@@ -152,6 +152,10 @@ require("undo-glow").setup({
    hl = "UgComment", -- Same as above
    hl_color = { bg = "#FFB86C" }, -- Ugly purple color
   },
+  cursor = {
+   hl = "UgCursor", -- Same as above
+   hl_color = { bg = "#FF79C6" }, -- Ugly magenta color
+  },
  },
 }
 ```
@@ -189,6 +193,9 @@ return {
     },
     comment = {
      hl_color = { bg = "#6D5640" },
+    },
+    cursor = {
+     hl_color = { bg = "#C7709B" },
     },
    },
   },
@@ -293,9 +300,22 @@ return {
   init = function()
    vim.api.nvim_create_autocmd("TextYankPost", {
     desc = "Highlight when yanking (copying) text",
-    callback = require("undo-glow").yank,
+    callback = function()
+     vim.schedule(function()
+      require("undo-glow").yank()
+     end)
+    end,
    })
-  end,
+
+   vim.api.nvim_create_autocmd("CursorMoved", {
+    desc = "Highlight when cursor moved significantly",
+    callback = function()
+     vim.schedule(function()
+      require("undo-glow").cursor_moved()
+     end)
+    end,
+   })
+  end
  },
 }
 ```
@@ -320,6 +340,7 @@ The default colors are fairly ugly in my opinion, but they are sharp enough for 
 | **paste** | ***UgPaste*** | #8BE9FD |
 | **search** | ***UgSearch*** | #BD93F9 |
 | **comment** | ***UgComment*** | #FFB86C  |
+| **cursor** | ***UgCursor*** | #FF79C6  |
 
 <!-- colors:end -->
 
@@ -539,6 +560,31 @@ require("undo-glow").comment_line(opts) -- Comment lines with `gcc`.
 vim.keymap.set({ "n", "x" }, "gc", require("undo-glow").comment, { expr = true, noremap = true, desc = "Toggle comment with highlight" })
 vim.keymap.set("o", "gc", require("undo-glow").comment_text_object, { noremap = true, desc = "Comment textobject with highlight" })
 vim.keymap.set("n", "gcc", require("undo-glow").comment_line, { expr = true, noremap = true, desc = "Toggle comment line with highlight" })
+```
+
+<!-- config:end -->
+
+</details>
+
+#### Significant Cursor Moved Highlights
+
+> [!WARNING]
+> This is not a command and it is designed to be used in autocmd callback.
+
+```lua
+---@param opts? UndoGlow.CommandOpts
+require("undo-glow").cursor_moved(opts) -- Significant cursor moved with highlights.
+```
+
+<details><summary>Usage Example</summary>
+
+<!-- config:start -->
+
+```lua
+vim.api.nvim_create_autocmd("CursorMoved", {
+ desc = "Highlight when cursor moved significantly",
+ callback = require("undo-glow").cursor_moved,
+})
 ```
 
 <!-- config:end -->

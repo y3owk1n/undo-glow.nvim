@@ -5,7 +5,7 @@
 
 ---@class UndoGlow.Config
 ---@field animation? UndoGlow.Config.Animation
----@field highlights? table<"undo" | "redo" | "yank" | "paste" | "search" | "comment", { hl: string, hl_color: UndoGlow.HlColor }>
+---@field highlights? table<"undo" | "redo" | "yank" | "paste" | "search" | "comment" | "cursor", { hl: string, hl_color: UndoGlow.HlColor }>
 
 ---@class UndoGlow.EasingOpts
 ---@field time integer Elapsed time

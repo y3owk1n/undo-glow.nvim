@@ -13,6 +13,7 @@ function M.setup(user_config)
 		paste = true,
 		search = true,
 		comment = true,
+		cursor = true,
 	}
 
 	for key in pairs(M.config.highlights) do
@@ -28,6 +29,7 @@ function M.setup(user_config)
 		paste = "UgPaste",
 		search = "UgSearch",
 		comment = "UgComment",
+		cursor = "UgCursor",
 	}
 
 	for key, highlight in pairs(M.config.highlights) do
@@ -126,6 +128,14 @@ end
 function M.comment_line(opts)
 	local commands = require("undo-glow.commands")
 	return commands.comment_line(opts)
+end
+
+--- Cursor move command that highlights.
+--- For autocmd usage only.
+---@param opts? UndoGlow.CommandOpts
+function M.cursor_moved(opts)
+	local commands = require("undo-glow.commands")
+	return commands.cursor_moved(opts)
 end
 
 --- Core API to highlight changes in the current buffer.
