@@ -32,6 +32,10 @@ local config = {
 			hl = "UgComment",
 			hl_color = require("undo-glow.color").default_comment,
 		},
+		cursor = {
+			hl = "UgCursor",
+			hl_color = require("undo-glow.color").default_cursor,
+		},
 	},
 }
 
