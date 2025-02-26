@@ -246,6 +246,9 @@ describe("undo-glow.utils", function()
 				},
 				should_detach = false,
 			}
+
+			state = require("undo-glow.utils").create_state(state)
+
 			config = {} -- dummy config
 
 			-- Stub color functions (already stubbed above, but ensuring they exist here)
@@ -350,6 +353,19 @@ describe("undo-glow.utils", function()
 			assert.is_function(state.animation.easing)
 		end)
 
+		it("should substitute animation string to function", function()
+			local opts = {
+				hlgroup = "CustomHL",
+				animation = {
+					enabled = true,
+					duration = 200,
+					animation_type = "jitter",
+				},
+			}
+			local state = utils.create_state(opts)
+			assert.is_function(state.animation.animation_type)
+		end)
+
 		it("should set non configured to nil", function()
 			local opts = {
 				hlgroup = "CustomHL",
@@ -384,6 +400,7 @@ describe("undo-glow.utils", function()
 						easing = function(x)
 							return x
 						end,
+						animation_type = "jitter",
 						fps = 30,
 					},
 				},
@@ -392,7 +409,55 @@ describe("undo-glow.utils", function()
 			assert.equals(true, validated.state.animation.enabled)
 			assert.equals(150, validated.state.animation.duration)
 			assert.is_function(validated.state.animation.easing)
+			assert.is_function(validated.state.animation.animation_type)
 			assert.equals(30, validated.state.animation.fps)
+		end)
+	end)
+
+	describe("get_easing", function()
+		it("pass in function and should return function", function()
+			local easing = utils.get_easing(function(opts)
+				return 1
+			end)
+
+			assert.is_function(easing)
+		end)
+
+		it("pass in string and should return function", function()
+			local easing = utils.get_easing("linear")
+
+			assert.is_function(easing)
+		end)
+
+		it("any other opts will be nill", function()
+			local easing_empty = utils.get_easing()
+			local easing_wrong_string = utils.get_easing("hello")
+
+			assert.is_nil(easing_empty)
+			assert.is_nil(easing_wrong_string)
+		end)
+	end)
+
+	describe("get_animation_type", function()
+		it("pass in function and should return function", function()
+			local animation_type = utils.get_animation_type(function(opts) end)
+
+			assert.is_function(animation_type)
+		end)
+
+		it("pass in string and should return function", function()
+			local animation_type = utils.get_animation_type("fade")
+
+			assert.is_function(animation_type)
+		end)
+
+		it("any other opts will be nill", function()
+			local animation_type_empty = utils.get_animation_type()
+			local animation_type_wrong_string =
+				utils.get_animation_type("hello")
+
+			assert.is_nil(animation_type_empty)
+			assert.is_nil(animation_type_wrong_string)
 		end)
 	end)
 end)
