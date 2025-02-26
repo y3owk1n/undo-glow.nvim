@@ -76,18 +76,41 @@ end
 ---@param s_col integer Start column
 ---@param e_row integer End row
 ---@param e_col integer End column
+---@param force_edge? boolean
 ---@return integer
-function M.highlight_range(bufnr, hlgroup, s_row, s_col, e_row, e_col)
+function M.highlight_range(
+	bufnr,
+	hlgroup,
+	s_row,
+	s_col,
+	e_row,
+	e_col,
+	force_edge
+)
 	s_row, s_col, e_row, e_col =
 		M.sanitize_coords(bufnr, s_row, s_col, e_row, e_col)
 
-	local extmark_id = vim.api.nvim_buf_set_extmark(bufnr, M.ns, s_row, s_col, {
+	local opts = {
 		end_row = e_row,
 		end_col = e_col,
 		hl_group = hlgroup,
 		hl_mode = "combine",
-	})
+	}
 
+	if type(force_edge) == "boolean" and force_edge == true then
+		local line = vim.api.nvim_buf_get_lines(bufnr, s_row, s_row + 1, false)[1]
+			or ""
+		local text_width = vim.fn.strdisplaywidth(line)
+		local win_width = vim.api.nvim_win_get_width(0)
+		local pad = win_width - text_width
+		if pad > 0 then
+			opts.virt_text = { { string.rep(" ", pad), hlgroup } }
+			opts.virt_text_win_col = text_width
+		end
+	end
+
+	local extmark_id =
+		vim.api.nvim_buf_set_extmark(bufnr, M.ns, s_row, s_col, opts)
 	return extmark_id
 end
 
@@ -119,7 +142,8 @@ function M.handle_highlight(opts)
 			opts.s_row,
 			opts.s_col,
 			opts.e_row,
-			opts.e_col
+			opts.e_col,
+			opts.state.force_edge
 		)
 
 		M.animate_or_clear_highlights(
@@ -302,6 +326,7 @@ function M.create_state(opts)
 	return {
 		should_detach = false,
 		current_hlgroup = opts.hlgroup or "UgUndo",
+		force_edge = opts.force_edge or false,
 		animation = {
 			animation_type = M.get_animation_type(
 				opts.animation.animation_type
