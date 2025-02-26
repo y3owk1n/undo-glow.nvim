@@ -93,20 +93,12 @@ function M.animate.fade(opts)
 		end
 
 		vim.api.nvim_set_hl(0, opts.hlgroup, hl_opts)
-
-		-- if progress >= 1 then
-		-- 	return true
-		-- end
 	end)
 end
 
 ---@param opts UndoGlow.Animation
 function M.animate.blink(opts)
 	M.animate_start(opts, function(progress)
-		-- if progress >= 1 then
-		-- 	return true
-		-- end
-
 		local blink_period = 200
 		local phase = (progress * opts.duration % blink_period)
 			< (blink_period / 2)
@@ -133,10 +125,6 @@ end
 ---@param opts UndoGlow.Animation
 function M.animate.jitter(opts)
 	M.animate_start(opts, function(progress)
-		-- if progress >= 1 then
-		-- 	return true
-		-- end
-
 		local function jitter_color(rgb)
 			local function clamp(val)
 				return math.max(0, math.min(255, val))
@@ -192,11 +180,6 @@ function M.animate.pulse(opts)
 		end
 
 		vim.api.nvim_set_hl(0, opts.hlgroup, hl_opts)
-
-		-- Stop after total duration has elapsed
-		-- if progress >= 1 then
-		-- 	return true
-		-- end
 	end)
 end
 
