@@ -15,6 +15,15 @@ M.default_cursor = { bg = "#FF79C6" } -- Magenta
 ---@return UndoGlow.RGBColor
 function M.hex_to_rgb(hex)
 	hex = hex:gsub("#", "")
+
+	if #hex == 3 then
+		return {
+			r = tonumber(hex:sub(1, 1) .. hex:sub(1, 1), 16),
+			g = tonumber(hex:sub(2, 2) .. hex:sub(2, 2), 16),
+			b = tonumber(hex:sub(3, 3) .. hex:sub(3, 3), 16),
+		}
+	end
+
 	return {
 		r = tonumber(hex:sub(1, 2), 16),
 		g = tonumber(hex:sub(3, 4), 16),
