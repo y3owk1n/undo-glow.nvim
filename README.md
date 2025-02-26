@@ -498,7 +498,11 @@ require("undo-glow").yank(opts) -- Yank with highlights.
 ```lua
 vim.api.nvim_create_autocmd("TextYankPost", {
  desc = "Highlight when yanking (copying) text",
- callback = require("undo-glow").yank,
+ callback = function()
+  vim.schedule(function()
+  require("undo-glow").yank()
+  end)
+ end,
 })
 ```
 
@@ -575,6 +579,12 @@ vim.keymap.set("n", "gcc", require("undo-glow").comment_line, { expr = true, nor
 
 #### Significant Cursor Moved Highlights
 
+Best effort to imitate [beacon.nvim](https://github.com/DanilaMihailov/beacon.nvim) functionality. Highlights when:
+
+- Cursor moved more than 10 steps away
+- On buffer load
+- Split view supported
+
 > [!WARNING]
 > This is not a command and it is designed to be used in autocmd callback.
 
@@ -590,7 +600,11 @@ require("undo-glow").cursor_moved(opts) -- Significant cursor moved with highlig
 ```lua
 vim.api.nvim_create_autocmd("CursorMoved", {
  desc = "Highlight when cursor moved significantly",
- callback = require("undo-glow").cursor_moved,
+ callback = function()
+  vim.schedule(function()
+  require("undo-glow").cursor_moved()
+  end)
+ end,
 })
 ```
 
