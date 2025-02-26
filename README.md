@@ -405,6 +405,7 @@ Each builtin commands takes in optional `opts` take allows to configure **color*
 ---@class UndoGlow.CommandOpts
 ---@field hlgroup? string
 ---@field animation? UndoGlow.Config.Animation
+---@field force_edge? boolean Force highlight to extend to the end of the right side.
 
 ---@class UndoGlow.Config.Animation
 ---@field enabled? boolean Turn on or off for animation
@@ -554,6 +555,7 @@ vim.keymap.set("n", "gcc", require("undo-glow").comment_line, { expr = true, nor
 ---@class UndoGlow.HighlightChanges
 ---@field hlgroup? string -- Default to `UgUndo`
 ---@field animation? UndoGlow.Config.Animation
+---@field force_edge? boolean Force highlight to extend to the end of the right side.
 
 ---@class UndoGlow.Config.Animation
 ---@field enabled? boolean Turn on or off for animation
@@ -603,6 +605,7 @@ end
 ---@class UndoGlow.HighlightRegion
 ---@field hlgroup? string
 ---@field animation? UndoGlow.Config.Animation
+---@field force_edge? boolean Force highlight to extend to the end of the right side.
 ---@field s_row integer Start row
 ---@field s_col integer Start column
 ---@field e_row integer End row

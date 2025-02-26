@@ -31,6 +31,7 @@
 ---@field current_hlgroup string
 ---@field should_detach boolean
 ---@field animation? UndoGlow.Config.Animation
+---@field force_edge? boolean
 
 ---@class UndoGlow.RGBColor
 ---@field r integer Red (0-255)
@@ -40,6 +41,7 @@
 ---@class UndoGlow.CommandOpts
 ---@field hlgroup? string
 ---@field animation? UndoGlow.Config.Animation
+---@field force_edge? boolean
 
 ---@class UndoGlow.HighlightChanges : UndoGlow.CommandOpts
 

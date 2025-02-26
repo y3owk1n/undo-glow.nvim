@@ -66,40 +66,91 @@ describe("undo-glow.utils", function()
 	end)
 
 	describe("highlight_range", function()
-		local buf = 1
+		local bufnr
+
 		before_each(function()
-			vim.api.nvim_buf_set_extmark = function(
-				bufnr,
-				ns,
-				s_row,
-				s_col,
-				opts
-			)
-				return 42 -- Dummy extmark id.
-			end
-			vim.api.nvim_buf_line_count = function(bufnr)
-				return 3
-			end
-			vim.api.nvim_buf_get_lines = function(bufnr, start, stop, strict)
-				return { "Dummy" }
-			end
+			bufnr = vim.api.nvim_create_buf(false, true) -- Create a new buffer for testing
+			vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, {
+				"This is a test line",
+				"Another test line",
+				"Yet another line",
+			})
 		end)
 
-		it("should call sanitize_coords and return an extmark id", function()
-			local extmark_id = utils.highlight_range(buf, "TestHL", 0, 0, 0, 5)
-			assert.equals(42, extmark_id)
+		after_each(function()
+			vim.api.nvim_buf_delete(bufnr, { force = true }) -- Clean up buffer
+		end)
+
+		it("adds a highlight correctly", function()
+			local hlgroup = "Visual"
+			local s_row, s_col = 0, 5
+			local e_row, e_col = 0, 10
+			local extmark_id = utils.highlight_range(
+				bufnr,
+				hlgroup,
+				s_row,
+				s_col,
+				e_row,
+				e_col,
+				false
+			)
+
+			local extmark = vim.api.nvim_buf_get_extmark_by_id(
+				bufnr,
+				utils.ns,
+				extmark_id,
+				{ details = true }
+			)
+			assert.equals(extmark[3].hl_group, hlgroup)
+			assert.equals(extmark[3].end_row, s_row)
+			assert.equals(extmark[3].end_col, s_col)
+		end)
+
+		it("handles force_edge correctly", function()
+			local hlgroup = "Visual"
+			local s_row, s_col = 0, 5
+			local e_row, e_col = 0, 10
+			local extmark_id = utils.highlight_range(
+				bufnr,
+				hlgroup,
+				s_row,
+				s_col,
+				e_row,
+				e_col,
+				true
+			)
+
+			local extmark = vim.api.nvim_buf_get_extmark_by_id(
+				bufnr,
+				utils.ns,
+				extmark_id,
+				{ details = true }
+			)
+
+			assert.equals(extmark[3].hl_group, hlgroup)
+			assert.equals(extmark[3].end_row, s_row)
+			assert.equals(extmark[3].end_col, s_col)
+			assert.not_nil(extmark[3].virt_text)
 		end)
 	end)
 
 	describe("handle_highlight", function()
 		local opts
+		local bufnr
 		before_each(function()
+			bufnr = vim.api.nvim_create_buf(false, true) -- Create a new buffer for testing
+			vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, {
+				"This is a test line",
+				"Another test line",
+				"Yet another line",
+			})
+
 			opts = {
-				bufnr = 1,
+				bufnr = bufnr,
 				s_row = 0,
-				s_col = 0,
+				s_col = 5,
 				e_row = 0,
-				e_col = 5,
+				e_col = 10,
 				state = {
 					current_hlgroup = "TestHL",
 					animation = { enabled = false },
@@ -114,12 +165,13 @@ describe("undo-glow.utils", function()
 					},
 				},
 			}
-			vim.api.nvim_buf_is_valid = function(bufnr)
-				return true
-			end
 			-- Spy on functions within the utils module.
 			spy.on(utils, "highlight_range")
 			spy.on(utils, "animate_or_clear_highlights")
+		end)
+
+		after_each(function()
+			vim.api.nvim_buf_delete(bufnr, { force = true }) -- Clean up buffer
 		end)
 
 		it(
@@ -133,10 +185,7 @@ describe("undo-glow.utils", function()
 		)
 
 		it("should do nothing if the buffer is not valid", function()
-			vim.api.nvim_buf_is_valid = function(bufnr)
-				return false
-			end
-			-- Removed spy.reset calls as they are not available.
+			opts.bufnr = 999 -- set to a weird number
 			utils.handle_highlight(opts)
 			assert.spy(utils.highlight_range).was_not_called()
 			assert.spy(utils.animate_or_clear_highlights).was_not_called()
