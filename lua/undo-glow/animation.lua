@@ -20,8 +20,8 @@ local function animate_clear(opts, timer)
 end
 
 ---@param opts UndoGlow.Animation
----@param animate_fn fun(progress: number): true|nil `progress` is a number between 0 (start) - 1 (end) and return a `true` value when the animation should end.
-local function animate_start(opts, animate_fn)
+---@param animate_fn fun(progress: number) `progress` is a number between 0 (start) - 1 (end)
+function M.animate_start(opts, animate_fn)
 	local start_time = vim.uv.hrtime()
 	local interval = 1000 / opts.state.animation.fps
 	local timer = vim.uv.new_timer()
@@ -38,11 +38,12 @@ local function animate_start(opts, animate_fn)
 					local progress =
 						math.max(0, math.min(1, elapsed / opts.duration))
 
-					local status = animate_fn(progress)
-
-					if status == true then
+					if progress >= 1 then
 						animate_clear(opts, timer)
+						return
 					end
+
+					animate_fn(progress)
 				end)
 
 				if not success then
@@ -64,7 +65,7 @@ end
 -- Animate the fadeout of a highlight group from a start color to the Normal background
 ---@param opts UndoGlow.Animation
 function M.animate.fade(opts)
-	animate_start(opts, function(progress)
+	M.animate_start(opts, function(progress)
 		local eased = opts.state.animation.easing({
 			time = progress,
 			begin = 0,
@@ -93,18 +94,18 @@ function M.animate.fade(opts)
 
 		vim.api.nvim_set_hl(0, opts.hlgroup, hl_opts)
 
-		if progress >= 1 then
-			return true
-		end
+		-- if progress >= 1 then
+		-- 	return true
+		-- end
 	end)
 end
 
 ---@param opts UndoGlow.Animation
 function M.animate.blink(opts)
-	animate_start(opts, function(progress)
-		if progress >= 1 then
-			return true
-		end
+	M.animate_start(opts, function(progress)
+		-- if progress >= 1 then
+		-- 	return true
+		-- end
 
 		local blink_period = 200
 		local phase = (progress * opts.duration % blink_period)
@@ -131,10 +132,10 @@ end
 
 ---@param opts UndoGlow.Animation
 function M.animate.jitter(opts)
-	animate_start(opts, function(progress)
-		if progress >= 1 then
-			return true
-		end
+	M.animate_start(opts, function(progress)
+		-- if progress >= 1 then
+		-- 	return true
+		-- end
 
 		local function jitter_color(rgb)
 			local function clamp(val)
@@ -162,7 +163,7 @@ end
 
 ---@param opts UndoGlow.Animation
 function M.animate.pulse(opts)
-	animate_start(opts, function(progress)
+	M.animate_start(opts, function(progress)
 		local t = 0.5 * (1 - math.cos(2 * math.pi * progress))
 		local eased = opts.state.animation.easing({
 			time = t,
@@ -193,9 +194,9 @@ function M.animate.pulse(opts)
 		vim.api.nvim_set_hl(0, opts.hlgroup, hl_opts)
 
 		-- Stop after total duration has elapsed
-		if progress >= 1 then
-			return true
-		end
+		-- if progress >= 1 then
+		-- 	return true
+		-- end
 	end)
 end
 

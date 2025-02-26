@@ -259,9 +259,7 @@ function M.animate_or_clear_highlights(
 			state = state,
 		}
 
-		require("undo-glow.animation").animate[state.animation.animation_type](
-			animation_opts
-		)
+		state.animation.animation_type(animation_opts)
 	else
 		vim.defer_fn(function()
 			if vim.api.nvim_buf_is_valid(bufnr) then
@@ -305,7 +303,9 @@ function M.create_state(opts)
 		should_detach = false,
 		current_hlgroup = opts.hlgroup or "UgUndo",
 		animation = {
-			animation_type = opts.animation.animation_type or nil,
+			animation_type = M.get_animation_type(
+				opts.animation.animation_type
+			) or nil,
 			enabled = opts.animation.enabled or nil,
 			duration = opts.animation.duration or nil,
 			easing = M.get_easing(opts.animation.easing) or nil,
@@ -325,7 +325,7 @@ function M.validate_state_for_highlight(opts)
 	-- Check animation_type and fallback to global
 	if not opts.state.animation.animation_type then
 		opts.state.animation.animation_type =
-			opts.config.animation.animation_type
+			M.get_animation_type(opts.config.animation.animation_type)
 	end
 
 	-- Check duration and fallback to global
@@ -354,6 +354,19 @@ function M.get_easing(easing)
 	end
 	if type(easing) == "string" then
 		return require("undo-glow.easing")[easing]
+	end
+
+	return nil
+end
+
+---@param animation_type? UndoGlow.AnimationTypeString|UndoGlow.AnimationTypeFn
+---@return UndoGlow.AnimationTypeFn|nil
+function M.get_animation_type(animation_type)
+	if type(animation_type) == "function" then
+		return animation_type
+	end
+	if type(animation_type) == "string" then
+		return require("undo-glow.animation").animate[animation_type]
 	end
 
 	return nil

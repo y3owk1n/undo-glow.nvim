@@ -91,7 +91,8 @@ require("undo-glow").setup({
 ### Default Options
 
 ```lua
----@alias UndoGlow.AnimationType "fade" | "blink" | "pulse" | "jitter"
+---@alias UndoGlow.AnimationTypeString "fade" | "blink" | "pulse" | "jitter"
+---@alias UndoGlow.AnimationTypeFn fun(opts: UndoGlow.Animation)
 ---@alias UndoGlow.EasingString "linear" | "in_quad" | "out_quad" | "in_out_quad" | "out_in_quad" | "in_cubic" | "out_cubic" | "in_out_cubic" | "out_in_cubic" | "in_quart" | "out_quart" | "in_out_quart" | "out_in_quart" | "in_quint" | "out_quint" | "in_out_quint" | "out_in_quint" | "in_sine" | "out_sine" | "in_out_sine" | "out_in_sine" | "in_expo" | "out_expo" | "in_out_expo" | "out_in_expo" | "in_circ" | "out_circ" | "in_out_circ" | "out_in_circ" | "in_elastic" | "out_elastic" | "in_out_elastic" | "out_in_elastic" | "in_back" | "out_back" | "in_out_back" | "out_in_back" | "in_bounce" | "out_bounce" | "in_out_bounce" | "out_in_bounce"
 ---@alias UndoGlow.EasingFn fun(opts: UndoGlow.EasingOpts): integer
 
@@ -102,7 +103,7 @@ require("undo-glow").setup({
 ---@class UndoGlow.Config.Animation
 ---@field enabled? boolean Turn on or off for animation
 ---@field duration? number Highlight duration in ms
----@field animation_type? UndoGlow.AnimationType
+---@field animation_type? UndoGlow.AnimationTypeString | UndoGlow.AnimationTypeFn A animation_type string or function that does the animation
 ---@field easing? UndoGlow.EasingString | UndoGlow.EasingFn A easing string or function that computes easing.
 ---@field fps? number Normally either 60 / 120, up to you
 
@@ -408,7 +409,7 @@ Each builtin commands takes in optional `opts` take allows to configure **color*
 ---@class UndoGlow.Config.Animation
 ---@field enabled? boolean Turn on or off for animation
 ---@field duration? number Highlight duration in ms
----@field animation_type? UndoGlow.AnimationType
+---@field animation_type? UndoGlow.AnimationTypeString | UndoGlow.AnimationTypeFn A animation_type string or function that does the animation
 ---@field easing? UndoGlow.EasingString | UndoGlow.EasingFn A easing string or function that computes easing.
 ---@field fps? number Normally either 60 / 120, up to you
 ```
@@ -557,7 +558,7 @@ vim.keymap.set("n", "gcc", require("undo-glow").comment_line, { expr = true, nor
 ---@class UndoGlow.Config.Animation
 ---@field enabled? boolean Turn on or off for animation
 ---@field duration? number Highlight duration in ms
----@field animation_type? UndoGlow.AnimationType
+---@field animation_type? UndoGlow.AnimationTypeString | UndoGlow.AnimationTypeFn A animation_type string or function that does the animation
 ---@field easing? UndoGlow.EasingString | UndoGlow.EasingFn A easing string or function that computes easing.
 ---@field fps? number Normally either 60 / 120, up to you
 
@@ -610,7 +611,7 @@ end
 ---@class UndoGlow.Config.Animation
 ---@field enabled? boolean Turn on or off for animation
 ---@field duration? number Highlight duration in ms
----@field animation_type? UndoGlow.AnimationType
+---@field animation_type? UndoGlow.AnimationTypeString | UndoGlow.AnimationTypeFn A animation_type string or function that does the animation
 ---@field easing? UndoGlow.EasingString | UndoGlow.EasingFn A easing string or function that computes easing.
 ---@field fps? number Normally either 60 / 120, up to you
 
@@ -712,38 +713,116 @@ vim.api.nvim_create_autocmd({ "BufReadPost", "TextChanged" }, {
 > If you wish to, every different action can have different animation configurations.
 
 ```lua
----@alias AnimationType "fade" | "blink" | "pulse" | "jitter"
+---@alias UndoGlow.AnimationTypeString "fade" <- default | "blink" | "pulse" | "jitter"
+---@alias UndoGlow.AnimationTypeFn fun(opts: UndoGlow.Animation)
+
+
+---@field animation_type? UndoGlow.AnimationTypeString | UndoGlow.AnimationTypeFn A animation_type string or function that does the animation
 ```
 
-#### No Animation
+#### Animation previews
+
+##### No Animation
 
 Static highlight and will be cleared after a duration immediately.
 
 <https://github.com/user-attachments/assets/7ea4b7fb-9c04-445c-a397-914b76c240f1>
 
-#### Fade (Default)
+##### Fade (Default)
 
 Gradually increases or decreases the opacity of the highlight, creating a smooth fading effect.
 
 <https://github.com/user-attachments/assets/06820af3-1c37-445c-9e3d-946c277d946a>
 
-#### Blink
+##### Blink
 
 Toggles the highlight on and off at a fixed interval, similar to a cursor blink.
 
 <https://github.com/user-attachments/assets/8afee494-f9a0-4eef-9c9e-86a5c0c56eae>
 
-#### Pulse
+##### Pulse
 
 Alternates the highlight intensity in a rhythmic manner, creating a breathing effect.
 
 <https://github.com/user-attachments/assets/57c9f86a-f1e6-424c-a885-caf288b594fc>
 
-#### Jitter
+##### Jitter
 
 Rapidly moves or shifts the highlight slightly, giving a shaky or vibrating appearance.
 
 <https://github.com/user-attachments/assets/8627ee17-2ac7-4571-a897-3422cebe0e1b>
+
+#### Changing animation from configuration
+
+##### Animation type in string
+
+```lua
+-- configuration opts
+{
+ animation = {
+  --- rest of configurations
+  animation_type = "jitter" -- one of the 4 builtin
+  --- rest of configurations
+ }
+}
+```
+
+##### Animation type in function
+
+> [!warning]
+> This API is just re-exported from the source code and that's exactly how the animation internally works.
+> There's a lot of manual configuration for now, and I don't think lots of people will want to configure their own animation.
+> But hey, if you need to, it's there for you.
+
+```lua
+-- configuration opts
+{
+ animation = {
+  --- rest of configurations
+  animation_type = function(opts)
+   require("undo-glow").animate_start(opts, function(progress)
+    -- do something for your animation
+    -- normally you will do some calculation with the progress value (0 = start, 1 = end)
+    -- and set the colors accordingly
+    -- view the source code for more examples
+   end)
+  end
+  --- rest of configurations
+ }
+}
+```
+
+##### Example using `blink` animation from source code
+
+```lua
+-- configuration opts
+{
+ animation = {
+  --- rest of configurations
+  animation_type = function(opts)
+   require("undo-glow").animate_start(opts, function(progress)
+      local blink_period = 200
+      local phase = (progress * opts.duration % blink_period) < (blink_period / 2)
+
+      if phase then
+       local hl_opts = { bg = require("undo-glow.color").rgb_to_hex(opts.start_bg) }
+       if opts.start_fg then
+        hl_opts.fg = require("undo-glow.color").rgb_to_hex(opts.start_fg)
+       end
+       vim.api.nvim_set_hl(0, opts.hlgroup, hl_opts)
+      else
+       local hl_opts = { bg = require("undo-glow.color").rgb_to_hex(opts.end_bg) }
+       if opts.start_fg then
+        hl_opts.fg = require("undo-glow.color").rgb_to_hex(opts.end_fg)
+       end
+       vim.api.nvim_set_hl(0, opts.hlgroup, hl_opts)
+      end
+   end)
+  end
+  --- rest of configurations
+ }
+}
+```
 
 ### Easing
 

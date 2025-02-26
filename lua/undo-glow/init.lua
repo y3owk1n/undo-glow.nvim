@@ -1,5 +1,6 @@
 local M = {}
----@alias UndoGlow.AnimationType "fade" | "blink" | "pulse" | "jitter"
+---@alias UndoGlow.AnimationTypeString "fade" | "blink" | "pulse" | "jitter"
+---@alias UndoGlow.AnimationTypeFn fun(opts: UndoGlow.Animation)
 ---@alias UndoGlow.EasingString "linear" | "in_quad" | "out_quad" | "in_out_quad" | "out_in_quad" | "in_cubic" | "out_cubic" | "in_out_cubic" | "out_in_cubic" | "in_quart" | "out_quart" | "in_out_quart" | "out_in_quart" | "in_quint" | "out_quint" | "in_out_quint" | "out_in_quint" | "in_sine" | "out_sine" | "in_out_sine" | "out_in_sine" | "in_expo" | "out_expo" | "in_out_expo" | "out_in_expo" | "in_circ" | "out_circ" | "in_out_circ" | "out_in_circ" | "in_elastic" | "out_elastic" | "in_out_elastic" | "out_in_elastic" | "in_back" | "out_back" | "in_out_back" | "out_in_back" | "in_bounce" | "out_bounce" | "in_out_bounce" | "out_in_bounce"
 ---@alias UndoGlow.EasingFn fun(opts: UndoGlow.EasingOpts): integer
 
@@ -19,7 +20,7 @@ local M = {}
 ---@class UndoGlow.Config.Animation
 ---@field enabled? boolean Turn on or off for animation
 ---@field duration? number Highlight duration in ms
----@field animation_type? UndoGlow.AnimationType
+---@field animation_type? UndoGlow.AnimationTypeString | UndoGlow.AnimationTypeFn A animation_type string or function that does the animation
 ---@field easing? UndoGlow.EasingString | UndoGlow.EasingFn A easing string or function that computes easing.
 ---@field fps? number Normally either 60 / 120, up to you
 
@@ -68,7 +69,6 @@ local M = {}
 ---@field e_row integer End row
 ---@field e_col integer End column
 
-M.easing = require("undo-glow.easing")
 M.config = require("undo-glow.config")
 
 ---@param user_config? UndoGlow.Config
@@ -110,6 +110,12 @@ function M.setup(user_config)
 end
 
 ------- Public API -------
+
+--- re-exports all easing functions
+M.easing = require("undo-glow.easing")
+
+--- re-exports animate_start function only
+M.animate_start = require("undo-glow.animation").animate_start
 
 --- Undo command that highlights.
 ---@param opts? UndoGlow.CommandOpts
