@@ -123,7 +123,7 @@ require("undo-glow").setup({
  animation = {
   enabled = false, -- whether to turn on or off for animation
   duration = 100, -- in ms
-  animation_type = "fade", -- default to "fade"
+  animation_type = "fade", -- default to "fade", see more at animation section on how to change or create your own
   fps = 120, -- change the fps, normally either 60 / 120, but it can be whatever number
   easing = "in_out_cubic", -- see more at easing section on how to change and create your own
  },
