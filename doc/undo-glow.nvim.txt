@@ -99,6 +99,12 @@ COMMENT ~
 <https://github.com/user-attachments/assets/624db7db-6b50-437b-a92c-966ad2246d70>
 
 
+SIGNIFICANT CURSOR MOVEMENT (LIKE BEACON.NVIM) ~
+
+
+<https://github.com/user-attachments/assets/d59645b6-7473-4de5-9dbc-9389cd6580c2>
+
+
 INSTALLATION                      *undo-glow.nvim-undo-glow.nvim-installation*
 
 Using lazy.nvim <https://github.com/folke/lazy.nvim>
