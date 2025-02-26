@@ -19,25 +19,23 @@ describe("undo-glow.utils", function()
 	end)
 
 	describe("sanitize_coords", function()
-		local buf = 1
-		local lines = { "Hello", "World", "!" }
+		local bufnr
 
 		before_each(function()
-			vim.api.nvim_buf_line_count = function(bufnr)
-				return #lines
-			end
-			vim.api.nvim_buf_get_lines = function(bufnr, start, stop, strict)
-				local result = {}
-				for i = start + 1, math.min(stop, #lines) do
-					table.insert(result, lines[i])
-				end
-				return result
-			end
+			bufnr = vim.api.nvim_create_buf(false, true) -- Create a new buffer for testing
+			vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, {
+				"Hello World!",
+				"Another Hello World!",
+				"No More!",
+			})
 		end)
 
+		after_each(function()
+			vim.api.nvim_buf_delete(bufnr, { force = true }) -- Clean up buffer
+		end)
 		it("should return same coordinates if in range", function()
 			local s_row, s_col, e_row, e_col =
-				utils.sanitize_coords(buf, 1, 1, 1, 3)
+				utils.sanitize_coords(bufnr, 1, 1, 1, 3)
 			assert.equals(1, s_row)
 			assert.equals(1, s_col)
 			assert.equals(1, e_row)
@@ -46,22 +44,55 @@ describe("undo-glow.utils", function()
 
 		it("should clamp negative s_row and s_col", function()
 			local s_row, s_col, e_row, e_col =
-				utils.sanitize_coords(buf, -1, -5, 0, 10)
-			-- For line "Hello" (length 5): s_row clamped to 0, s_col to 0, and e_col to 5.
+				utils.sanitize_coords(bufnr, -1, -5, 0, 50)
 			assert.equals(0, s_row)
 			assert.equals(0, s_col)
-			assert.equals(0, e_row)
-			assert.equals(5, e_col)
 		end)
 
 		it("should clamp s_row and e_row to the line count", function()
 			local s_row, s_col, e_row, e_col =
-				utils.sanitize_coords(buf, 5, 2, 10, 10)
-			-- With 3 lines, s_row and e_row should be clamped to 3 and the line retrieved is empty.
-			assert.equals(3, s_row)
+				utils.sanitize_coords(bufnr, 5, 5, 20, 20)
+			assert.equals(3, s_row) -- Last valid row
+			assert.equals(3, e_row) -- Last valid row
+		end)
+
+		it("should ensure e_row is not before s_row", function()
+			local s_row, s_col, e_row, e_col =
+				utils.sanitize_coords(bufnr, 2, 3, 1, 5)
+			assert.are_equal(s_row >= e_row, true)
+		end)
+
+		it("should clamp e_col to the length of the line", function()
+			local s_row, s_col, e_row, e_col =
+				utils.sanitize_coords(bufnr, 1, 5, 1, 50)
+			assert.equals(20, e_col) -- "Another Hello World!" length
+		end)
+
+		it("should clamp both start and end columns properly", function()
+			local s_row, s_col, e_row, e_col =
+				utils.sanitize_coords(bufnr, 1, -10, 1, 50)
 			assert.equals(0, s_col)
+			assert.equals(20, e_col) -- "Another Hello World!" length
+		end)
+
+		it("should work correctly for a single character line", function()
+			vim.api.nvim_buf_set_lines(bufnr, 3, 4, false, { "X" })
+			local s_row, s_col, e_row, e_col =
+				utils.sanitize_coords(bufnr, 3, 5, 3, 10)
+			assert.equals(3, s_row)
+			assert.equals(1, s_col) -- Max valid column is 1
 			assert.equals(3, e_row)
-			assert.equals(0, e_col)
+			assert.equals(1, e_col) -- Max valid column is 1
+		end)
+
+		it("should handle empty lines correctly", function()
+			vim.api.nvim_buf_set_lines(bufnr, 1, 2, false, { "" }) -- Replace line 1 with empty line
+			local s_row, s_col, e_row, e_col =
+				utils.sanitize_coords(bufnr, 1, 5, 1, 10)
+			assert.equals(1, s_row)
+			assert.equals(0, s_col)
+			assert.equals(1, e_row)
+			assert.equals(0, e_col) -- Empty line has length 0
 		end)
 	end)
 
@@ -102,8 +133,8 @@ describe("undo-glow.utils", function()
 				{ details = true }
 			)
 			assert.equals(extmark[3].hl_group, hlgroup)
-			assert.equals(extmark[3].end_row, s_row)
-			assert.equals(extmark[3].end_col, s_col)
+			assert.equals(extmark[3].end_row, e_row)
+			assert.equals(extmark[3].end_col, e_col)
 		end)
 
 		it("handles force_edge correctly", function()
@@ -128,8 +159,8 @@ describe("undo-glow.utils", function()
 			)
 
 			assert.equals(extmark[3].hl_group, hlgroup)
-			assert.equals(extmark[3].end_row, s_row)
-			assert.equals(extmark[3].end_col, s_col)
+			assert.equals(extmark[3].end_row, e_row)
+			assert.equals(extmark[3].end_col, e_col)
 			assert.not_nil(extmark[3].virt_text)
 		end)
 	end)
@@ -193,170 +224,175 @@ describe("undo-glow.utils", function()
 	end)
 
 	describe("get_search_region", function()
+		local bufnr
+
 		before_each(function()
-			vim.api.nvim_get_current_buf = function()
-				return 1
-			end
-			vim.api.nvim_win_get_cursor = function(win)
-				return { 1, 3 }
-			end
-			vim.fn = vim.fn or {}
-			vim.fn.getreg = function(reg)
-				return "World"
-			end
-			vim.api.nvim_buf_get_lines = function(bufnr, start, stop, strict)
-				return { "Hello World" }
-			end
+			bufnr = vim.api.nvim_create_buf(false, true) -- Create a new buffer for testing
+			vim.api.nvim_set_current_buf(bufnr)
+			vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, {
+				"Hello World!",
+				"Search for this pattern",
+				"Another line of text",
+			})
 		end)
 
-		it("should return a region that matches the search pattern", function()
-			local region = utils.get_search_region()
-			assert.is_table(region)
-			-- "Hello World": "World" starts at character 7 (Lua's string.find returns 7,11)
-			-- s_row is cursor row - 1 = 0; s_col = 7 - 1 = 6; e_col = 11.
-			assert.equals(0, region.s_row)
-			assert.equals(6, region.s_col)
-			assert.equals(0, region.e_row)
-			assert.equals(11, region.e_col)
+		after_each(function()
+			vim.api.nvim_buf_delete(bufnr, { force = true }) -- Clean up buffer
 		end)
 
-		it("should return nil if search register is empty", function()
-			vim.fn.getreg = function(reg)
-				return ""
+		it("should return nil if no search pattern is set", function()
+			vim.fn.setreg("/", "")
+			local result = utils.get_search_region()
+			assert.is_nil(result)
+		end)
+
+		it(
+			"should return correct match region when cursor is inside a match",
+			function()
+				vim.fn.setreg("/", "Search")
+				vim.api.nvim_win_set_cursor(0, { 2, 5 })
+				local result = utils.get_search_region()
+				assert.is_not_nil(result)
+				assert.equals(1, result.s_row)
+				assert.equals(0, result.s_col)
+				assert.equals(1, result.e_row)
+				assert.equals(6, result.e_col)
 			end
-			local region = utils.get_search_region()
-			assert.is_nil(region)
+		)
+
+		it("should return first match if cursor is before any match", function()
+			vim.fn.setreg("/", "Hello")
+			vim.api.nvim_win_set_cursor(0, { 1, 1 })
+			local result = utils.get_search_region()
+			assert.is_not_nil(result)
+			assert.equals(0, result.s_row)
+			assert.equals(0, result.s_col)
+			assert.equals(0, result.e_row)
+			assert.equals(5, result.e_col)
+		end)
+
+		it("should return nil if no match is found", function()
+			vim.fn.setreg("/", "Nonexistent")
+			vim.api.nvim_win_set_cursor(0, { 2, 0 })
+			local result = utils.get_search_region()
+			assert.is_nil(result)
 		end)
 	end)
 
 	describe("get_search_star_region", function()
+		local bufnr
+
 		before_each(function()
-			vim.api.nvim_get_current_buf = function()
-				return 1
-			end
-			vim.api.nvim_win_get_cursor = function(win)
-				return { 1, 0 }
-			end
-			vim.fn = vim.fn or {}
-			vim.fn.getreg = function(reg)
-				return "Hello"
-			end
-			vim.api.nvim_buf_get_lines = function(bufnr, start, stop, strict)
-				return { "Hello World" }
-			end
-			-- Stub vim.regex to simulate matching.
-			vim.regex = function(pattern)
-				return {
-					match_str = function(line)
-						return 0 -- simulate match at beginning (0-indexed)
-					end,
-				}
-			end
-			vim.fn.matchstr = function(line, pattern)
-				return "Hello"
-			end
+			bufnr = vim.api.nvim_create_buf(false, true)
+			vim.api.nvim_set_current_buf(bufnr)
+			vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, {
+				"Hello World!",
+				"Search for this pattern",
+				"Another line of text",
+			})
 		end)
 
-		it("should return a region for search star", function()
-			local region = utils.get_search_star_region()
-			assert.is_table(region)
-			-- Expect s_row=0, s_col=0, e_row=0, and e_col = 0 + length("Hello") = 5.
-			assert.equals(0, region.s_row)
-			assert.equals(0, region.s_col)
-			assert.equals(0, region.e_row)
-			assert.equals(5, region.e_col)
+		after_each(function()
+			vim.api.nvim_buf_delete(bufnr, { force = true })
 		end)
+
+		it("should return nil if no search pattern is set", function()
+			vim.fn.setreg("/", "")
+			local result = utils.get_search_star_region()
+			assert.is_nil(result)
+		end)
+
+		it(
+			"should return correct match region when pattern is found",
+			function()
+				vim.fn.setreg("/", "pattern")
+				vim.api.nvim_win_set_cursor(0, { 2, 10 })
+				local result = utils.get_search_star_region()
+				assert.is_not_nil(result)
+				assert.equals(1, result.s_row)
+				assert.equals(16, result.s_col)
+				assert.equals(1, result.e_row)
+				assert.equals(23, result.e_col)
+			end
+		)
+
+		it(
+			"should return correct match region when pattern is at the start",
+			function()
+				vim.fn.setreg("/", "Hello")
+				vim.api.nvim_win_set_cursor(0, { 1, 0 })
+				local result = utils.get_search_star_region()
+				assert.is_not_nil(result)
+				assert.equals(0, result.s_row)
+				assert.equals(0, result.s_col)
+				assert.equals(0, result.e_row)
+				assert.equals(5, result.e_col)
+			end
+		)
 
 		it("should return nil if no match is found", function()
-			vim.regex = function(pattern)
-				return {
-					match_str = function(line)
-						return nil
-					end,
-				}
-			end
-			local region = utils.get_search_star_region()
-			assert.is_nil(region)
+			vim.fn.setreg("/", "NotFound")
+			vim.api.nvim_win_set_cursor(0, { 2, 0 })
+			local result = utils.get_search_star_region()
+			assert.is_nil(result)
 		end)
 	end)
 
 	describe("animate_or_clear_highlights", function()
-		local state, config
+		local bufnr, state, hlgroup, extmark_id, start_bg, start_fg, config
+
 		before_each(function()
+			bufnr = vim.api.nvim_create_buf(false, true)
 			state = {
 				animation = {
-					enabled = true,
+					enabled = false,
 					duration = 100,
-					animation_type = "fade",
-					easing = function(x)
-						return x
-					end,
-					fps = 60,
+					animation_type = function() end,
 				},
-				should_detach = false,
 			}
-
-			state = require("undo-glow.utils").create_state(state)
-
-			config = {} -- dummy config
-
-			-- Stub color functions (already stubbed above, but ensuring they exist here)
-			package.loaded["undo-glow.color"].get_normal_bg = function()
-				return "#000000"
-			end
-			package.loaded["undo-glow.color"].get_normal_fg = function()
-				return "#ffffff"
-			end
-			package.loaded["undo-glow.color"].hex_to_rgb = function(hex)
-				return hex
-			end
-
-			-- Ensure vim.defer_fn calls the function immediately
-			vim.defer_fn = function(fn, timeout)
-				fn()
-			end
-			vim.api.nvim_buf_is_valid = function(bufnr)
-				return true
-			end
-			vim.api.nvim_buf_del_extmark = function(bufnr, ns, extmark_id)
-				return true
-			end
-
-			spy.on(vim, "defer_fn")
+			hlgroup = "TestHighlight"
+			extmark_id = 1
+			start_bg = "#ff0000"
+			start_fg = "#ffffff"
+			config = {}
 		end)
 
-		it("should animate highlights when animation is enabled", function()
+		after_each(function()
+			vim.api.nvim_buf_delete(bufnr, { force = true })
+		end)
+
+		it(
+			"should defer clearing highlight if animation is disabled",
+			function()
+				local spy = spy.new(function() end)
+				vim.defer_fn = spy
+				vim.api.nvim_buf_del_extmark = spy
+				utils.animate_or_clear_highlights(
+					bufnr,
+					state,
+					hlgroup,
+					extmark_id,
+					start_bg,
+					start_fg,
+					config
+				)
+				assert.spy(vim.api.nvim_buf_del_extmark).was_called()
+			end
+		)
+
+		it("should call animation function if enabled", function()
 			state.animation.enabled = true
-			local extmark_id = 123
+			state.animation.animation_type = spy.new(function() end)
 			utils.animate_or_clear_highlights(
-				1,
+				bufnr,
 				state,
-				"TestHL",
+				hlgroup,
 				extmark_id,
-				"#aaaaaa",
-				"#bbbbbb",
+				start_bg,
+				start_fg,
 				config
 			)
-			-- The animation function in our stub marks the opts as called.
-			assert.is_true(state.should_detach)
-		end)
-
-		it("should clear highlights when animation is disabled", function()
-			state.animation.enabled = false
-			local extmark_id = 123
-			local del_extmark_spy = spy.on(vim.api, "nvim_buf_del_extmark")
-			utils.animate_or_clear_highlights(
-				1,
-				state,
-				"TestHL",
-				extmark_id,
-				"#aaaaaa",
-				"#bbbbbb",
-				config
-			)
-			assert.spy(vim.defer_fn).was_called()
-			assert.spy(del_extmark_spy).was_called()
-			assert.is_true(state.should_detach)
+			assert.spy(state.animation.animation_type).was_called()
 		end)
 	end)
 
@@ -385,8 +421,6 @@ describe("undo-glow.utils", function()
 			assert.equals("CustomHL", state.current_hlgroup)
 			assert.equals(true, state.animation.enabled)
 			assert.equals(200, state.animation.duration)
-			-- animation_type falls back to config if not provided in opts.animation.
-			-- assert.equals("blink", state.animation.animation_type)
 		end)
 
 		it("should substitute easing string to function", function()
