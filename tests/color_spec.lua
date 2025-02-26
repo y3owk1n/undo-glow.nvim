@@ -1,3 +1,5 @@
+---@module 'luassert'
+
 local color = require("undo-glow.color")
 
 describe("undo-glow.color", function()
