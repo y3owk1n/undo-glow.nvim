@@ -536,7 +536,11 @@ Usage Example ~
 >lua
     vim.api.nvim_create_autocmd("TextYankPost", {
      desc = "Highlight when yanking (copying) text",
-     callback = require("undo-glow").yank,
+     callback = function()
+      vim.schedule(function()
+      require("undo-glow").yank()
+      end)
+     end,
     })
 <
 
@@ -595,6 +599,13 @@ Usage Example ~
 
 SIGNIFICANT CURSOR MOVED HIGHLIGHTS
 
+Best effort to imitate beacon.nvim
+<https://github.com/DanilaMihailov/beacon.nvim> functionality. Highlights when:
+
+- Cursor moved more than 10 steps away
+- On buffer load
+- Split view supported
+
 
   [!WARNING] This is not a command and it is designed to be used in autocmd
   callback.
@@ -608,7 +619,11 @@ Usage Example ~
 >lua
     vim.api.nvim_create_autocmd("CursorMoved", {
      desc = "Highlight when cursor moved significantly",
-     callback = require("undo-glow").cursor_moved,
+     callback = function()
+      vim.schedule(function()
+      require("undo-glow").cursor_moved()
+      end)
+     end,
     })
 <
 
