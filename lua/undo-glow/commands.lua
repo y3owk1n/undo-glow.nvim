@@ -48,7 +48,10 @@ end
 
 ---@param opts? UndoGlow.CommandOpts
 function M.search_next(opts)
+	vim.g.ug_ignore_cursor_moved = true
+
 	local ok = pcall(vim.cmd, "normal! n")
+
 	if not ok then
 		return
 	end
@@ -70,7 +73,10 @@ end
 
 ---@param opts? UndoGlow.CommandOpts
 function M.search_prev(opts)
+	vim.g.ug_ignore_cursor_moved = true
+
 	local ok = pcall(vim.cmd, "normal! N")
+
 	if not ok then
 		return
 	end
@@ -93,7 +99,10 @@ end
 
 ---@param opts? UndoGlow.CommandOpts
 function M.search_star(opts)
+	vim.g.ug_ignore_cursor_moved = true
+
 	local ok = pcall(vim.cmd, "normal! *")
+
 	if not ok then
 		return
 	end
@@ -155,21 +164,29 @@ function M.cursor_moved(opts)
 	local new_buffer = (prev_buf ~= current_buf)
 	local new_window = (prev_win ~= current_win)
 
-	if diff > 10 or new_buffer or new_window then
-		local cur_line = vim.api.nvim_get_current_line()
-		local cur_line_length = #cur_line
-		require("undo-glow").highlight_region(vim.tbl_extend("force", opts, {
-			s_row = current_row - 1,
-			s_col = current_col,
-			e_row = current_row - 1,
-			e_col = cur_line_length,
-			force_edge = true,
-		}))
+	if not vim.g.ug_ignore_cursor_moved then
+		if diff > 10 or new_buffer or new_window then
+			local cur_line = vim.api.nvim_get_current_line()
+			local cur_line_length = #cur_line
+			require("undo-glow").highlight_region(
+				vim.tbl_extend("force", opts, {
+					s_row = current_row - 1,
+					s_col = current_col,
+					e_row = current_row - 1,
+					e_col = cur_line_length,
+					force_edge = true,
+				})
+			)
+		end
 	end
 
 	vim.g.ug_prev_cursor = current_row
 	vim.g.ug_prev_buf = current_buf
 	vim.g.ug_prev_win = current_win
+
+	if vim.g.ug_ignore_cursor_moved == true then
+		vim.g.ug_ignore_cursor_moved = nil
+	end
 end
 
 return M
