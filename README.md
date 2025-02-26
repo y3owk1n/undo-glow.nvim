@@ -56,6 +56,10 @@ There are alot of similars plugins that you can simply find from github. The mai
 
 <https://github.com/user-attachments/assets/624db7db-6b50-437b-a92c-966ad2246d70>
 
+### Significant Cursor Movement (Like beacon.nvim)
+
+<https://github.com/user-attachments/assets/d59645b6-7473-4de5-9dbc-9389cd6580c2>
+
 ## 📦 Installation
 
 Using [lazy.nvim](https://github.com/folke/lazy.nvim):
