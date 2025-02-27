@@ -35,6 +35,7 @@ There are alot of similars plugins that you can simply find from github. The mai
 - [highlight-undo.nvim](https://github.com/tzachar/highlight-undo.nvim)
 - [tiny-glimmer.nvim](https://github.com/rachartier/tiny-glimmer.nvim)
 - [emission.nvim](https://github.com/aileot/emission.nvim)
+- [beacon.nvim](https://github.com/DanilaMihailov/beacon.nvim)
 
 ## 👀 Previews
 
