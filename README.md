@@ -24,11 +24,18 @@ This project is feature complete at this point. The rest of the commits will be 
 
 There are alot of similars plugins that you can simply find from github. The main differences of **undo-glow.nvim** from the rest are:
 
-- Configurable animation and colors everywhere (Globally or per action, including your custom actions)
+- Configurable animations, easings and colors everywhere (Globally or per action, including your custom actions)
 - Expose APIs for you to even create your own actions that can highlight
 - Create custom easings if the builtin easings are not enough for you
-- Do not hijack your keymaps and silently creates autocmd (Do it your own in your config)
+- Do not hijack your keymaps or silently creates autocmd (Do it your own in your config instead)
 - You can use it as a library to create other plugins or integration with another plugins, since we are exposing the core APIs that are handling highlights
+
+### Alternative to
+
+- [highlight-undo.nvim](https://github.com/tzachar/highlight-undo.nvim)
+- [tiny-glimmer.nvim](https://github.com/rachartier/tiny-glimmer.nvim)
+- [emission.nvim](https://github.com/aileot/emission.nvim)
+- [beacon.nvim](https://github.com/DanilaMihailov/beacon.nvim)
 
 ## 👀 Previews
 
