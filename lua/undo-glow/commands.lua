@@ -181,6 +181,15 @@ function M.cursor_moved(opts)
 		return
 	end
 
+	local is_preview_window = vim.wo.previewwindow
+
+	local is_floating_window = vim.api.nvim_win_get_config(current_win).relative
+		~= ""
+
+	if is_preview_window or is_floating_window then
+		return
+	end
+
 	local current_row, current_col = unpack(vim.api.nvim_win_get_cursor(0))
 
 	local prev_buf = vim.g.ug_prev_buf or current_buf
