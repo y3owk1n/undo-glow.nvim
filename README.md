@@ -28,7 +28,7 @@ There are alot of similars plugins that you can simply find from github. The mai
 - Expose APIs for you to even create your own actions that can highlight
 - Create custom easings if the builtin easings are not enough for you
 - Do not hijack your keymaps and silently creates autocmd (Do it your own in your config)
-- You can use it as a library to create other plugins, since we are exposing the core APIs that are handling highlights
+- You can use it as a library to create other plugins or integration with another plugins, since we are exposing the core APIs that are handling highlights
 
 ## 👀 Previews
 
@@ -173,9 +173,7 @@ require("undo-glow").setup({
 return {
  {
   "y3owk1n/undo-glow.nvim",
-  -- dir = "~/Dev/undo-glow.nvim", -- Your path
   event = { "VeryLazy" },
-  ---@module 'undo-glow'
   ---@type UndoGlow.Config
   opts = {
    animation = {
@@ -446,8 +444,10 @@ Each builtin commands takes in optional `opts` take allows to configure **color*
 #### Undo Highlights
 
 ```lua
----@param opts? UndoGlow.CommandOpts
-require("undo-glow").undo(opts) -- Undo command with highlights
+---Undo command that highlights.
+---@param opts? UndoGlow.CommandOpts Optional command option
+---@return nil
+require("undo-glow").undo(opts)
 ```
 
 <details><summary>Usage Example</summary>
@@ -465,8 +465,10 @@ vim.keymap.set("n", "u", require("undo-glow").undo, { noremap = true, desc = "Un
 #### Redo Highlights
 
 ```lua
----@param opts? UndoGlow.CommandOpts
-require("undo-glow").redo(opts) -- Redo command with highlights
+---Redo command that highlights.
+---@param opts? UndoGlow.CommandOpts Optional command option
+---@return nil
+require("undo-glow").redo(opts)
 ```
 
 <details><summary>Usage Example</summary>
@@ -487,8 +489,11 @@ vim.keymap.set("n", "<C-r>", require("undo-glow").redo, { noremap = true, desc =
 > This is not a command and it is designed to be used in autocmd callback.
 
 ```lua
----@param opts? UndoGlow.CommandOpts
-require("undo-glow").yank(opts) -- Yank with highlights.
+---Yank command that highlights.
+---For autocmd usage only.
+---@param opts? UndoGlow.CommandOpts Optional command option
+---@return nil
+require("undo-glow").yank(opts)
 ```
 
 <details><summary>Usage Example</summary>
@@ -513,9 +518,15 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 #### Paste Highlights
 
 ```lua
----@param opts? UndoGlow.CommandOpts
-require("undo-glow").paste_below(opts) -- Paste below command with highlights
-require("undo-glow").paste_above(opts) -- Paste above command with highlights
+---Paste below command with highlights.
+---@param opts? UndoGlow.CommandOpts Optional command option
+---@return nil
+require("undo-glow").paste_below(opts)
+
+---Paste above command with highlights.
+---@param opts? UndoGlow.CommandOpts Optional command option
+---@return nil
+require("undo-glow").paste_above(opts)
 ```
 
 <details><summary>Usage Example</summary>
@@ -534,10 +545,20 @@ vim.keymap.set("n", "P", require("undo-glow").paste_above, { noremap = true, des
 #### Search Highlights
 
 ```lua
----@param opts? UndoGlow.CommandOpts
-require("undo-glow").search_next(opts) -- Search next command with highlights
-require("undo-glow").search_prev(opts) -- Search prev command with highlights
-require("undo-glow").search_star(opts) -- Search current word with "*" with highlights
+---Search next command with highlights.
+---@param opts? UndoGlow.CommandOpts Optional command option
+---@return nil
+require("undo-glow").search_next(opts)
+
+---Search prev command with highlights.
+---@param opts? UndoGlow.CommandOpts Optional command option
+---@return nil
+require("undo-glow").search_prev(opts)
+
+---Search star (*) command with highlights.
+---@param opts? UndoGlow.CommandOpts Optional command option
+---@return nil
+require("undo-glow").search_star(opts)
 ```
 
 <details><summary>Usage Example</summary>
@@ -557,9 +578,21 @@ vim.keymap.set("n", "*", require("undo-glow").search_star, { noremap = true, des
 #### Comment Highlights
 
 ```lua
----@param opts? UndoGlow.CommandOpts
-require("undo-glow").comment(opts) -- Comment with `gc` in `n` and `x` mode
-require("undo-glow").comment_textobject(opts) -- Comment with `gc` in `o` mode. E.g. gcip, gcap, etc
+---Comment with `gc` in `n` and `x` mode with highlights.
+---Requires `expr` = true in ``vim.keymap.set`
+---@param opts? UndoGlow.CommandOpts Optional command option
+---@return string|nil expression String for expression and nil for non-expression
+require("undo-glow").comment(opts)
+
+---Comment with `gc` in `o` mode. E.g. gcip, gcap, etc with highlights.
+---@param opts? UndoGlow.CommandOpts Optional command option
+---@return nil
+require("undo-glow").comment_textobject(opts)
+
+---Comment lines with `gcc` with highlights.
+---Requires `expr` = true in ``vim.keymap.set`
+---@param opts? UndoGlow.CommandOpts Optional command option
+---@return string expression String for expression
 require("undo-glow").comment_line(opts) -- Comment lines with `gcc`.
 ```
 
@@ -589,8 +622,11 @@ Best effort to imitate [beacon.nvim](https://github.com/DanilaMihailov/beacon.nv
 > This is not a command and it is designed to be used in autocmd callback.
 
 ```lua
----@param opts? UndoGlow.CommandOpts
-require("undo-glow").cursor_moved(opts) -- Significant cursor moved with highlights.
+---Cursor move command that highlights.
+---For autocmd usage only.
+---@param opts? UndoGlow.CommandOpts Optional command option
+---@return nil
+require("undo-glow").cursor_moved(opts)
 ```
 
 <details><summary>Usage Example</summary>
@@ -602,7 +638,7 @@ vim.api.nvim_create_autocmd("CursorMoved", {
  desc = "Highlight when cursor moved significantly",
  callback = function()
   vim.schedule(function()
-  require("undo-glow").cursor_moved()
+   require("undo-glow").cursor_moved()
   end)
  end,
 })
@@ -631,8 +667,10 @@ vim.api.nvim_create_autocmd("CursorMoved", {
 ---@field easing? UndoGlow.EasingString | UndoGlow.EasingFn A easing string or function that computes easing.
 ---@field fps? number Normally either 60 / 120, up to you
 
----@param opts? UndoGlow.HighlightChanges
-require("undo-glow").highlight_changes(opts) -- API to highlight text changes
+---Core API to highlight changes in the current buffer.
+---@param opts? UndoGlow.HighlightChanges|UndoGlow.CommandOpts
+---@return nil
+require("undo-glow").highlight_changes(opts)
 ```
 
 ##### Usage
@@ -654,11 +692,13 @@ vim.keymap.set("n", "key_that_you_like", some_action, { silent = true })
 <!-- config:start -->
 
 ```lua
----@param opts? UndoGlow.CommandOpts
+---Undo command that highlights.
+---@param opts? UndoGlow.CommandOpts Optional command option
+---@return nil
 function M.undo(opts)
  opts = require("undo-glow.utils").merge_command_opts("UgUndo", opts)
  require("undo-glow").highlight_changes(opts)
- vim.cmd("undo")
+ pcall(vim.cmd, "undo")
 end
 ```
 
@@ -685,8 +725,10 @@ end
 ---@field easing? UndoGlow.EasingString | UndoGlow.EasingFn A easing string or function that computes easing.
 ---@field fps? number Normally either 60 / 120, up to you
 
---- @param opts UndoGlow.HighlightRegion Options for highlighting the region:
-require("undo-glow").highlight_region(opts) -- API to highlight certain region without text changes
+---Core API to highlight a specified region in the current buffer.
+---@param opts UndoGlow.HighlightRegion
+---@return nil
+require("undo-glow").highlight_region(opts)
 ```
 
 ##### Usage Example
@@ -719,7 +761,10 @@ vim.keymap.set("n", "key_that_you_like", some_action, { silent = true })
 <!-- config:start -->
 
 ```lua
----@param opts? UndoGlow.CommandOpts
+---Yank command that highlights.
+---For autocmd usage only.
+---@param opts? UndoGlow.CommandOpts Optional command option
+---@return nil
 function M.yank(opts)
  opts = require("undo-glow.utils").merge_command_opts("UgYank", opts)
 
@@ -785,7 +830,6 @@ vim.api.nvim_create_autocmd({ "BufReadPost", "TextChanged" }, {
 ```lua
 ---@alias UndoGlow.AnimationTypeString "fade" <- default | "blink" | "pulse" | "jitter"
 ---@alias UndoGlow.AnimationTypeFn fun(opts: UndoGlow.Animation)
-
 
 ---@field animation_type? UndoGlow.AnimationTypeString | UndoGlow.AnimationTypeFn A animation_type string or function that does the animation
 ```

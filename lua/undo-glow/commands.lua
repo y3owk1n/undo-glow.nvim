@@ -1,21 +1,27 @@
 local M = {}
 
----@param opts? UndoGlow.CommandOpts
+---Undo command that highlights.
+---@param opts? UndoGlow.CommandOpts Optional command option
+---@return nil
 function M.undo(opts)
 	opts = require("undo-glow.utils").merge_command_opts("UgUndo", opts)
 	require("undo-glow").highlight_changes(opts)
 	pcall(vim.cmd, "undo")
 end
 
----@param opts? UndoGlow.CommandOpts
+---Redo command that highlights.
+---@param opts? UndoGlow.CommandOpts Optional command option
+---@return nil
 function M.redo(opts)
 	opts = require("undo-glow.utils").merge_command_opts("UgRedo", opts)
 	require("undo-glow").highlight_changes(opts)
 	pcall(vim.cmd, "redo")
 end
 
---- Helper to use this in autocmds. Do not use this as a command, it does nothing.
----@param opts? UndoGlow.CommandOpts
+---Yank command that highlights.
+---For autocmd usage only.
+---@param opts? UndoGlow.CommandOpts Optional command option
+---@return nil
 function M.yank(opts)
 	opts = require("undo-glow.utils").merge_command_opts("UgYank", opts)
 
@@ -30,7 +36,9 @@ function M.yank(opts)
 	}))
 end
 
----@param opts? UndoGlow.CommandOpts
+---Paste below command with highlights.
+---@param opts? UndoGlow.CommandOpts Optional command option
+---@return nil
 function M.paste_below(opts)
 	opts = require("undo-glow.utils").merge_command_opts("UgPaste", opts)
 	require("undo-glow").highlight_changes(opts)
@@ -38,7 +46,9 @@ function M.paste_below(opts)
 	pcall(vim.cmd, string.format('normal! "%sp"', register))
 end
 
----@param opts? UndoGlow.CommandOpts
+---Paste above command with highlights.
+---@param opts? UndoGlow.CommandOpts Optional command option
+---@return nil
 function M.paste_above(opts)
 	opts = require("undo-glow.utils").merge_command_opts("UgPaste", opts)
 	require("undo-glow").highlight_changes(opts)
@@ -46,7 +56,9 @@ function M.paste_above(opts)
 	pcall(vim.cmd, string.format('normal! "%sP"', register))
 end
 
----@param opts? UndoGlow.CommandOpts
+---Search next command with highlights.
+---@param opts? UndoGlow.CommandOpts Optional command option
+---@return nil
 function M.search_next(opts)
 	vim.g.ug_ignore_cursor_moved = true
 
@@ -71,7 +83,9 @@ function M.search_next(opts)
 	}))
 end
 
----@param opts? UndoGlow.CommandOpts
+---Search prev command with highlights.
+---@param opts? UndoGlow.CommandOpts Optional command option
+---@return nil
 function M.search_prev(opts)
 	vim.g.ug_ignore_cursor_moved = true
 
@@ -97,7 +111,9 @@ function M.search_prev(opts)
 	}))
 end
 
----@param opts? UndoGlow.CommandOpts
+---Search star (*) command with highlights.
+---@param opts? UndoGlow.CommandOpts Optional command option
+---@return nil
 function M.search_star(opts)
 	vim.g.ug_ignore_cursor_moved = true
 
@@ -122,28 +138,39 @@ function M.search_star(opts)
 	}))
 end
 
----@param opts? UndoGlow.CommandOpts
+---Comment with `gc` in `n` and `x` mode with highlights.
+---Requires `expr` = true in ``vim.keymap.set`
+---@param opts? UndoGlow.CommandOpts Optional command option
+---@return string|nil expression String for expression and nil for non-expression
 function M.comment(opts)
 	opts = require("undo-glow.utils").merge_command_opts("UgComment", opts)
 	require("undo-glow").highlight_changes(opts)
 	return require("vim._comment").operator()
 end
 
----@param opts? UndoGlow.CommandOpts
+---Comment with `gc` in `o` mode. E.g. gcip, gcap, etc with highlights.
+---@param opts? UndoGlow.CommandOpts Optional command option
+---@return nil
 function M.comment_textobject(opts)
 	opts = require("undo-glow.utils").merge_command_opts("UgComment", opts)
 	require("undo-glow").highlight_changes(opts)
 	return require("vim._comment").textobject()
 end
 
----@param opts? UndoGlow.CommandOpts
+---Comment lines with `gcc` with highlights.
+---Requires `expr` = true in ``vim.keymap.set`
+---@param opts? UndoGlow.CommandOpts Optional command option
+---@return string expression String for expression
 function M.comment_line(opts)
 	opts = require("undo-glow.utils").merge_command_opts("UgComment", opts)
 	require("undo-glow").highlight_changes(opts)
 	return require("vim._comment").operator() .. "_"
 end
 
----@param opts? UndoGlow.CommandOpts
+---Cursor move command that highlights.
+---For autocmd usage only.
+---@param opts? UndoGlow.CommandOpts Optional command option
+---@return nil
 function M.cursor_moved(opts)
 	opts = require("undo-glow.utils").merge_command_opts("UgCursor", opts)
 

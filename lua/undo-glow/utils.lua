@@ -4,8 +4,10 @@ local counter = 0 -- For unique highlight groups
 
 M.ns = vim.api.nvim_create_namespace("undo-glow")
 
----@param base string
----@return string
+---Generates a unique highlight group name based on the given base.
+---Increments an internal counter and appends it to the base string.
+---@param base string The base name for the highlight group.
+---@return string unique_hlgroup The unique highlight group name.
 function M.get_unique_hlgroup(base)
 	counter = counter + 1
 
@@ -16,13 +18,16 @@ function M.get_unique_hlgroup(base)
 	return base .. "_" .. counter
 end
 
--- Sanitize coordinates to prevent out-of-range
----@param bufnr integer Buffer number
----@param s_row integer Start row
----@param s_col integer Start column
----@param e_row integer End row
----@param e_col integer End column
----@return integer, integer, integer, integer
+---Sanitizes coordinates to ensure they fall within the valid range for the given buffer.
+---@param bufnr integer Buffer number.
+---@param s_row integer Start row.
+---@param s_col integer Start column.
+---@param e_row integer End row.
+---@param e_col integer End column.
+---@return integer start_row Sanitized start row (1-based).
+---@return integer start_col Sanitized start column (1-based).
+---@return integer end_row Sanitized end row (1-based).
+---@return integer end_col Sanitized end column (1-based).
 function M.sanitize_coords(bufnr, s_row, s_col, e_row, e_col)
 	local line_count = vim.api.nvim_buf_line_count(bufnr)
 
@@ -69,15 +74,16 @@ function M.sanitize_coords(bufnr, s_row, s_col, e_row, e_col)
 	return s_row, s_col, e_row, e_col
 end
 
--- Highlight a range in the buffer
----@param bufnr integer Buffer number
----@param hlgroup string Highlight group
----@param s_row integer Start row
----@param s_col integer Start column
----@param e_row integer End row
----@param e_col integer End column
----@param force_edge? boolean
----@return integer
+---Highlights a range in the buffer using an extmark.
+---Optionally forces edge highlighting by padding the virtual text.
+---@param bufnr integer Buffer number.
+---@param hlgroup string Highlight group name.
+---@param s_row integer Start row.
+---@param s_col integer Start column.
+---@param e_row integer End row.
+---@param e_col integer End column.
+---@param force_edge? boolean Optional flag to force edge highlighting.
+---@return integer extmark_id Extmark ID for the created highlight.
 function M.highlight_range(
 	bufnr,
 	hlgroup,
@@ -114,7 +120,10 @@ function M.highlight_range(
 	return extmark_id
 end
 
----@param opts UndoGlow.HandleHighlight
+---Handles highlighting for a buffer by validating state, applying animations (if enabled),
+---and ultimately setting up the extmark.
+---@param opts UndoGlow.HandleHighlight The handle highlight options.
+---@return nil
 function M.handle_highlight(opts)
 	if vim.api.nvim_buf_is_valid(opts.bufnr) then
 		opts = M.validate_state_for_highlight(opts)
@@ -158,7 +167,8 @@ function M.handle_highlight(opts)
 	end
 end
 
----@return UndoGlow.RowCol | nil
+---Determines the region of the current search pattern based on the cursor position.
+---@return UndoGlow.RowCol|nil region A table containing s_row, s_col, e_row, and e_col for the search region, or nil if not found.
 function M.get_search_region()
 	local bufnr = vim.api.nvim_get_current_buf()
 	local cursor = vim.api.nvim_win_get_cursor(0)
@@ -212,7 +222,8 @@ function M.get_search_region()
 	}
 end
 
----@return UndoGlow.RowCol | nil
+---Determines the "search star" region based on the current search pattern and cursor position.
+---@return UndoGlow.RowCol|nil region A table containing s_row, s_col, e_row, and e_col for the search star region, or nil if not found.
 function M.get_search_star_region()
 	local bufnr = vim.api.nvim_get_current_buf()
 	local cursor = vim.api.nvim_win_get_cursor(0)
@@ -245,14 +256,16 @@ function M.get_search_star_region()
 	}
 end
 
--- Animate or clear highlights after a duration
----@param bufnr integer Buffer number
----@param state UndoGlow.State State
----@param hlgroup string Unique highlight group name
----@param extmark_id integer
----@param start_bg string The starting background color (hex)
----@param start_fg? string The starting foreground color (hex)
----@param config UndoGlow.Config
+---Animates or clears highlights after a duration based on the state configuration.
+---If animations are enabled, it invokes the animation callback; otherwise, it defers the removal of the extmark.
+---@param bufnr integer Buffer number.
+---@param state UndoGlow.State The state containing animation configuration.
+---@param hlgroup string Unique highlight group name.
+---@param extmark_id integer The extmark ID of the highlight.
+---@param start_bg string The starting background color (hex).
+---@param start_fg? string The starting foreground color (hex).
+---@param config UndoGlow.Config The configuration options.
+---@return nil
 function M.animate_or_clear_highlights(
 	bufnr,
 	state,
@@ -299,9 +312,10 @@ function M.animate_or_clear_highlights(
 	state.should_detach = true
 end
 
----@param hlgroup string
----@param opts? UndoGlow.CommandOpts
----@return UndoGlow.CommandOpts
+---Merges a given highlight group into the command options.
+---@param hlgroup string The highlight group name.
+---@param opts? UndoGlow.CommandOpts Optional command options.
+---@return UndoGlow.CommandOpts The merged command options.
 function M.merge_command_opts(hlgroup, opts)
 	opts = vim.tbl_extend("force", {
 		hlgroup = hlgroup,
@@ -317,8 +331,9 @@ function M.merge_command_opts(hlgroup, opts)
 	return opts
 end
 
----@param opts? UndoGlow.CommandOpts
----@return UndoGlow.State
+---Creates a state table from the provided command options.
+---@param opts? UndoGlow.CommandOpts Optional command options.
+---@return UndoGlow.State The created state table.
 function M.create_state(opts)
 	opts = opts or {}
 	opts.animation = opts.animation or {}
@@ -339,8 +354,9 @@ function M.create_state(opts)
 	}
 end
 
----@param opts UndoGlow.HandleHighlight
----@return UndoGlow.HandleHighlight
+---Validates and updates the state for highlighting by falling back to configuration defaults when necessary.
+---@param opts UndoGlow.HandleHighlight The handle highlight options.
+---@return UndoGlow.HandleHighlight The validated and updated handle highlight options.
 function M.validate_state_for_highlight(opts)
 	-- Check animation status and fallback to global
 	if type(opts.state.animation.enabled) ~= "boolean" then
@@ -371,8 +387,10 @@ function M.validate_state_for_highlight(opts)
 	return opts
 end
 
----@param easing? UndoGlow.EasingString|UndoGlow.EasingFn
----@return UndoGlow.EasingFn|nil
+---Retrieves an easing function based on the provided option.
+---Accepts either a function or a string key to look up the easing function.
+---@param easing? UndoGlow.EasingString|UndoGlow.EasingFn The easing option.
+---@return UndoGlow.EasingFn|nil easing_fn The easing function, or nil if not found.
 function M.get_easing(easing)
 	if type(easing) == "function" then
 		return easing
@@ -384,8 +402,10 @@ function M.get_easing(easing)
 	return nil
 end
 
----@param animation_type? UndoGlow.AnimationTypeString|UndoGlow.AnimationTypeFn
----@return UndoGlow.AnimationTypeFn|nil
+---Retrieves an animation type function based on the provided option.
+---Accepts either a function or a string key to look up the animation type function.
+---@param animation_type? UndoGlow.AnimationTypeString|UndoGlow.AnimationTypeFn The animation type option.
+---@return UndoGlow.AnimationTypeFn|nil animation_type_fn The animation type function, or nil if not found.
 function M.get_animation_type(animation_type)
 	if type(animation_type) == "function" then
 		return animation_type
