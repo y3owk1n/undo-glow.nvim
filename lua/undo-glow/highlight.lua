@@ -1,16 +1,19 @@
 local M = {}
 
----@param name string Highlight name
----@param color UndoGlow.HlColor
+---Sets a highlight group if it does not exist.
+---@param name string The name of the highlight group.
+---@param color UndoGlow.HlColor The highlight color options (bg, fg, etc.).
 function M.set_highlight(name, color)
 	if vim.fn.hlexists(name) == 0 then
 		vim.api.nvim_set_hl(0, name, color)
 	end
 end
 
----@param from string Highlight name
----@param to string Highlight name
----@param color UndoGlow.HlColor
+---Links one highlight group to another by fetching the target group's colors.
+---If the target highlight group defines colors, they are formatted and applied to the source.
+---@param from string The source highlight group name.
+---@param to string The target highlight group name.
+---@param color UndoGlow.HlColor The default color settings.
 function M.link_highlight(from, to, color)
 	local toHl = vim.api.nvim_get_hl(0, { name = to })
 
@@ -31,9 +34,12 @@ function M.link_highlight(from, to, color)
 	})
 end
 
----@param target_hlgroup string
----@param config_hl string
----@param config_hl_color UndoGlow.HlColor
+---Sets up a highlight group based on configuration.
+---If the configured highlight group differs from the target, the groups are linked;
+---otherwise, the highlight is set directly.
+---@param target_hlgroup string The target highlight group name.
+---@param config_hl string The configured highlight group name.
+---@param config_hl_color UndoGlow.HlColor The configured highlight color options.
 function M.setup_highlight(target_hlgroup, config_hl, config_hl_color)
 	if config_hl ~= target_hlgroup then
 		M.link_highlight(target_hlgroup, config_hl, config_hl_color)
@@ -42,8 +48,9 @@ function M.setup_highlight(target_hlgroup, config_hl, config_hl_color)
 	end
 end
 
----@param hlgroup string
----@return vim.api.keyset.hl_info
+---Resolves a highlight group by following its links until a concrete definition is found.
+---@param hlgroup string The starting highlight group name.
+---@return vim.api.keyset.hl_info resolved_hl_info The final resolved highlight group details.
 function M.resolve_hlgroup(hlgroup)
 	local seen = {}
 	while hlgroup do

@@ -2,8 +2,10 @@ local M = {}
 
 M.animate = {}
 
----@param opts UndoGlow.Animation
----@param timer uv.uv_timer_t
+---Function to clear the animation when complete
+---@param opts UndoGlow.Animation The animation options.
+---@param timer uv.uv_timer_t The timer instance used for animation.
+---@return nil
 local function animate_clear(opts, timer)
 	timer:stop()
 	if not vim.uv.is_closing(timer) then
@@ -19,8 +21,11 @@ local function animate_clear(opts, timer)
 	vim.cmd("hi clear " .. opts.hlgroup)
 end
 
----@param opts UndoGlow.Animation
----@param animate_fn fun(progress: number) `progress` is a number between 0 (start) - 1 (end)
+--- Starts an animation.
+--- Repeatedly calls the provided animation function with a progress value between 0 and 1 until the animation completes.
+--- @param opts UndoGlow.Animation The animation options.
+--- @param animate_fn fun(progress: number): nil A function that receives the current progress (0 = start, 1 = end).
+--- @return nil
 function M.animate_start(opts, animate_fn)
 	local start_time = vim.uv.hrtime()
 	local interval = 1000 / opts.state.animation.fps
@@ -62,8 +67,9 @@ function M.animate_start(opts, animate_fn)
 	end
 end
 
--- Animate the fadeout of a highlight group from a start color to the Normal background
----@param opts UndoGlow.Animation
+--- Fades out a highlight group from a start color to the normal background.
+--- @param opts UndoGlow.Animation The animation options.
+--- @return nil
 function M.animate.fade(opts)
 	M.animate_start(opts, function(progress)
 		local eased = opts.state.animation.easing({
@@ -96,7 +102,9 @@ function M.animate.fade(opts)
 	end)
 end
 
----@param opts UndoGlow.Animation
+--- Blinks a highlight group by alternating between the start and end colors.
+--- @param opts UndoGlow.Animation The animation options.
+--- @return nil
 function M.animate.blink(opts)
 	M.animate_start(opts, function(progress)
 		local blink_period = 200
@@ -122,9 +130,11 @@ function M.animate.blink(opts)
 	end)
 end
 
----@param opts UndoGlow.Animation
+--- Applies a jitter effect to a highlight group by randomly altering the colors.
+--- @param opts UndoGlow.Animation The animation options.
+--- @return nil
 function M.animate.jitter(opts)
-	M.animate_start(opts, function(progress)
+	M.animate_start(opts, function(_)
 		local function jitter_color(rgb)
 			local function clamp(val)
 				return math.max(0, math.min(255, val))
@@ -149,7 +159,9 @@ function M.animate.jitter(opts)
 	end)
 end
 
----@param opts UndoGlow.Animation
+--- Pulses a highlight group by rhythmically blending the start and end colors.
+--- @param opts UndoGlow.Animation The animation options.
+--- @return nil
 function M.animate.pulse(opts)
 	M.animate_start(opts, function(progress)
 		local t = 0.5 * (1 - math.cos(2 * math.pi * progress))

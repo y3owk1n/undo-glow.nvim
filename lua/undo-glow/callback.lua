@@ -1,6 +1,6 @@
 local M = {}
 
---- Callback to track changes
+---Callback to track changes
 ---@param state UndoGlow.State State
 ---@param config UndoGlow.Config
 ---@param _err any Error

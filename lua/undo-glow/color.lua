@@ -10,9 +10,10 @@ M.default_search = { bg = "#BD93F9" } -- Purple
 M.default_comment = { bg = "#FFB86C" } -- Orange
 M.default_cursor = { bg = "#FF79C6" } -- Magenta
 
--- Utility functions for color manipulation and easing
----@param hex string
----@return UndoGlow.RGBColor
+---Converts a hexadecimal color string to an RGB table.
+---Examples: "#FFF" or "#FFFFFF"
+---@param hex string The hexadecimal color string.
+---@return UndoGlow.RGBColor rgb_color The RGB representation of the hex color.
 function M.hex_to_rgb(hex)
 	hex = hex:gsub("#", "")
 
@@ -30,16 +31,19 @@ function M.hex_to_rgb(hex)
 		b = tonumber(hex:sub(5, 6), 16),
 	}
 end
----@param rgb UndoGlow.RGBColor
----@return string
+
+---Converts an RGB table to a hexadecimal color string.
+---@param rgb UndoGlow.RGBColor The RGB color table.
+---@return string hex_code The hexadecimal representation of the color.
 function M.rgb_to_hex(rgb)
 	return string.format("#%02X%02X%02X", rgb.r, rgb.g, rgb.b)
 end
 
----@param c1 UndoGlow.RGBColor
----@param c2 UndoGlow.RGBColor
----@param t number (0-1) Interpolation factor
----@return string
+---Blends two RGB colors together based on an interpolation factor.
+---@param c1 UndoGlow.RGBColor The starting color.
+---@param c2 UndoGlow.RGBColor The ending color.
+---@param t number (0-1) Interpolation factor.
+---@return string hex_code The blended color as a hexadecimal string.
 function M.blend_color(c1, c2, t)
 	local r = math.floor(c1.r + (c2.r - c1.r) * t + 0.5)
 	local g = math.floor(c1.g + (c2.g - c1.g) * t + 0.5)
@@ -47,7 +51,8 @@ function M.blend_color(c1, c2, t)
 	return M.rgb_to_hex({ r = r, g = g, b = b })
 end
 
----@return string
+---Retrieves the Normal highlight group's background color.
+---@return string hex_code The Normal highlight group's background color as a hexadecimal string.
 function M.get_normal_bg()
 	local normal = vim.api.nvim_get_hl(0, { name = "Normal" })
 	if normal.bg then
@@ -57,7 +62,8 @@ function M.get_normal_bg()
 	end
 end
 
----@return string
+---Retrieves the Normal highlight group's foreground color.
+---@return string hex_code The Normal highlight group's foreground color as a hexadecimal string.
 function M.get_normal_fg()
 	local normal = vim.api.nvim_get_hl(0, { name = "Normal" })
 	if normal.fg then
@@ -67,8 +73,9 @@ function M.get_normal_fg()
 	end
 end
 
----@param current_hlgroup_detail vim.api.keyset.hl_info
----@return UndoGlow.HlColor
+---Initializes colors based on the current highlight group details.
+---@param current_hlgroup_detail vim.api.keyset.hl_info The current highlight group details.
+---@return UndoGlow.HlColor colors The initial colors table containing bg and fg.
 function M.init_colors(current_hlgroup_detail)
 	local init_color = {
 		bg = nil,
