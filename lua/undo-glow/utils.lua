@@ -317,6 +317,8 @@ end
 ---@param opts? UndoGlow.CommandOpts Optional command options.
 ---@return UndoGlow.CommandOpts The merged command options.
 function M.merge_command_opts(hlgroup, opts)
+	opts = (type(opts) == "table") and opts or {}
+
 	opts = vim.tbl_extend("force", {
 		hlgroup = hlgroup,
 		animation = {
@@ -326,7 +328,7 @@ function M.merge_command_opts(hlgroup, opts)
 			easing = nil,
 			fps = nil,
 		},
-	}, opts or {})
+	}, opts)
 
 	return opts
 end

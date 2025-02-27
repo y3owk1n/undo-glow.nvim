@@ -409,6 +409,33 @@ describe("undo-glow.utils", function()
 			assert.is_nil(result.animation.easing)
 			assert.is_nil(result.animation.fps)
 		end)
+		it(
+			"should merge command options with defaults if opts is empty table",
+			function()
+				local opts = {}
+				local result = utils.merge_command_opts("TestHL", opts)
+				assert.equals("TestHL", result.hlgroup)
+				assert.is_table(result.animation)
+				-- The merged animation table should have the keys forced to nil.
+				assert.is_nil(result.animation.enabled)
+				assert.is_nil(result.animation.animation_type)
+				assert.is_nil(result.animation.duration)
+				assert.is_nil(result.animation.easing)
+				assert.is_nil(result.animation.fps)
+			end
+		)
+		it("should merge command options with defaults if opts is 0", function()
+			local opts = 0
+			local result = utils.merge_command_opts("TestHL", opts)
+			assert.equals("TestHL", result.hlgroup)
+			assert.is_table(result.animation)
+			-- The merged animation table should have the keys forced to nil.
+			assert.is_nil(result.animation.enabled)
+			assert.is_nil(result.animation.animation_type)
+			assert.is_nil(result.animation.duration)
+			assert.is_nil(result.animation.easing)
+			assert.is_nil(result.animation.fps)
+		end)
 	end)
 
 	describe("create_state", function()
