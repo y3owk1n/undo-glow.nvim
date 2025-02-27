@@ -149,10 +149,11 @@ end
 ---Cursor move command that highlights.
 ---For autocmd usage only.
 ---@param opts? UndoGlow.CommandOpts Optional command option
+---@param ignored_ft? table<string> Optional filetypes to ignore
 ---@return nil
-function M.cursor_moved(opts)
+function M.cursor_moved(opts, ignored_ft)
 	local commands = require("undo-glow.commands")
-	return commands.cursor_moved(opts)
+	return commands.cursor_moved(opts, ignored_ft)
 end
 
 ---Core API to highlight changes in the current buffer.

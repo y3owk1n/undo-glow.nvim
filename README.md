@@ -618,6 +618,13 @@ Best effort to imitate [beacon.nvim](https://github.com/DanilaMihailov/beacon.nv
 - On buffer load
 - Split view supported
 
+For now the following are ignored:
+
+- Preview windows
+- Floating windows
+- Buffers that are not text buffers
+- Filetypes that are passed in to be ignored
+
 > [!WARNING]
 > This is not a command and it is designed to be used in autocmd callback.
 
@@ -625,8 +632,9 @@ Best effort to imitate [beacon.nvim](https://github.com/DanilaMihailov/beacon.nv
 ---Cursor move command that highlights.
 ---For autocmd usage only.
 ---@param opts? UndoGlow.CommandOpts Optional command option
+---@param ignored_ft? table<string> Optional filetypes to ignore
 ---@return nil
-require("undo-glow").cursor_moved(opts)
+require("undo-glow").cursor_moved(opts, ignored_ft)
 ```
 
 <details><summary>Usage Example</summary>
@@ -639,6 +647,16 @@ vim.api.nvim_create_autocmd("CursorMoved", {
  callback = function()
   vim.schedule(function()
    require("undo-glow").cursor_moved()
+  end)
+ end,
+})
+
+-- Ignore certain filetype
+vim.api.nvim_create_autocmd("CursorMoved", {
+ desc = "Highlight when cursor moved significantly",
+ callback = function()
+  vim.schedule(function()
+   require("undo-glow").cursor_moved(_, { "mason", "lazy", ... })
   end)
  end,
 })
