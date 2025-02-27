@@ -170,8 +170,9 @@ end
 ---Cursor move command that highlights.
 ---For autocmd usage only.
 ---@param opts? UndoGlow.CommandOpts Optional command option
+---@param ignored_ft? table<string> Optional filetypes to ignore
 ---@return nil
-function M.cursor_moved(opts)
+function M.cursor_moved(opts, ignored_ft)
 	opts = require("undo-glow.utils").merge_command_opts("UgCursor", opts)
 
 	local current_buf = vim.api.nvim_get_current_buf()
@@ -183,10 +184,23 @@ function M.cursor_moved(opts)
 
 	local is_preview_window = vim.wo.previewwindow
 
+	-- NOTE: Disable floating window will also disable lazy, mason, zen mode and more that uses it
+	-- This come in handy to disable almost all snacks related windows
+	-- Consider different approach maybe by explicitly ignore filetype and do not ignore floating window, but
+	-- we will then need to maintain a list of it.
 	local is_floating_window = vim.api.nvim_win_get_config(current_win).relative
 		~= ""
 
-	if is_preview_window or is_floating_window then
+	local is_not_text_buffer = vim.bo.buftype ~= ""
+
+	local is_ignored_ft = vim.tbl_contains(ignored_ft or {}, vim.bo.filetype)
+
+	if
+		is_preview_window
+		or is_floating_window
+		or is_not_text_buffer
+		or is_ignored_ft
+	then
 		return
 	end
 
