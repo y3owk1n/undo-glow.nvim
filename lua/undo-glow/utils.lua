@@ -96,6 +96,7 @@ function M.highlight_range(
 	s_row, s_col, e_row, e_col =
 		M.sanitize_coords(bufnr, s_row, s_col, e_row, e_col)
 
+	---@type vim.api.keyset.set_extmark
 	local opts = {
 		end_row = e_row,
 		end_col = e_col,
