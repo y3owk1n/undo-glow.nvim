@@ -21,11 +21,11 @@ local function animate_clear(opts, timer)
 	vim.cmd("hi clear " .. opts.hlgroup)
 end
 
---- Starts an animation.
---- Repeatedly calls the provided animation function with a progress value between 0 and 1 until the animation completes.
---- @param opts UndoGlow.Animation The animation options.
---- @param animate_fn fun(progress: number): nil A function that receives the current progress (0 = start, 1 = end).
---- @return nil
+---Starts an animation.
+---Repeatedly calls the provided animation function with a progress value between 0 and 1 until the animation completes.
+---@param opts UndoGlow.Animation The animation options.
+---@param animate_fn fun(progress: number): nil A function that receives the current progress (0 = start, 1 = end).
+---@return nil
 function M.animate_start(opts, animate_fn)
 	local start_time = vim.uv.hrtime()
 	local interval = 1000 / opts.state.animation.fps
@@ -67,9 +67,9 @@ function M.animate_start(opts, animate_fn)
 	end
 end
 
---- Fades out a highlight group from a start color to the normal background.
---- @param opts UndoGlow.Animation The animation options.
---- @return nil
+---Fades out a highlight group from a start color to the normal background.
+---@param opts UndoGlow.Animation The animation options.
+---@return nil
 function M.animate.fade(opts)
 	M.animate_start(opts, function(progress)
 		local eased = opts.state.animation.easing({
@@ -100,9 +100,9 @@ function M.animate.fade(opts)
 	end)
 end
 
---- Blinks a highlight group by alternating between the start and end colors.
---- @param opts UndoGlow.Animation The animation options.
---- @return nil
+---Blinks a highlight group by alternating between the start and end colors.
+---@param opts UndoGlow.Animation The animation options.
+---@return nil
 function M.animate.blink(opts)
 	M.animate_start(opts, function(progress)
 		local blink_period = 200
@@ -128,9 +128,9 @@ function M.animate.blink(opts)
 	end)
 end
 
---- Applies a jitter effect to a highlight group by randomly altering the colors.
---- @param opts UndoGlow.Animation The animation options.
---- @return nil
+---Applies a jitter effect to a highlight group by randomly altering the colors.
+---@param opts UndoGlow.Animation The animation options.
+---@return nil
 function M.animate.jitter(opts)
 	M.animate_start(opts, function(_)
 		---@param rgb UndoGlow.RGBColor
@@ -158,9 +158,9 @@ function M.animate.jitter(opts)
 	end)
 end
 
---- Pulses a highlight group by rhythmically blending the start and end colors.
---- @param opts UndoGlow.Animation The animation options.
---- @return nil
+---Pulses a highlight group by rhythmically blending the start and end colors.
+---@param opts UndoGlow.Animation The animation options.
+---@return nil
 function M.animate.pulse(opts)
 	M.animate_start(opts, function(progress)
 		local systolic_duration = 0.5
@@ -195,9 +195,9 @@ function M.animate.pulse(opts)
 	end)
 end
 
---- Applies a spring effect that overshoots the target color before settling.
---- @param opts UndoGlow.Animation The animation options.
---- @return nil
+---Applies a spring effect that overshoots the target color before settling.
+---@param opts UndoGlow.Animation The animation options.
+---@return nil
 function M.animate.spring(opts)
 	M.animate_start(opts, function(progress)
 		local t = math.sin(
@@ -224,9 +224,9 @@ function M.animate.spring(opts)
 	end)
 end
 
---- Gradually desaturates the highlight color.
---- @param opts UndoGlow.Animation The animation options.
---- @return nil
+---Gradually desaturates the highlight color.
+---@param opts UndoGlow.Animation The animation options.
+---@return nil
 function M.animate.desaturate(opts)
 	M.animate_start(opts, function(progress)
 		---@param rgb UndoGlow.RGBColor
@@ -247,9 +247,9 @@ function M.animate.desaturate(opts)
 	end)
 end
 
---- Applies a strobe effect by rapidly toggling between the start and end colors.
---- @param opts UndoGlow.Animation The animation options.
---- @return nil
+---Applies a strobe effect by rapidly toggling between the start and end colors.
+---@param opts UndoGlow.Animation The animation options.
+---@return nil
 function M.animate.strobe(opts)
 	M.animate_start(opts, function(progress)
 		local use_start = math.floor(progress * 10) % 2 == 0
@@ -270,9 +270,9 @@ function M.animate.strobe(opts)
 	end)
 end
 
---- Simulates a zoom effect by quickly increasing brightness and then returning to normal.
---- @param opts UndoGlow.Animation The animation options.
---- @return nil
+---Simulates a zoom effect by quickly increasing brightness and then returning to normal.
+---@param opts UndoGlow.Animation The animation options.
+---@return nil
 function M.animate.zoom(opts)
 	M.animate_start(opts, function(progress)
 		local t = math.sin(progress * math.pi)
