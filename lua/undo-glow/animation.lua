@@ -164,25 +164,29 @@ end
 --- @return nil
 function M.animate.pulse(opts)
 	M.animate_start(opts, function(progress)
-		local t = 0.5 * (1 - math.cos(2 * math.pi * progress))
-		local eased = opts.state.animation.easing({
-			time = t,
-			begin = 0,
-			change = 1,
-			duration = 1,
-		})
+		local systolic_duration = 0.5
+
+		local t = 0
+
+		if progress < systolic_duration then
+			t = (progress / systolic_duration) ^ 2.0
+		else
+			t = 1
+				- ((progress - systolic_duration) / (1 - systolic_duration))
+					^ 0.5
+		end
 
 		local blended_bg = require("undo-glow.color").blend_color(
 			opts.start_bg,
 			opts.end_bg,
-			eased
+			t
 		)
 		local blended_fg = opts.start_fg
 				and opts.end_fg
 				and require("undo-glow.color").blend_color(
 					opts.start_fg,
 					opts.end_fg,
-					eased
+					t
 				)
 			or nil
 
