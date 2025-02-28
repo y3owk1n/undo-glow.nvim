@@ -849,7 +849,7 @@ vim.api.nvim_create_autocmd({ "BufReadPost", "TextChanged" }, {
 > [!note]
 > Animation is `off` by default. You can turn it on in your config with `animation.enabled = true`.
 
-**undo-glow.nvim** comes with 4 default animations out of the box and can be toggled on and off and swap globally or per action (incuding your custom actions).
+**undo-glow.nvim** comes with numerous default animations out of the box and can be toggled on and off and swap globally or per action (incuding your custom actions).
 
 > [!note]
 > If you wish to, every different action can have different animation configurations.
@@ -959,11 +959,15 @@ Briefly increases brightness to simulate a zoom or spotlight effect before retur
   --- @param opts UndoGlow.Animation The animation options.
   --- @return nil
   animation_type = function(opts)
+   ---@param opts UndoGlow.Animation The animation options.
+   ---@param animate_fn fun(progress: number): UndoGlow.HlColor A function that receives the current progress (0 = start, 1 = end) and return the hl colors.
+   ---@return nil
    require("undo-glow").animate_start(opts, function(progress)
     -- do something for your animation
     -- normally you will do some calculation with the progress value (0 = start, 1 = end)
-    -- and set the colors accordingly or modify the extmark, or whatever
-    -- view the source code for more examples
+    -- you also have access to the current extmark via `opts.extmark_id`
+    -- make sure to return the bg and fg (optional) at the end
+    return hl_opts
    end)
   end
   --- rest of configurations
@@ -984,17 +988,15 @@ Briefly increases brightness to simulate a zoom or spotlight effect before retur
       local phase = (progress * opts.duration % blink_period) < (blink_period / 2)
 
       if phase then
-       local hl_opts = { bg = require("undo-glow.color").rgb_to_hex(opts.start_bg) }
-       if opts.start_fg then
-        hl_opts.fg = require("undo-glow.color").rgb_to_hex(opts.start_fg)
-       end
-       vim.api.nvim_set_hl(0, opts.hlgroup, hl_opts)
+        return {
+          bg = require("undo-glow.color").rgb_to_hex(opts.start_bg),
+          fg = opts.start_fg and require("undo-glow.color").rgb_to_hex(opts.start_fg) or nil,
+        }
       else
-       local hl_opts = { bg = require("undo-glow.color").rgb_to_hex(opts.end_bg) }
-       if opts.start_fg then
-        hl_opts.fg = require("undo-glow.color").rgb_to_hex(opts.end_fg)
-       end
-       vim.api.nvim_set_hl(0, opts.hlgroup, hl_opts)
+        return {
+          bg = require("undo-glow.color").rgb_to_hex(opts.end_bg),
+          fg = opts.end_fg and require("undo-glow.color").rgb_to_hex(opts.end_fg) or nil,
+        }
       end
    end)
   end

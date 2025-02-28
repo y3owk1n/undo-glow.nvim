@@ -24,7 +24,7 @@ end
 ---Starts an animation.
 ---Repeatedly calls the provided animation function with a progress value between 0 and 1 until the animation completes.
 ---@param opts UndoGlow.Animation The animation options.
----@param animate_fn fun(progress: number): nil A function that receives the current progress (0 = start, 1 = end).
+---@param animate_fn fun(progress: number): UndoGlow.HlColor A function that receives the current progress (0 = start, 1 = end) and return the hl colors.
 ---@return nil
 function M.animate_start(opts, animate_fn)
 	local start_time = vim.uv.hrtime()
@@ -48,7 +48,9 @@ function M.animate_start(opts, animate_fn)
 						return
 					end
 
-					animate_fn(progress)
+					local hl_opts = animate_fn(progress)
+
+					vim.api.nvim_set_hl(0, opts.hlgroup, hl_opts)
 				end)
 
 				if not success then
@@ -79,24 +81,20 @@ function M.animate.fade(opts)
 			duration = 1,
 		})
 
-		local hl_opts = {}
-
-		hl_opts.bg = require("undo-glow.color").blend_color(
-			opts.start_bg,
-			opts.end_bg,
-			eased
-		)
-
-		hl_opts.fg = opts.start_fg
-				and opts.end_fg
-				and require("undo-glow.color").blend_color(
-					opts.start_fg,
-					opts.end_fg,
-					eased
-				)
-			or nil
-
-		vim.api.nvim_set_hl(0, opts.hlgroup, hl_opts)
+		return {
+			bg = require("undo-glow.color").blend_color(
+				opts.start_bg,
+				opts.end_bg,
+				eased
+			),
+			fg = (opts.start_fg and opts.end_fg)
+					and require("undo-glow.color").blend_color(
+						opts.start_fg,
+						opts.end_fg,
+						eased
+					)
+				or nil,
+		}
 	end)
 end
 
@@ -109,21 +107,20 @@ function M.animate.blink(opts)
 		local phase = (progress * opts.duration % blink_period)
 			< (blink_period / 2)
 
-		local hl_opts = {}
-
 		if phase then
-			hl_opts.bg = require("undo-glow.color").rgb_to_hex(opts.start_bg)
-			if opts.start_fg then
-				hl_opts.fg =
-					require("undo-glow.color").rgb_to_hex(opts.start_fg)
-			end
-			vim.api.nvim_set_hl(0, opts.hlgroup, hl_opts)
+			return {
+				bg = require("undo-glow.color").rgb_to_hex(opts.start_bg),
+				fg = opts.start_fg and require("undo-glow.color").rgb_to_hex(
+					opts.start_fg
+				) or nil,
+			}
 		else
-			hl_opts.bg = require("undo-glow.color").rgb_to_hex(opts.end_bg)
-			if opts.start_fg then
-				hl_opts.fg = require("undo-glow.color").rgb_to_hex(opts.end_fg)
-			end
-			vim.api.nvim_set_hl(0, opts.hlgroup, hl_opts)
+			return {
+				bg = require("undo-glow.color").rgb_to_hex(opts.end_bg),
+				fg = opts.end_fg and require("undo-glow.color").rgb_to_hex(
+					opts.end_fg
+				) or nil,
+			}
 		end
 	end)
 end
@@ -149,12 +146,10 @@ function M.animate.jitter(opts)
 			return require("undo-glow.color").rgb_to_hex(converted_rgb)
 		end
 
-		local hl_opts = {}
-
-		hl_opts.bg = jitter_color(opts.start_bg)
-		hl_opts.fg = opts.start_fg and jitter_color(opts.start_fg) or nil
-
-		vim.api.nvim_set_hl(0, opts.hlgroup, hl_opts)
+		return {
+			bg = jitter_color(opts.start_bg),
+			fg = opts.start_fg and jitter_color(opts.start_fg) or nil,
+		}
 	end)
 end
 
@@ -175,23 +170,21 @@ function M.animate.pulse(opts)
 					^ 0.5
 		end
 
-		local hl_opts = {}
-
-		hl_opts.bg = require("undo-glow.color").blend_color(
-			opts.start_bg,
-			opts.end_bg,
-			t
-		)
-		hl_opts.fg = opts.start_fg
-				and opts.end_fg
-				and require("undo-glow.color").blend_color(
-					opts.start_fg,
-					opts.end_fg,
-					t
-				)
-			or nil
-
-		vim.api.nvim_set_hl(0, opts.hlgroup, hl_opts)
+		return {
+			bg = require("undo-glow.color").blend_color(
+				opts.start_bg,
+				opts.end_bg,
+				t
+			),
+			fg = opts.start_fg
+					and opts.end_fg
+					and require("undo-glow.color").blend_color(
+						opts.start_fg,
+						opts.end_fg,
+						t
+					)
+				or nil,
+		}
 	end)
 end
 
@@ -204,23 +197,21 @@ function M.animate.spring(opts)
 			progress * math.pi * (0.2 + 2.5 * progress * progress * progress)
 		) * (1 - progress) + progress
 
-		local hl_opts = {}
-
-		hl_opts.bg = require("undo-glow.color").blend_color(
-			opts.start_bg,
-			opts.end_bg,
-			t
-		)
-		hl_opts.fg = opts.start_fg
-				and opts.end_fg
-				and require("undo-glow.color").blend_color(
-					opts.start_fg,
-					opts.end_fg,
-					t
-				)
-			or nil
-
-		vim.api.nvim_set_hl(0, opts.hlgroup, hl_opts)
+		return {
+			bg = require("undo-glow.color").blend_color(
+				opts.start_bg,
+				opts.end_bg,
+				t
+			),
+			fg = opts.start_fg
+					and opts.end_fg
+					and require("undo-glow.color").blend_color(
+						opts.start_fg,
+						opts.end_fg,
+						t
+					)
+				or nil,
+		}
 	end)
 end
 
@@ -238,12 +229,11 @@ function M.animate.desaturate(opts)
 			return require("undo-glow.color").rgb_to_hex(desaturated_rgb)
 		end
 
-		local hl_opts = {}
-
-		hl_opts.bg = desaturate(opts.start_bg)
-		hl_opts.fg = opts.start_fg and opts.end_fg and desaturate(opts.start_fg)
-			or nil
-		vim.api.nvim_set_hl(0, opts.hlgroup, hl_opts)
+		return {
+			bg = desaturate(opts.start_bg),
+			fg = opts.start_fg and opts.end_fg and desaturate(opts.start_fg)
+				or nil,
+		}
 	end)
 end
 
@@ -253,20 +243,21 @@ end
 function M.animate.strobe(opts)
 	M.animate_start(opts, function(progress)
 		local use_start = math.floor(progress * 10) % 2 == 0
-		local hl_opts = {}
 		if use_start then
-			hl_opts.bg = require("undo-glow.color").rgb_to_hex(opts.start_bg)
-			if opts.start_fg then
-				hl_opts.fg =
-					require("undo-glow.color").rgb_to_hex(opts.start_fg)
-			end
+			return {
+				bg = require("undo-glow.color").rgb_to_hex(opts.start_bg),
+				fg = opts.start_fg and require("undo-glow.color").rgb_to_hex(
+					opts.start_fg
+				) or nil,
+			}
 		else
-			hl_opts.bg = require("undo-glow.color").rgb_to_hex(opts.end_bg)
-			if opts.end_fg then
-				hl_opts.fg = require("undo-glow.color").rgb_to_hex(opts.end_fg)
-			end
+			return {
+				bg = require("undo-glow.color").rgb_to_hex(opts.end_bg),
+				fg = opts.end_fg and require("undo-glow.color").rgb_to_hex(
+					opts.end_fg
+				) or nil,
+			}
 		end
-		vim.api.nvim_set_hl(0, opts.hlgroup, hl_opts)
 	end)
 end
 
@@ -288,11 +279,11 @@ function M.animate.zoom(opts)
 		local zoom_fg = opts.start_fg and adjust_brightness(opts.start_fg)
 			or nil
 
-		local hl_opts = { bg = require("undo-glow.color").rgb_to_hex(zoom_bg) }
-		if zoom_fg then
-			hl_opts.fg = require("undo-glow.color").rgb_to_hex(zoom_fg)
-		end
-		vim.api.nvim_set_hl(0, opts.hlgroup, hl_opts)
+		return {
+			bg = require("undo-glow.color").rgb_to_hex(zoom_bg),
+			fg = zoom_fg and require("undo-glow.color").rgb_to_hex(zoom_fg)
+				or nil,
+		}
 	end)
 end
 
