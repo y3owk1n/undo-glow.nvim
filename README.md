@@ -984,7 +984,7 @@ Rapidly moves or shifts the highlight slightly, giving a shaky or vibrating appe
 **undo-glow.nvim** comes with a handful of default easing options as below [(Thanks to EmmanuelOga/easing)](https://github.com/EmmanuelOga/easing) . Feel free to send PRs for more interesting easings.
 
 > [!note]
-> Not all animation supports easing. Only `pulse` and `fade (default)` supports easing. If you use other animation and set easing, it will just get ignored.
+> Not all animation supports easing. Only `fade (default)` supports easing. If you use other animation and set easing, it will just get ignored.
 
 > [!warning]
 > Easing wil be ignored if `animation.enabled` is `off`. Make sure you turn it on if you want easing.
