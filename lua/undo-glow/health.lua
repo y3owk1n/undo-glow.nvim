@@ -1,9 +1,9 @@
 local M = {}
 
---- Reports a status message using vim.health.
---- Supports boolean values (true for OK, false for error) and string levels ("ok", "warn", "error").
---- @param level "ok"|"warn"|"error" The status level.
---- @param msg string The message to display.
+---Reports a status message using vim.health.
+---Supports boolean values (true for OK, false for error) and string levels ("ok", "warn", "error").
+---@param level "ok"|"warn"|"error" The status level.
+---@param msg string The message to display.
 local function report_status(level, msg)
 	local health = vim.health or {}
 	if level == "ok" then
@@ -22,8 +22,8 @@ local function report_status(level, msg)
 	end
 end
 
---- Prints a separator header for a new section.
---- @param title string The section title.
+---Prints a separator header for a new section.
+---@param title string The section title.
 local function separator(title)
 	vim.health.start(title)
 end
