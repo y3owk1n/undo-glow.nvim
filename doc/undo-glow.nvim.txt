@@ -912,7 +912,7 @@ Alternates the highlight intensity in a rhythmic manner, creating a breathing
 effect.
 
 
-<https://github.com/user-attachments/assets/57c9f86a-f1e6-424c-a885-caf288b594fc>
+<https://github.com/user-attachments/assets/68145ed1-326e-4f64-8dcf-3edae8baeb31>
 
 
 JITTER
@@ -922,6 +922,39 @@ appearance.
 
 
 <https://github.com/user-attachments/assets/8627ee17-2ac7-4571-a897-3422cebe0e1b>
+
+
+SPRING
+
+Overshoots the target color and then settles, mimicking a spring-like motion.
+
+
+<https://github.com/user-attachments/assets/bd19d4d6-0585-4705-bd56-1efcf18f3565>
+
+
+DESATURATE
+
+Gradually reduces the color saturation, muting the highlight over time.
+
+
+<https://github.com/user-attachments/assets/a16ec21f-524d-4805-83d4-b56d0c59f1d1>
+
+
+STROBE
+
+Rapidly toggles between two colors to simulate a strobe light effect.
+
+
+<https://github.com/user-attachments/assets/8e0fd3bf-2a8b-4e0a-a5c1-8430e06bdba2>
+
+
+ZOOM
+
+Briefly increases brightness to simulate a zoom or spotlight effect before
+returning to normal.
+
+
+<https://github.com/user-attachments/assets/93e9da9a-771c-4988-acdd-2c796f04b306>
 
 
 CHANGING ANIMATION FROM CONFIGURATION
