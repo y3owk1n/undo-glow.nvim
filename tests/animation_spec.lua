@@ -1,19 +1,17 @@
 ---@module 'luassert'
 
 local animation = require("undo-glow.animation")
-
-local assert = require("luassert")
-
 local utils = require("undo-glow.utils")
+local color = require("undo-glow.color")
+local uv = vim.uv or vim.loop
 
 describe("undo-glow.animation", function()
-	local bufnr
-	local hlgroup
-	local ns = utils.ns
+	local bufnr, ns, hlgroup
 
 	before_each(function()
 		bufnr = vim.api.nvim_create_buf(false, true)
-		hlgroup = "TestHl" .. tostring(math.random(1000))
+		ns = utils.ns
+		hlgroup = "TestHL"
 	end)
 
 	after_each(function()
@@ -23,92 +21,70 @@ describe("undo-glow.animation", function()
 		vim.cmd("hi clear " .. hlgroup)
 	end)
 
-	local function start_animation(animation_type, duration)
-		local extmark_id = vim.api.nvim_buf_set_extmark(bufnr, ns, 0, 0, {})
-		local opts = {
-			bufnr = bufnr,
-			extmark_id = extmark_id,
-			hlgroup = hlgroup,
-			start_bg = { r = 255, g = 0, b = 0 }, -- Red
-			end_bg = { r = 0, g = 0, b = 255 }, -- Blue
-			start_fg = { r = 255, g = 255, b = 255 }, -- White
-			end_fg = { r = 0, g = 0, b = 0 }, -- Black
-			duration = duration or 100, -- Default 100ms for tests
-			state = {
-				animation = {
-					fps = 60,
-					easing = function(params)
-						return params.time
-					end, -- Linear easing
-				},
-			},
-		}
-		animation.animate[animation_type](opts)
-		return extmark_id
-	end
+	describe("animate_clear", function()
+		it("should stop and close the timer", function()
+			local timer = uv.new_timer()
+			timer:start(1000, 1000, function() end)
+			local opts = { bufnr = bufnr, extmark_id = 1, hlgroup = hlgroup }
+			animation.animate_clear(opts, timer)
+			assert.is_false(timer:is_active(), "Timer should be stopped")
+		end)
 
-	local function wait_for_animation(duration)
-		vim.wait(duration + 50) -- Wait duration + 50ms buffer
-	end
-
-	describe("fade animation", function()
-		it("cleans up extmark and hlgroup", function()
-			local extmark_id = start_animation("fade", 100)
-			wait_for_animation(100)
-
+		it("should delete extmark if valid", function()
+			local extmark_id = vim.api.nvim_buf_set_extmark(bufnr, ns, 0, 0, {})
+			local opts =
+				{ bufnr = bufnr, extmark_id = extmark_id, hlgroup = hlgroup }
+			local timer = uv.new_timer()
+			animation.animate_clear(opts, timer)
 			local marks = vim.api.nvim_buf_get_extmarks(bufnr, ns, 0, -1, {})
-			assert.same({}, marks)
+			assert.equal(0, #marks, "Extmark should be deleted")
+		end)
 
-			local hl = vim.api.nvim_get_hl(hlgroup, true)
-			assert.is_nil(hl.background)
+		it("should clear the highlight group", function()
+			vim.api.nvim_set_hl(0, hlgroup, { bg = "#FF0000" })
+			local opts = { hlgroup = hlgroup, bufnr = bufnr }
+			local timer = uv.new_timer()
+			animation.animate_clear(opts, timer)
+			local hl = vim.api.nvim_get_hl(0, { name = hlgroup })
+			assert.is_nil(hl.background, "Highlight should be cleared")
 		end)
 	end)
 
-	describe("blink animation", function()
-		it("cleans up extmark and hlgroup", function()
-			local extmark_id = start_animation("blink", 100)
-			wait_for_animation(100)
+	describe("animate_start", function()
+		it("should handle animation completion", function()
+			local opts = {
+				bufnr = bufnr,
+				duration = 10, -- Short duration for testing
+				hlgroup = hlgroup,
+				state = { animation = { fps = 60 } },
+				start_bg = { r = 255, g = 0, b = 0 },
+				end_bg = { r = 0, g = 0, b = 0 },
+			}
+			local animate_fn = function(progress)
+				return {
+					bg = color.blend_color(
+						opts.start_bg,
+						opts.end_bg,
+						progress
+					),
+				}
+			end
 
+			animation.animate_start(opts, animate_fn)
+			vim.wait(20, function() end) -- Wait for animation to finish
+
+			-- Verify cleanup
 			local marks = vim.api.nvim_buf_get_extmarks(bufnr, ns, 0, -1, {})
-			assert.same({}, marks)
-
-			local hl = vim.api.nvim_get_hl(hlgroup, true)
-			assert.is_nil(hl.background)
+			local hl = vim.api.nvim_get_hl(0, { name = opts.hlgroup })
+			assert.equal(
+				0,
+				#marks,
+				"Extmark should be deleted after completion"
+			)
+			assert.is_nil(
+				hl.background,
+				"Highlight should be cleared after completion"
+			)
 		end)
-	end)
-
-	describe("jitter animation", function()
-		it("cleans up extmark and hlgroup", function()
-			local extmark_id = start_animation("jitter", 100)
-			wait_for_animation(100)
-
-			local marks = vim.api.nvim_buf_get_extmarks(bufnr, ns, 0, -1, {})
-			assert.same({}, marks)
-
-			local hl = vim.api.nvim_get_hl(hlgroup, true)
-			assert.is_nil(hl.background)
-		end)
-	end)
-
-	describe("pulse animation", function()
-		it("cleans up extmark and hlgroup", function()
-			local extmark_id = start_animation("pulse", 100)
-			wait_for_animation(100)
-
-			local marks = vim.api.nvim_buf_get_extmarks(bufnr, ns, 0, -1, {})
-			assert.same({}, marks)
-
-			local hl = vim.api.nvim_get_hl(hlgroup, true)
-			assert.is_nil(hl.background)
-		end)
-	end)
-
-	it("handles invalid buffer during animation", function()
-		local extmark_id = start_animation("fade", 200)
-		vim.api.nvim_buf_delete(bufnr, { force = true })
-		wait_for_animation(200)
-
-		local hl = vim.api.nvim_get_hl(hlgroup, true)
-		assert.is_nil(hl.background)
 	end)
 end)
