@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.5.0](https://github.com/y3owk1n/undo-glow.nvim/compare/v1.4.0...v1.5.0) (2025-02-28)
+
+
+### Features
+
+* **animation:** add desaturate animation ([#155](https://github.com/y3owk1n/undo-glow.nvim/issues/155)) ([46c98be](https://github.com/y3owk1n/undo-glow.nvim/commit/46c98bee10e9249e5988cdbc442f05ebbcd26b94))
+* **animation:** add spring animation ([#154](https://github.com/y3owk1n/undo-glow.nvim/issues/154)) ([cbfec8c](https://github.com/y3owk1n/undo-glow.nvim/commit/cbfec8c0177a071bb327ca7333456eb2962bd916))
+* **animation:** add strobe animation ([#156](https://github.com/y3owk1n/undo-glow.nvim/issues/156)) ([5b454e8](https://github.com/y3owk1n/undo-glow.nvim/commit/5b454e843bf4506a768109813f8018ea715b05f9))
+* **animation:** add zoom animation ([#157](https://github.com/y3owk1n/undo-glow.nvim/issues/157)) ([52cbe7b](https://github.com/y3owk1n/undo-glow.nvim/commit/52cbe7bbda2933f7bf29777ab951f9934548f8df))
+* **animation:** simplify animation color creation ([#162](https://github.com/y3owk1n/undo-glow.nvim/issues/162)) ([fa6f20f](https://github.com/y3owk1n/undo-glow.nvim/commit/fa6f20f0aacd749455225f8022e3984c429f8a1b))
+* **color:** add rgb to hsl conversion ([#152](https://github.com/y3owk1n/undo-glow.nvim/issues/152)) ([48350f3](https://github.com/y3owk1n/undo-glow.nvim/commit/48350f387a9c783226511794f9b275a50904e0f3))
+
+
+### Bug Fixes
+
+* **animation.animate.pulse:** improve pulse effect to stimulate realistic pulse ([#151](https://github.com/y3owk1n/undo-glow.nvim/issues/151)) ([32cd757](https://github.com/y3owk1n/undo-glow.nvim/commit/32cd757a97e04f0d90dbe5b8fd3ccf48b07d0609))
+* **animation:** call M.animate_clear properly ([#163](https://github.com/y3owk1n/undo-glow.nvim/issues/163)) ([bb86fc6](https://github.com/y3owk1n/undo-glow.nvim/commit/bb86fc652e3ffe80cd32a0d7579332729740fc27))
+* **commands.cursor_moved:** do not default prev_buf and prev_win to current on load ([#143](https://github.com/y3owk1n/undo-glow.nvim/issues/143)) ([a101421](https://github.com/y3owk1n/undo-glow.nvim/commit/a1014219c787a5c506ab62a54bde61b2ee1ab1bf))
+* **commands.cursor_moved:** full width for cursor highlight ([#146](https://github.com/y3owk1n/undo-glow.nvim/issues/146)) ([c8158ce](https://github.com/y3owk1n/undo-glow.nvim/commit/c8158ce7b594b2cb5f735ed394850819cd6fbea1))
+* ensure that force_edge are properly checked as nil before default to boolean ([#145](https://github.com/y3owk1n/undo-glow.nvim/issues/145)) ([d18fe70](https://github.com/y3owk1n/undo-glow.nvim/commit/d18fe7082abf386356baa76c627572566ef5e04f))
+
 ## [1.4.0](https://github.com/y3owk1n/undo-glow.nvim/compare/v1.3.0...v1.4.0) (2025-02-27)
 
 
