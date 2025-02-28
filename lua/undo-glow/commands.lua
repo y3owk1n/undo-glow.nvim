@@ -206,9 +206,9 @@ function M.cursor_moved(opts, ignored_ft)
 
 	local current_row, current_col = unpack(vim.api.nvim_win_get_cursor(0))
 
-	local prev_buf = vim.g.ug_prev_buf or current_buf
+	local prev_buf = vim.g.ug_prev_buf
 	local prev_row = vim.g.ug_prev_cursor or current_row
-	local prev_win = vim.g.ug_prev_win or current_win
+	local prev_win = vim.g.ug_prev_win
 
 	local diff = math.abs(current_row - prev_row)
 	local new_buffer = (prev_buf ~= current_buf)
