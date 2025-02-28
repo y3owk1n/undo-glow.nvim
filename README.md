@@ -885,13 +885,37 @@ Toggles the highlight on and off at a fixed interval, similar to a cursor blink.
 
 Alternates the highlight intensity in a rhythmic manner, creating a breathing effect.
 
-<https://github.com/user-attachments/assets/57c9f86a-f1e6-424c-a885-caf288b594fc>
+<https://github.com/user-attachments/assets/68145ed1-326e-4f64-8dcf-3edae8baeb31>
 
 ##### Jitter
 
 Rapidly moves or shifts the highlight slightly, giving a shaky or vibrating appearance.
 
 <https://github.com/user-attachments/assets/8627ee17-2ac7-4571-a897-3422cebe0e1b>
+
+##### Spring
+
+Overshoots the target color and then settles, mimicking a spring-like motion.
+
+<https://github.com/user-attachments/assets/bd19d4d6-0585-4705-bd56-1efcf18f3565>
+
+##### Desaturate
+
+Gradually reduces the color saturation, muting the highlight over time.
+
+<https://github.com/user-attachments/assets/a16ec21f-524d-4805-83d4-b56d0c59f1d1>
+
+##### Strobe
+
+Rapidly toggles between two colors to simulate a strobe light effect.
+
+<https://github.com/user-attachments/assets/8e0fd3bf-2a8b-4e0a-a5c1-8430e06bdba2>
+
+##### Zoom
+
+Briefly increases brightness to simulate a zoom or spotlight effect before returning to normal.
+
+<https://github.com/user-attachments/assets/93e9da9a-771c-4988-acdd-2c796f04b306>
 
 #### Changing animation from configuration
 
