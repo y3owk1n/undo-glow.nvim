@@ -6,7 +6,7 @@ M.animate = {}
 ---@param opts UndoGlow.Animation The animation options.
 ---@param timer uv.uv_timer_t The timer instance used for animation.
 ---@return nil
-local function animate_clear(opts, timer)
+function M.animate_clear(opts, timer)
 	timer:stop()
 	if not vim.uv.is_closing(timer) then
 		timer:close()
