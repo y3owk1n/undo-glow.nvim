@@ -37,6 +37,7 @@ local config = {
 			hl_color = require("undo-glow.color").default_cursor,
 		},
 	},
+	priority = 4096, -- so that it will work with render-markdown.nvim
 }
 
 return config

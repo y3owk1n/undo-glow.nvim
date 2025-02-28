@@ -83,6 +83,7 @@ end
 ---@param e_row integer End row.
 ---@param e_col integer End column.
 ---@param force_edge? boolean Optional flag to force edge highlighting.
+---@param priority? integer Extmark priority to render the highlight (Default 4096)
 ---@return integer extmark_id Extmark ID for the created highlight.
 function M.highlight_range(
 	bufnr,
@@ -91,7 +92,8 @@ function M.highlight_range(
 	s_col,
 	e_row,
 	e_col,
-	force_edge
+	force_edge,
+	priority
 )
 	s_row, s_col, e_row, e_col =
 		M.sanitize_coords(bufnr, s_row, s_col, e_row, e_col)
@@ -102,6 +104,7 @@ function M.highlight_range(
 		end_col = e_col,
 		hl_group = hlgroup,
 		hl_mode = "combine",
+		priority = priority,
 	}
 
 	if type(force_edge) == "boolean" and force_edge == true then
@@ -153,7 +156,8 @@ function M.handle_highlight(opts)
 			opts.s_col,
 			opts.e_row,
 			opts.e_col,
-			opts.state.force_edge
+			opts.state.force_edge,
+			opts.config.priority
 		)
 
 		M.animate_or_clear_highlights(

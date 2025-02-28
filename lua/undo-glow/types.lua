@@ -10,6 +10,7 @@
 ---@class UndoGlow.Config
 ---@field animation? UndoGlow.Config.Animation Configuration for animations.
 ---@field highlights? table<"undo" | "redo" | "yank" | "paste" | "search" | "comment" | "cursor", { hl: string, hl_color: UndoGlow.HlColor }> Highlight configurations for various actions.
+---@field priority? integer Extmark priority to render the highlight (Default 4096)
 
 ---Options passed to easing functions.
 ---@class UndoGlow.EasingOpts
