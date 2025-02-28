@@ -229,4 +229,28 @@ function M.animate.spring(opts)
 		vim.api.nvim_set_hl(0, opts.hlgroup, hl_opts)
 	end)
 end
+
+--- Gradually desaturates the highlight color.
+--- Requires: rgb_to_hsl and hsl_to_rgb functions in your color module.
+--- @param opts UndoGlow.Animation The animation options.
+--- @return nil
+function M.animate.desaturate(opts)
+	M.animate_start(opts, function(progress)
+		local function desaturate(rgb)
+			local hsl = require("undo-glow.color").rgb_to_hsl(rgb)
+			hsl.s = hsl.s * (1 - progress) -- reduce saturation over time
+			local desaturated_rgb = require("undo-glow.color").hsl_to_rgb(hsl)
+			return desaturated_rgb
+		end
+
+		local desat_bg = desaturate(opts.start_bg)
+		local hl_opts = { bg = require("undo-glow.color").rgb_to_hex(desat_bg) }
+		if opts.start_fg then
+			local desat_fg = desaturate(opts.start_fg)
+			hl_opts.fg = require("undo-glow.color").rgb_to_hex(desat_fg)
+		end
+		vim.api.nvim_set_hl(0, opts.hlgroup, hl_opts)
+	end)
+end
+
 return M
