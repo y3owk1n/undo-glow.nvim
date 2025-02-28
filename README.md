@@ -189,25 +189,25 @@ return {
    },
    highlights = {
     undo = {
-     hl_color = { bg = "#BF3A3A" },
+     hl_color = { bg = "#48384b" }, -- Dark muted red
     },
     redo = {
-     hl_color = { bg = "#3EAD62" },
+     hl_color = { bg = "#384b3f" }, -- Dark muted green
     },
     yank = {
-     hl_color = { bg = "#D7D65D" },
+     hl_color = { bg = "#4b4838" }, -- Dark muted yellow
     },
     paste = {
-     hl_color = { bg = "#6BB1C9" },
+     hl_color = { bg = "#38464b" }, -- Dark muted cyan
     },
     search = {
-     hl_color = { bg = "#8A77C5" },
+     hl_color = { bg = "#40384b" }, -- Dark muted purple
     },
     comment = {
-     hl_color = { bg = "#D08A5A" },
+     hl_color = { bg = "#4b3f38" }, -- Dark muted orange
     },
     cursor = {
-     hl_color = { bg = "#C7709B" },
+     hl_color = { bg = "#4b3843" }, -- Dark muted pink
     },
    },
   },
