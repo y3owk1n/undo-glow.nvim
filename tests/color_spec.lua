@@ -28,6 +28,53 @@ describe("undo-glow.color", function()
 		end)
 	end)
 
+	describe("rgb_to_hsl", function()
+		it("should convert valid RGB colors to HSL tables", function()
+			local result = color.rgb_to_hsl({ r = 255, g = 85, b = 85 })
+
+			-- Round H, S, L values to 6 decimals for stable comparison.
+			result.h = tonumber(string.format("%.6f", result.h)) or 0
+			result.s = tonumber(string.format("%.6f", result.s)) or 0
+			result.l = tonumber(string.format("%.6f", result.l)) or 0
+			assert.are.same({ h = 0, s = 1, l = 0.666667 }, result)
+		end)
+
+		it("should handle pure red color correctly", function()
+			local result = color.rgb_to_hsl({ r = 255, g = 0, b = 0 })
+			assert.are.same({ h = 0, s = 1, l = 0.5 }, result)
+		end)
+
+		it("should handle pure black (achromatic) correctly", function()
+			local result = color.rgb_to_hsl({ r = 0, g = 0, b = 0 })
+			assert.are.same({ h = 0, s = 0, l = 0 }, result)
+		end)
+	end)
+
+	describe("hsl_to_rgb", function()
+		it("should convert valid HSL colors to RGB tables", function()
+			local result = color.hsl_to_rgb({ h = 0, s = 1, l = 0.666667 })
+			assert.are.same({ r = 255, g = 85, b = 85 }, result)
+
+			result =
+				color.hsl_to_rgb({ h = 135.600000, s = 0.938776, l = 0.647059 })
+
+			-- Allow for minor rounding differences (±1) on each channel.
+			assert.is_true(math.abs(result.r - 80) <= 1, "r channel mismatch")
+			assert.is_true(math.abs(result.g - 250) <= 1, "g channel mismatch")
+			assert.is_true(math.abs(result.b - 123) <= 1, "b channel mismatch")
+		end)
+
+		it("should handle pure red color correctly", function()
+			local result = color.hsl_to_rgb({ h = 0, s = 1, l = 0.5 })
+			assert.are.same({ r = 255, g = 0, b = 0 }, result)
+		end)
+
+		it("should handle pure black (achromatic) correctly", function()
+			local result = color.hsl_to_rgb({ h = 0, s = 0, l = 0 })
+			assert.are.same({ r = 0, g = 0, b = 0 }, result)
+		end)
+	end)
+
 	describe("blend_color", function()
 		it("should properly blend two colors", function()
 			local red = color.hex_to_rgb("#FF0000")

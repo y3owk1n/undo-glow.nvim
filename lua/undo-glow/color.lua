@@ -39,6 +39,92 @@ function M.rgb_to_hex(rgb)
 	return string.format("#%02X%02X%02X", rgb.r, rgb.g, rgb.b)
 end
 
+---Converts an RGB table to an HSL table.
+---@param rgb UndoGlow.RGBColor The RGB color table.
+---@return UndoGlow.HSLColor hsl_color The HSL representation (h in degrees, s and l as fractions).
+function M.rgb_to_hsl(rgb)
+	local r = rgb.r / 255
+	local g = rgb.g / 255
+	local b = rgb.b / 255
+
+	local max = math.max(r, g, b)
+	local min = math.min(r, g, b)
+	local h, s, l = 0, 0, (max + min) / 2
+
+	if max == min then
+		-- Achromatic case: no hue or saturation.
+		h = 0
+		s = 0
+	else
+		local d = max - min
+		if l > 0.5 then
+			s = d / (2 - max - min)
+		else
+			s = d / (max + min)
+		end
+
+		if max == r then
+			h = (g - b) / d + (g < b and 6 or 0)
+		elseif max == g then
+			h = (b - r) / d + 2
+		else -- max == b
+			h = (r - g) / d + 4
+		end
+		h = h * 60
+	end
+
+	return { h = h, s = s, l = l }
+end
+
+---Converts an HSL table to an RGB table.
+---@param hsl UndoGlow.HSLColor The HSL color table (h in degrees, s and l as fractions).
+---@return UndoGlow.RGBColor rgb The RGB representation of the color.
+function M.hsl_to_rgb(hsl)
+	local h, s, l = hsl.h, hsl.s, hsl.l
+	local r, g, b
+
+	if s == 0 then
+		-- Achromatic: r, g, and b are equal.
+		r = l
+		g = l
+		b = l
+	else
+		local function hue2rgb(p, q, t)
+			if t < 0 then
+				t = t + 1
+			end
+			if t > 1 then
+				t = t - 1
+			end
+			if t < 1 / 6 then
+				return p + (q - p) * 6 * t
+			end
+			if t < 1 / 2 then
+				return q
+			end
+			if t < 2 / 3 then
+				return p + (q - p) * (2 / 3 - t) * 6
+			end
+			return p
+		end
+
+		local q = l < 0.5 and (l * (1 + s)) or (l + s - l * s)
+		local p = 2 * l - q
+		local h_norm = h / 360
+
+		r = hue2rgb(p, q, h_norm + 1 / 3)
+		g = hue2rgb(p, q, h_norm)
+		b = hue2rgb(p, q, h_norm - 1 / 3)
+	end
+
+	-- Convert back to 0-255 range.
+	return {
+		r = math.floor(r * 255 + 0.5),
+		g = math.floor(g * 255 + 0.5),
+		b = math.floor(b * 255 + 0.5),
+	}
+end
+
 ---Blends two RGB colors together based on an interpolation factor.
 ---@param c1 UndoGlow.RGBColor The starting color.
 ---@param c2 UndoGlow.RGBColor The ending color.
