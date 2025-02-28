@@ -408,6 +408,7 @@ describe("undo-glow.utils", function()
 			assert.is_nil(result.animation.duration)
 			assert.is_nil(result.animation.easing)
 			assert.is_nil(result.animation.fps)
+			assert.is_nil(result.force_edge)
 		end)
 		it(
 			"should merge command options with defaults if opts is empty table",
@@ -422,6 +423,7 @@ describe("undo-glow.utils", function()
 				assert.is_nil(result.animation.duration)
 				assert.is_nil(result.animation.easing)
 				assert.is_nil(result.animation.fps)
+				assert.is_nil(result.force_edge)
 			end
 		)
 		it("should merge command options with defaults if opts is 0", function()
@@ -435,6 +437,7 @@ describe("undo-glow.utils", function()
 			assert.is_nil(result.animation.duration)
 			assert.is_nil(result.animation.easing)
 			assert.is_nil(result.animation.fps)
+			assert.is_nil(result.force_edge)
 		end)
 	end)
 
