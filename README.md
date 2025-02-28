@@ -916,15 +916,29 @@ Rapidly moves or shifts the highlight slightly, giving a shaky or vibrating appe
 > But hey, if you need to, it's there for you.
 
 ```lua
+---@class UndoGlow.Animation
+---@field bufnr integer Current buffer number
+---@field hlgroup string Current highlight group
+---@field extmark_id integer Current extmark ID
+---@field start_bg UndoGlow.RGBColor Bg color from the hlgroup
+---@field end_bg UndoGlow.RGBColor `Normal` bg color from your theme
+---@field start_fg? UndoGlow.RGBColor Fg color from the hlgroup
+---@field end_fg? UndoGlow.RGBColor `Normal` fg color from your theme
+---@field duration integer Duration of the animation
+---@field config UndoGlow.Config Access to current configuration table
+---@field state UndoGlow.State Access to the current state of this animation
+
 -- configuration opts
 {
  animation = {
   --- rest of configurations
+  --- @param opts UndoGlow.Animation The animation options.
+  --- @return nil
   animation_type = function(opts)
    require("undo-glow").animate_start(opts, function(progress)
     -- do something for your animation
     -- normally you will do some calculation with the progress value (0 = start, 1 = end)
-    -- and set the colors accordingly
+    -- and set the colors accordingly or modify the extmark, or whatever
     -- view the source code for more examples
    end)
   end
