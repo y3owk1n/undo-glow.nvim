@@ -231,7 +231,6 @@ function M.animate.spring(opts)
 end
 
 --- Gradually desaturates the highlight color.
---- Requires: rgb_to_hsl and hsl_to_rgb functions in your color module.
 --- @param opts UndoGlow.Animation The animation options.
 --- @return nil
 function M.animate.desaturate(opts)
@@ -253,4 +252,26 @@ function M.animate.desaturate(opts)
 	end)
 end
 
+--- Applies a strobe effect by rapidly toggling between the start and end colors.
+--- @param opts UndoGlow.Animation The animation options.
+--- @return nil
+function M.animate.strobe(opts)
+	M.animate_start(opts, function(progress)
+		local use_start = math.floor(progress * 10) % 2 == 0
+		local hl_opts = {}
+		if use_start then
+			hl_opts.bg = require("undo-glow.color").rgb_to_hex(opts.start_bg)
+			if opts.start_fg then
+				hl_opts.fg =
+					require("undo-glow.color").rgb_to_hex(opts.start_fg)
+			end
+		else
+			hl_opts.bg = require("undo-glow.color").rgb_to_hex(opts.end_bg)
+			if opts.end_fg then
+				hl_opts.fg = require("undo-glow.color").rgb_to_hex(opts.end_fg)
+			end
+		end
+		vim.api.nvim_set_hl(0, opts.hlgroup, hl_opts)
+	end)
+end
 return M
