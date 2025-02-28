@@ -44,7 +44,7 @@ function M.animate_start(opts, animate_fn)
 						math.max(0, math.min(1, elapsed / opts.duration))
 
 					if progress >= 1 then
-						animate_clear(opts, timer)
+						M.animate_clear(opts, timer)
 						return
 					end
 
