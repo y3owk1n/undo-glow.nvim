@@ -328,6 +328,7 @@ function M.merge_command_opts(hlgroup, opts)
 			easing = nil,
 			fps = nil,
 		},
+		force_edge = nil,
 	}, opts)
 
 	return opts
@@ -343,7 +344,8 @@ function M.create_state(opts)
 	return {
 		should_detach = false,
 		current_hlgroup = opts.hlgroup or "UgUndo",
-		force_edge = opts.force_edge or false,
+		force_edge = type(opts.force_edge) == "nil" and false
+			or opts.force_edge,
 		animation = {
 			animation_type = M.get_animation_type(
 				opts.animation.animation_type

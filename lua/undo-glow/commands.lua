@@ -224,7 +224,8 @@ function M.cursor_moved(opts, ignored_ft)
 					s_col = current_col,
 					e_row = current_row - 1,
 					e_col = cur_line_length,
-					force_edge = true,
+					force_edge = type(opts.force_edge) == "nil" and true
+						or opts.force_edge,
 				})
 			)
 		end
