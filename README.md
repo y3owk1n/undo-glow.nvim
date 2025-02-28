@@ -104,7 +104,7 @@ require("undo-glow").setup({
 ### Default Options
 
 ```lua
----@alias UndoGlow.AnimationTypeString "fade" | "blink" | "pulse" | "jitter"
+---@alias UndoGlow.AnimationTypeString "fade" | "blink" | "pulse" | "jitter" | "spring"
 ---@alias UndoGlow.AnimationTypeFn fun(opts: UndoGlow.Animation)
 ---@alias UndoGlow.EasingString "linear" | "in_quad" | "out_quad" | "in_out_quad" | "out_in_quad" | "in_cubic" | "out_cubic" | "in_out_cubic" | "out_in_cubic" | "in_quart" | "out_quart" | "in_out_quart" | "out_in_quart" | "in_quint" | "out_quint" | "in_out_quint" | "out_in_quint" | "in_sine" | "out_sine" | "in_out_sine" | "out_in_sine" | "in_expo" | "out_expo" | "in_out_expo" | "out_in_expo" | "in_circ" | "out_circ" | "in_out_circ" | "out_in_circ" | "in_elastic" | "out_elastic" | "in_out_elastic" | "out_in_elastic" | "in_back" | "out_back" | "in_out_back" | "out_in_back" | "in_bounce" | "out_bounce" | "in_out_bounce" | "out_in_bounce"
 ---@alias UndoGlow.EasingFn fun(opts: UndoGlow.EasingOpts): integer
@@ -855,7 +855,7 @@ vim.api.nvim_create_autocmd({ "BufReadPost", "TextChanged" }, {
 > If you wish to, every different action can have different animation configurations.
 
 ```lua
----@alias UndoGlow.AnimationTypeString "fade" <- default | "blink" | "pulse" | "jitter"
+---@alias UndoGlow.AnimationTypeString "fade" <- default | "blink" | "pulse" | "jitter" | "spring"
 ---@alias UndoGlow.AnimationTypeFn fun(opts: UndoGlow.Animation)
 
 ---@field animation_type? UndoGlow.AnimationTypeString | UndoGlow.AnimationTypeFn A animation_type string or function that does the animation
