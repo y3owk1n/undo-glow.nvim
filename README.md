@@ -116,6 +116,7 @@ require("undo-glow").setup({
 ---@class UndoGlow.Config
 ---@field animation? UndoGlow.Config.Animation
 ---@field highlights? table<"undo" | "redo" | "yank" | "paste" | "search" | "comment", { hl: string, hl_color: UndoGlow.HlColor }>
+---@field priority? integer Extmark priority to render the highlight (Default 4096)
 
 ---@class UndoGlow.Config.Animation
 ---@field enabled? boolean Turn on or off for animation
@@ -174,6 +175,7 @@ require("undo-glow").setup({
    hl_color = { bg = "#FF79C6" }, -- Ugly magenta color
   },
  },
+ priority = 4096, -- so that it will work with render-markdown.nvim
 }
 ```
 
