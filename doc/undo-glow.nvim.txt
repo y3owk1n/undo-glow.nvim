@@ -1021,9 +1021,8 @@ EASING ~
 free to send PRs for more interesting easings.
 
 
-  [!note] Not all animation supports easing. Only `pulse` and `fade (default)`
-  supports easing. If you use other animation and set easing, it will just get
-  ignored.
+  [!note] Not all animation supports easing. Only `fade (default)` supports
+  easing. If you use other animation and set easing, it will just get ignored.
 
   [!warning] Easing wil be ignored if `animation.enabled` is `off`. Make sure you
   turn it on if you want easing.
