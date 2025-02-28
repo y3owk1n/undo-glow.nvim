@@ -108,35 +108,43 @@ require("undo-glow").setup({
 ### Default Options
 
 ```lua
+---Animation type aliases.
 ---@alias UndoGlow.AnimationTypeString "fade" | "blink" | "pulse" | "jitter" | "spring" | "desaturate" | "strobe" | "zoom"
 ---@alias UndoGlow.AnimationTypeFn fun(opts: UndoGlow.Animation)
+
+---Easing function aliases.
 ---@alias UndoGlow.EasingString "linear" | "in_quad" | "out_quad" | "in_out_quad" | "out_in_quad" | "in_cubic" | "out_cubic" | "in_out_cubic" | "out_in_cubic" | "in_quart" | "out_quart" | "in_out_quart" | "out_in_quart" | "in_quint" | "out_quint" | "in_out_quint" | "out_in_quint" | "in_sine" | "out_sine" | "in_out_sine" | "out_in_sine" | "in_expo" | "out_expo" | "in_out_expo" | "out_in_expo" | "in_circ" | "out_circ" | "in_out_circ" | "out_in_circ" | "in_elastic" | "out_elastic" | "in_out_elastic" | "out_in_elastic" | "in_back" | "out_back" | "in_out_back" | "out_in_back" | "in_bounce" | "out_bounce" | "in_out_bounce" | "out_in_bounce"
 ---@alias UndoGlow.EasingFn fun(opts: UndoGlow.EasingOpts): integer
 
+---Configuration options for undo-glow.
 ---@class UndoGlow.Config
----@field animation? UndoGlow.Config.Animation
----@field highlights? table<"undo" | "redo" | "yank" | "paste" | "search" | "comment", { hl: string, hl_color: UndoGlow.HlColor }>
+---@field animation? UndoGlow.Config.Animation Configuration for animations.
+---@field highlights? table<"undo" | "redo" | "yank" | "paste" | "search" | "comment" | "cursor", { hl: string, hl_color: UndoGlow.HlColor }> Highlight configurations for various actions.
 ---@field priority? integer Extmark priority to render the highlight (Default 4096)
 
+---Animation configuration.
 ---@class UndoGlow.Config.Animation
----@field enabled? boolean Turn on or off for animation
----@field duration? number Highlight duration in ms
----@field animation_type? UndoGlow.AnimationTypeString | UndoGlow.AnimationTypeFn A animation_type string or function that does the animation
----@field easing? UndoGlow.EasingString | UndoGlow.EasingFn A easing string or function that computes easing.
----@field fps? number Normally either 60 / 120, up to you
+---@field enabled? boolean Whether animation is enabled.
+---@field duration? number Duration of the highlight animation in milliseconds.
+---@field animation_type? UndoGlow.AnimationTypeString|UndoGlow.AnimationTypeFn Animation type (a string key or a custom function).
+---@field easing? UndoGlow.EasingString|UndoGlow.EasingFn Easing function (a string key or a custom function).
+---@field fps? number Frames per second for the animation.
 
+---Options passed to easing functions.
 ---@class UndoGlow.EasingOpts
----@field time integer Elapsed time
----@field begin? integer Begin
----@field change? integer Change == ending - beginning
----@field duration? integer Duration (total time)
----@field amplitude? integer Amplitude
----@field period? integer Period
----@field overshoot? integer Overshoot
+---@field time number Elapsed time (e.g. a progress value between 0 and 1).
+---@field begin? number Optional start value.
+---@field change? number Optional change value (ending minus beginning).
+---@field duration? number Optional total duration.
+---@field amplitude? number Optional amplitude (for elastic easing).
+---@field period? number Optional period (for elastic easing).
+---@field overshoot? number Optional overshoot (for back easing).
 
+---Highlight color information.
 ---@class UndoGlow.HlColor
----@field bg string Background color
----@field fg? string Optional for text color (Without this, it will just remain the existing text color as it is)
+---@field bg string Background color as a hex string.
+---@field fg? string Optional foreground color as a hex string.
+
 {
  animation = {
   enabled = false, -- whether to turn on or off for animation
@@ -371,9 +379,10 @@ You can easily override the colors from configuration `opts`. And the types are 
 ```lua
 ---@field highlights? table<"undo" | "redo" | "yank" | "paste" | "search" | "comment", { hl: string, hl_color: UndoGlow.HlColor }>
 
+---Highlight color information.
 ---@class UndoGlow.HlColor
----@field bg string Background color
----@field fg? string Optional for text color (Without this, it will just remain the existing text color as it is)
+---@field bg string Background color as a hex string.
+---@field fg? string Optional foreground color as a hex string.
 ```
 
 By setting hlgroup name to other value, the plugin will grab the colors of the target hlgroup and apply to it. For example:
@@ -443,17 +452,19 @@ Each builtin commands takes in optional `opts` take allows to configure **color*
 > Each animation related options can be configured separately. If you don't, it will fallback to the default from your configuration.
 
 ```lua
+---Command options for triggering highlights.
 ---@class UndoGlow.CommandOpts
----@field hlgroup? string
----@field animation? UndoGlow.Config.Animation
----@field force_edge? boolean Force highlight to extend to the end of the right side.
+---@field hlgroup? string Optional highlight group to use.
+---@field animation? UndoGlow.Config.Animation Optional animation configuration.
+---@field force_edge? boolean Optional flag to force edge highlighting.
 
+---Animation configuration.
 ---@class UndoGlow.Config.Animation
----@field enabled? boolean Turn on or off for animation
----@field duration? number Highlight duration in ms
----@field animation_type? UndoGlow.AnimationTypeString | UndoGlow.AnimationTypeFn A animation_type string or function that does the animation
----@field easing? UndoGlow.EasingString | UndoGlow.EasingFn A easing string or function that computes easing.
----@field fps? number Normally either 60 / 120, up to you
+---@field enabled? boolean Whether animation is enabled.
+---@field duration? number Duration of the highlight animation in milliseconds.
+---@field animation_type? UndoGlow.AnimationTypeString|UndoGlow.AnimationTypeFn Animation type (a string key or a custom function).
+---@field easing? UndoGlow.EasingString|UndoGlow.EasingFn Easing function (a string key or a custom function).
+---@field fps? number Frames per second for the animation.
 ```
 
 #### Undo Highlights
@@ -688,17 +699,19 @@ vim.api.nvim_create_autocmd("CursorMoved", {
 #### Highlight text changes
 
 ```lua
+---Options for highlight changes API.
 ---@class UndoGlow.HighlightChanges
----@field hlgroup? string -- Default to `UgUndo`
----@field animation? UndoGlow.Config.Animation
----@field force_edge? boolean Force highlight to extend to the end of the right side.
+---@field hlgroup? string Optional highlight group to use.
+---@field animation? UndoGlow.Config.Animation Optional animation configuration.
+---@field force_edge? boolean Optional flag to force edge highlighting.
 
+---Animation configuration.
 ---@class UndoGlow.Config.Animation
----@field enabled? boolean Turn on or off for animation
----@field duration? number Highlight duration in ms
----@field animation_type? UndoGlow.AnimationTypeString | UndoGlow.AnimationTypeFn A animation_type string or function that does the animation
----@field easing? UndoGlow.EasingString | UndoGlow.EasingFn A easing string or function that computes easing.
----@field fps? number Normally either 60 / 120, up to you
+---@field enabled? boolean Whether animation is enabled.
+---@field duration? number Duration of the highlight animation in milliseconds.
+---@field animation_type? UndoGlow.AnimationTypeString|UndoGlow.AnimationTypeFn Animation type (a string key or a custom function).
+---@field easing? UndoGlow.EasingString|UndoGlow.EasingFn Easing function (a string key or a custom function).
+---@field fps? number Frames per second for the animation.
 
 ---Core API to highlight changes in the current buffer.
 ---@param opts? UndoGlow.HighlightChanges|UndoGlow.CommandOpts
@@ -742,21 +755,23 @@ end
 #### Highlight any region of your choice
 
 ```lua
+---Options for highlight region API.
 ---@class UndoGlow.HighlightRegion
----@field hlgroup? string
----@field animation? UndoGlow.Config.Animation
----@field force_edge? boolean Force highlight to extend to the end of the right side.
+---@field hlgroup? string Optional highlight group to use.
+---@field animation? UndoGlow.Config.Animation Optional animation configuration.
+---@field force_edge? boolean Optional flag to force edge highlighting.
 ---@field s_row integer Start row
 ---@field s_col integer Start column
 ---@field e_row integer End row
 ---@field e_col integer End column
 
+---Animation configuration.
 ---@class UndoGlow.Config.Animation
----@field enabled? boolean Turn on or off for animation
----@field duration? number Highlight duration in ms
----@field animation_type? UndoGlow.AnimationTypeString | UndoGlow.AnimationTypeFn A animation_type string or function that does the animation
----@field easing? UndoGlow.EasingString | UndoGlow.EasingFn A easing string or function that computes easing.
----@field fps? number Normally either 60 / 120, up to you
+---@field enabled? boolean Whether animation is enabled.
+---@field duration? number Duration of the highlight animation in milliseconds.
+---@field animation_type? UndoGlow.AnimationTypeString|UndoGlow.AnimationTypeFn Animation type (a string key or a custom function).
+---@field easing? UndoGlow.EasingString|UndoGlow.EasingFn Easing function (a string key or a custom function).
+---@field fps? number Frames per second for the animation.
 
 ---Core API to highlight a specified region in the current buffer.
 ---@param opts UndoGlow.HighlightRegion
@@ -950,17 +965,18 @@ Briefly increases brightness to simulate a zoom or spotlight effect before retur
 > But hey, if you need to, it's there for you.
 
 ```lua
+---Parameters for an animation.
 ---@class UndoGlow.Animation
----@field bufnr integer Current buffer number
----@field hlgroup string Current highlight group
----@field extmark_id integer Current extmark ID
----@field start_bg UndoGlow.RGBColor Bg color from the hlgroup
----@field end_bg UndoGlow.RGBColor `Normal` bg color from your theme
----@field start_fg? UndoGlow.RGBColor Fg color from the hlgroup
----@field end_fg? UndoGlow.RGBColor `Normal` fg color from your theme
----@field duration integer Duration of the animation
----@field config UndoGlow.Config Access to current configuration table
----@field state UndoGlow.State Access to the current state of this animation
+---@field bufnr integer Buffer number.
+---@field hlgroup string Highlight group name.
+---@field extmark_id integer Extmark identifier.
+---@field start_bg UndoGlow.RGBColor Starting background color.
+---@field end_bg UndoGlow.RGBColor Ending background color.
+---@field start_fg? UndoGlow.RGBColor Optional starting foreground color.
+---@field end_fg? UndoGlow.RGBColor Optional ending foreground color.
+---@field duration number Animation duration in milliseconds.
+---@field config UndoGlow.Config Configuration for undo-glow.
+---@field state UndoGlow.State Current state of the highlight.
 
 -- configuration opts
 {
@@ -1110,14 +1126,15 @@ require("undo-glow").easing.out_in_bounce
 > The easing function should always return an integer!
 
 ```lua
+---Options passed to easing functions.
 ---@class UndoGlow.EasingOpts
----@field time integer Elapsed time
----@field begin? integer Begin
----@field change? integer Change == ending - beginning
----@field duration? integer Duration (total time)
----@field amplitude? integer Amplitude
----@field period? integer Period
----@field overshoot? integer Overshoot
+---@field time number Elapsed time (e.g. a progress value between 0 and 1).
+---@field begin? number Optional start value.
+---@field change? number Optional change value (ending minus beginning).
+---@field duration? number Optional total duration.
+---@field amplitude? number Optional amplitude (for elastic easing).
+---@field period? number Optional period (for elastic easing).
+---@field overshoot? number Optional overshoot (for back easing).
 
 ---@param easing_opts UndoGlow.EasingOpts
 ---@return integer
