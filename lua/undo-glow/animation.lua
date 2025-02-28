@@ -274,4 +274,31 @@ function M.animate.strobe(opts)
 		vim.api.nvim_set_hl(0, opts.hlgroup, hl_opts)
 	end)
 end
+
+--- Simulates a zoom effect by quickly increasing brightness and then returning to normal.
+--- @param opts UndoGlow.Animation The animation options.
+--- @return nil
+function M.animate.zoom(opts)
+	M.animate_start(opts, function(progress)
+		local t = math.sin(progress * math.pi)
+		local brightness = 1 + 0.5 * t
+		local function adjust_brightness(rgb)
+			return {
+				r = math.min(255, math.floor(rgb.r * brightness)),
+				g = math.min(255, math.floor(rgb.g * brightness)),
+				b = math.min(255, math.floor(rgb.b * brightness)),
+			}
+		end
+		local zoom_bg = adjust_brightness(opts.start_bg)
+		local zoom_fg = opts.start_fg and adjust_brightness(opts.start_fg)
+			or nil
+
+		local hl_opts = { bg = require("undo-glow.color").rgb_to_hex(zoom_bg) }
+		if zoom_fg then
+			hl_opts.fg = require("undo-glow.color").rgb_to_hex(zoom_fg)
+		end
+		vim.api.nvim_set_hl(0, opts.hlgroup, hl_opts)
+	end)
+end
+
 return M
