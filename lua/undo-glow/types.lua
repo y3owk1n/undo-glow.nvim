@@ -47,6 +47,12 @@
 ---@field g integer Green (0-255)
 ---@field b integer Blue (0-255)
 
+---HSL color representation.
+---@class UndoGlow.HSLColor
+---@field h integer Hue component in degrees (0-360)
+---@field s integer Saturation component as a percentage (0-100)
+---@field l integer Lightness component as a percentage (0-100)
+
 ---Command options for triggering highlights.
 ---@class UndoGlow.CommandOpts
 ---@field hlgroup? string Optional highlight group to use.
