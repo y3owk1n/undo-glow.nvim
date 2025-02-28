@@ -39,6 +39,8 @@ There are alot of similars plugins that you can simply find from github. The mai
 - [emission.nvim](https://github.com/aileot/emission.nvim)
 - [beacon.nvim](https://github.com/DanilaMihailov/beacon.nvim)
 
+<!-- panvimdoc-ignore-start -->
+
 ## 👀 Previews
 
 ### Undo
@@ -68,6 +70,8 @@ There are alot of similars plugins that you can simply find from github. The mai
 ### Significant Cursor Movement (Like beacon.nvim)
 
 <https://github.com/user-attachments/assets/d59645b6-7473-4de5-9dbc-9389cd6580c2>
+
+<!-- panvimdoc-ignore-end -->
 
 ## 📦 Installation
 
@@ -861,6 +865,8 @@ vim.api.nvim_create_autocmd({ "BufReadPost", "TextChanged" }, {
 ---@field animation_type? UndoGlow.AnimationTypeString | UndoGlow.AnimationTypeFn A animation_type string or function that does the animation
 ```
 
+<!-- panvimdoc-ignore-start -->
+
 #### Animation previews
 
 ##### No Animation
@@ -917,6 +923,8 @@ Briefly increases brightness to simulate a zoom or spotlight effect before retur
 
 <https://github.com/user-attachments/assets/93e9da9a-771c-4988-acdd-2c796f04b306>
 
+<!-- panvimdoc-ignore-end -->
+
 #### Changing animation from configuration
 
 ##### Animation type in string
@@ -926,7 +934,7 @@ Briefly increases brightness to simulate a zoom or spotlight effect before retur
 {
  animation = {
   --- rest of configurations
-  animation_type = "jitter" -- one of the 4 builtin
+  animation_type = "jitter" -- one of the builtins
   --- rest of configurations
  }
 }

@@ -7,7 +7,6 @@ Table of Contents                           *undo-glow.nvim-table-of-contents*
   - Features                          |undo-glow.nvim-undo-glow.nvim-features|
   - Status                              |undo-glow.nvim-undo-glow.nvim-status|
   - Differences from other similar plugins|undo-glow.nvim-undo-glow.nvim-differences-from-other-similar-plugins|
-  - Previews                          |undo-glow.nvim-undo-glow.nvim-previews|
   - Installation                  |undo-glow.nvim-undo-glow.nvim-installation|
   - Configuration                |undo-glow.nvim-undo-glow.nvim-configuration|
   - Hlgroups                          |undo-glow.nvim-undo-glow.nvim-hlgroups|
@@ -68,51 +67,6 @@ ALTERNATIVE TO ~
 - tiny-glimmer.nvim <https://github.com/rachartier/tiny-glimmer.nvim>
 - emission.nvim <https://github.com/aileot/emission.nvim>
 - beacon.nvim <https://github.com/DanilaMihailov/beacon.nvim>
-
-
-PREVIEWS                              *undo-glow.nvim-undo-glow.nvim-previews*
-
-
-UNDO ~
-
-
-<https://github.com/user-attachments/assets/60d0cb17-78fb-414f-ab7f-870397b13d5e>
-
-
-REDO ~
-
-
-<https://github.com/user-attachments/assets/4fd54266-b116-4da3-8fee-186b44baf6a5>
-
-
-YANK ~
-
-
-<https://github.com/user-attachments/assets/1c55324a-1a1a-4bdd-b766-cc7ad4972b1b>
-
-
-PASTE ~
-
-
-<https://github.com/user-attachments/assets/cc32dfa7-1c00-4f07-885a-7ca4c9ae6649>
-
-
-SEARCH ~
-
-
-<https://github.com/user-attachments/assets/9c99e635-e4d7-490a-8ae6-ca2749656f57>
-
-
-COMMENT ~
-
-
-<https://github.com/user-attachments/assets/624db7db-6b50-437b-a92c-966ad2246d70>
-
-
-SIGNIFICANT CURSOR MOVEMENT (LIKE BEACON.NVIM) ~
-
-
-<https://github.com/user-attachments/assets/d59645b6-7473-4de5-9dbc-9389cd6580c2>
 
 
 INSTALLATION                      *undo-glow.nvim-undo-glow.nvim-installation*
@@ -877,86 +831,6 @@ actions).
 <
 
 
-ANIMATION PREVIEWS
-
-
-NO ANIMATION
-
-Static highlight and will be cleared after a duration immediately.
-
-
-<https://github.com/user-attachments/assets/7ea4b7fb-9c04-445c-a397-914b76c240f1>
-
-
-FADE (DEFAULT)
-
-Gradually increases or decreases the opacity of the highlight, creating a
-smooth fading effect.
-
-
-<https://github.com/user-attachments/assets/06820af3-1c37-445c-9e3d-946c277d946a>
-
-
-BLINK
-
-Toggles the highlight on and off at a fixed interval, similar to a cursor
-blink.
-
-
-<https://github.com/user-attachments/assets/8afee494-f9a0-4eef-9c9e-86a5c0c56eae>
-
-
-PULSE
-
-Alternates the highlight intensity in a rhythmic manner, creating a breathing
-effect.
-
-
-<https://github.com/user-attachments/assets/68145ed1-326e-4f64-8dcf-3edae8baeb31>
-
-
-JITTER
-
-Rapidly moves or shifts the highlight slightly, giving a shaky or vibrating
-appearance.
-
-
-<https://github.com/user-attachments/assets/8627ee17-2ac7-4571-a897-3422cebe0e1b>
-
-
-SPRING
-
-Overshoots the target color and then settles, mimicking a spring-like motion.
-
-
-<https://github.com/user-attachments/assets/bd19d4d6-0585-4705-bd56-1efcf18f3565>
-
-
-DESATURATE
-
-Gradually reduces the color saturation, muting the highlight over time.
-
-
-<https://github.com/user-attachments/assets/a16ec21f-524d-4805-83d4-b56d0c59f1d1>
-
-
-STROBE
-
-Rapidly toggles between two colors to simulate a strobe light effect.
-
-
-<https://github.com/user-attachments/assets/8e0fd3bf-2a8b-4e0a-a5c1-8430e06bdba2>
-
-
-ZOOM
-
-Briefly increases brightness to simulate a zoom or spotlight effect before
-returning to normal.
-
-
-<https://github.com/user-attachments/assets/93e9da9a-771c-4988-acdd-2c796f04b306>
-
-
 CHANGING ANIMATION FROM CONFIGURATION
 
 
@@ -967,7 +841,7 @@ ANIMATION TYPE IN STRING
     {
      animation = {
       --- rest of configurations
-      animation_type = "jitter" -- one of the 4 builtin
+      animation_type = "jitter" -- one of the builtins
       --- rest of configurations
      }
     }
