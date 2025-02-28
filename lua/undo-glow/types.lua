@@ -1,5 +1,5 @@
 ---Animation type aliases.
----@alias UndoGlow.AnimationTypeString "fade" | "blink" | "pulse" | "jitter"
+---@alias UndoGlow.AnimationTypeString "fade" | "blink" | "pulse" | "jitter" | "spring"
 ---@alias UndoGlow.AnimationTypeFn fun(opts: UndoGlow.Animation)
 
 ---Easing function aliases.

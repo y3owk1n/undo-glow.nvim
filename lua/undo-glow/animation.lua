@@ -199,4 +199,34 @@ function M.animate.pulse(opts)
 	end)
 end
 
+--- Applies a spring effect that overshoots the target color before settling.
+--- @param opts UndoGlow.Animation The animation options.
+--- @return nil
+function M.animate.spring(opts)
+	M.animate_start(opts, function(progress)
+		local t = math.sin(
+			progress * math.pi * (0.2 + 2.5 * progress * progress * progress)
+		) * (1 - progress) + progress
+
+		local blended_bg = require("undo-glow.color").blend_color(
+			opts.start_bg,
+			opts.end_bg,
+			t
+		)
+		local blended_fg = opts.start_fg
+				and opts.end_fg
+				and require("undo-glow.color").blend_color(
+					opts.start_fg,
+					opts.end_fg,
+					t
+				)
+			or nil
+
+		local hl_opts = { bg = blended_bg }
+		if blended_fg then
+			hl_opts.fg = blended_fg
+		end
+		vim.api.nvim_set_hl(0, opts.hlgroup, hl_opts)
+	end)
+end
 return M
