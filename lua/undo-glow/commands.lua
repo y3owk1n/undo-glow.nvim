@@ -221,7 +221,7 @@ function M.cursor_moved(opts, ignored_ft)
 			require("undo-glow").highlight_region(
 				vim.tbl_extend("force", opts, {
 					s_row = current_row - 1,
-					s_col = current_col,
+					s_col = 0, -- use current_col if want to start from the cursor, i think full width is nicer
 					e_row = current_row - 1,
 					e_col = cur_line_length,
 					force_edge = type(opts.force_edge) == "nil" and true
