@@ -109,7 +109,7 @@ require("undo-glow").setup({
 
 ```lua
 ---Animation type aliases.
----@alias UndoGlow.AnimationTypeString "fade" | "blink" | "pulse" | "jitter" | "spring" | "desaturate" | "strobe" | "zoom"
+---@alias UndoGlow.AnimationTypeString "fade" | "blink" | "pulse" | "jitter" | "spring" | "desaturate" | "strobe" | "zoom" | "rainbow"
 ---@alias UndoGlow.AnimationTypeFn fun(opts: UndoGlow.Animation)
 
 ---Easing function aliases.
@@ -876,7 +876,7 @@ vim.api.nvim_create_autocmd({ "BufReadPost", "TextChanged" }, {
 > If you wish to, every different action can have different animation configurations.
 
 ```lua
----@alias UndoGlow.AnimationTypeString "fade" <- default | "blink" | "pulse" | "jitter" | "spring" | "desaturate" | "strobe" | "zoom"
+---@alias UndoGlow.AnimationTypeString "fade" <- default | "blink" | "pulse" | "jitter" | "spring" | "desaturate" | "strobe" | "zoom" | "rainbow"
 ---@alias UndoGlow.AnimationTypeFn fun(opts: UndoGlow.Animation)
 
 ---@field animation_type? UndoGlow.AnimationTypeString | UndoGlow.AnimationTypeFn A animation_type string or function that does the animation
