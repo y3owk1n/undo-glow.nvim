@@ -328,12 +328,9 @@ function M.animate.slide(opts)
 	preserved_opts["ns_id"] = nil
 	preserved_opts["virt_text_pos"] = nil
 
-	if
-		preserved_opts.end_col == 0
-		and preserved_opts.end_row - original_row ~= 1
-	then
+	if preserved_opts.end_row - original_row > 1 then
 		vim.notify(
-			"UndoGlow: slid_right does not support multiple lines",
+			"UndoGlow: slide_right does not support multiple lines",
 			vim.log.levels.WARN
 		)
 		return false
@@ -433,10 +430,7 @@ function M.animate.slide_reverse(opts)
 	preserved_opts["ns_id"] = nil
 	preserved_opts["virt_text_pos"] = nil
 
-	if
-		preserved_opts.end_col == 0
-		and preserved_opts.end_row - original_row ~= 1
-	then
+	if preserved_opts.end_row - original_row > 1 then
 		vim.notify(
 			"UndoGlow: slide_left does not support multiple lines",
 			vim.log.levels.WARN
