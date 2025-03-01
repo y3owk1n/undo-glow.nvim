@@ -912,9 +912,15 @@ Static highlight and will be cleared after a duration immediately.
 
 ##### Fade (Default)
 
-Gradually increases or decreases the opacity of the highlight, creating a smooth fading effect.
+Gradually decreases the opacity of the highlight, creating a smooth fade-out effect.
 
 <https://github.com/user-attachments/assets/06820af3-1c37-445c-9e3d-946c277d946a>
+
+##### Fade Reverse
+
+Opposite of fade, gradually increases opacity of the highlight, creating a smooth fade-in effect.
+
+<https://github.com/user-attachments/assets/9fd6af7c-37d1-4b86-b2a2-3f0543787c52>
 
 ##### Blink
 
