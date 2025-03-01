@@ -24,7 +24,7 @@ end
 ---Starts an animation.
 ---Repeatedly calls the provided animation function with a progress value between 0 and 1 until the animation completes.
 ---@param opts UndoGlow.Animation The animation options.
----@param animate_fn fun(progress: number): UndoGlow.HlColor A function that receives the current progress (0 = start, 1 = end) and return the hl colors.
+---@param animate_fn fun(progress: number): UndoGlow.HlColor|nil A function that receives the current progress (0 = start, 1 = end) and return the hl colors or nothing.
 ---@return nil
 function M.animate_start(opts, animate_fn)
 	local start_time = vim.uv.hrtime()
@@ -50,7 +50,9 @@ function M.animate_start(opts, animate_fn)
 
 					local hl_opts = animate_fn(progress)
 
-					vim.api.nvim_set_hl(0, opts.hlgroup, hl_opts)
+					if hl_opts then
+						vim.api.nvim_set_hl(0, opts.hlgroup, hl_opts)
+					end
 				end)
 
 				if not success then
