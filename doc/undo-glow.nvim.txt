@@ -889,10 +889,17 @@ ANIMATION TYPE IN FUNCTION
     -- configuration opts
     {
      animation = {
-      --- rest of configurations
-      --- @param opts UndoGlow.Animation The animation options.
-      --- @return nil
+      ---rest of configurations
+      ---@param opts UndoGlow.Animation The animation options.
+      ---@return boolean|nil status Return `false` to fallback to fade
       animation_type = function(opts)
+       --- Sometimes thing just don't work and if your custom animation don't support certain thing
+       --- You can return false, and it will fallback to `fade` animation.
+       --- E.g. since `e_col` will always be 0 if you highlight with visual block, it will be troublesome to do calculation.
+       if should_fallback then
+        return false
+       end
+    
        ---@param opts UndoGlow.Animation The animation options.
        ---@param animate_fn fun(progress: number): UndoGlow.HlColor|nil A function that receives the current progress (0 = start, 1 = end) and return the hl colors or nothing.
        ---@return nil
