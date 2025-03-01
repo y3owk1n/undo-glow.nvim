@@ -69,7 +69,7 @@ There are alot of similars plugins that you can simply find from github. The mai
 
 ### Significant Cursor Movement (Like beacon.nvim)
 
-<https://github.com/user-attachments/assets/d59645b6-7473-4de5-9dbc-9389cd6580c2>
+<https://github.com/user-attachments/assets/6cc42cec-fb01-48ad-b069-68779c42726f>
 
 <!-- panvimdoc-ignore-end -->
 
@@ -957,6 +957,30 @@ Rapidly toggles between two colors to simulate a strobe light effect.
 Briefly increases brightness to simulate a zoom or spotlight effect before returning to normal.
 
 <https://github.com/user-attachments/assets/93e9da9a-771c-4988-acdd-2c796f04b306>
+
+##### Rainbow
+
+Cycles through hues smoothly, creating a rainbow-like transition effect.
+
+<https://github.com/user-attachments/assets/d287ad33-de80-47e1-8f93-7bfa7215afff>
+
+##### Slide
+
+Moves the highlight horizontally to the right across the text before fading out.
+
+> [!note]
+> Only supports single-line highlights.
+
+<https://github.com/user-attachments/assets/92d9b490-7f8c-4a06-a9ff-6a15af2ad531>
+
+##### Slide Reverse
+
+Moves the highlight horizontally to the left, reversing the slide effect. Only supports single-line highlights.
+
+> [!note]
+> Only supports single-line highlights.
+
+<https://github.com/user-attachments/assets/40e6036d-ad77-4fb0-ae3f-3056ea77659c>
 
 <!-- panvimdoc-ignore-end -->
 
