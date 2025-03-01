@@ -109,7 +109,7 @@ require("undo-glow").setup({
 
 ```lua
 ---Animation type aliases.
----@alias UndoGlow.AnimationTypeString "fade" | "blink" | "pulse" | "jitter" | "spring" | "desaturate" | "strobe" | "zoom" | "rainbow" | "slide" | "slide_reverse"
+---@alias UndoGlow.AnimationTypeString "fade" | "fade_reverse" | "blink" | "pulse" | "jitter" | "spring" | "desaturate" | "strobe" | "zoom" | "rainbow" | "slide" | "slide_reverse"
 ---@alias UndoGlow.AnimationTypeFn fun(opts: UndoGlow.Animation)
 
 ---Easing function aliases.
@@ -894,7 +894,7 @@ vim.api.nvim_create_autocmd({ "BufReadPost", "TextChanged" }, {
 > If you wish to, every different action can have different animation configurations.
 
 ```lua
----@alias UndoGlow.AnimationTypeString "fade" <- default | "blink" | "pulse" | "jitter" | "spring" | "desaturate" | "strobe" | "zoom" | "rainbow" | "slide" | "slide_reverse"
+---@alias UndoGlow.AnimationTypeString "fade" <- default | "fade_reverse" | "blink" | "pulse" | "jitter" | "spring" | "desaturate" | "strobe" | "zoom" | "rainbow" | "slide" | "slide_reverse"
 ---@alias UndoGlow.AnimationTypeFn fun(opts: UndoGlow.Animation)
 
 ---@field animation_type? UndoGlow.AnimationTypeString | UndoGlow.AnimationTypeFn A animation_type string or function that does the animation
@@ -1086,7 +1086,7 @@ Moves the highlight horizontally to the left, reversing the slide effect. Only s
 **undo-glow.nvim** comes with a handful of default easing options as below [(Thanks to EmmanuelOga/easing)](https://github.com/EmmanuelOga/easing) . Feel free to send PRs for more interesting easings.
 
 > [!note]
-> Not all animation supports easing. Only `fade (default)` supports easing. If you use other animation and set easing, it will just get ignored.
+> Not all animation supports easing. Only `fade (default)` and `fade_reverse` supports easing. If you use other animation and set easing, it will just get ignored.
 
 > [!warning]
 > Easing wil be ignored if `animation.enabled` is `off`. Make sure you turn it on if you want easing.
