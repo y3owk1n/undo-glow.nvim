@@ -288,7 +288,10 @@ function M.animate_or_clear_highlights(
 			state = opts.state,
 		}
 
-		opts.state.animation.animation_type(animation_opts)
+		local status = opts.state.animation.animation_type(animation_opts)
+		if status == false then
+			require("undo-glow.animation").animate.fade(animation_opts)
+		end
 	else
 		vim.defer_fn(function()
 			if vim.api.nvim_buf_is_valid(opts.bufnr) then

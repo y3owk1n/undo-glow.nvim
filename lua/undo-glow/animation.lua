@@ -73,7 +73,7 @@ end
 
 ---Fades out a highlight group from a start color to the normal background.
 ---@param opts UndoGlow.Animation The animation options.
----@return nil
+---@return boolean|nil status Return `false` to fallback to fade
 function M.animate.fade(opts)
 	M.animate_start(opts, function(progress)
 		local eased = opts.state.animation.easing({
@@ -102,7 +102,7 @@ end
 
 ---Blinks a highlight group by alternating between the start and end colors.
 ---@param opts UndoGlow.Animation The animation options.
----@return nil
+---@return boolean|nil status Return `false` to fallback to fade
 function M.animate.blink(opts)
 	M.animate_start(opts, function(progress)
 		local blink_period = 200
@@ -129,7 +129,7 @@ end
 
 ---Applies a jitter effect to a highlight group by randomly altering the colors.
 ---@param opts UndoGlow.Animation The animation options.
----@return nil
+---@return boolean|nil status Return `false` to fallback to fade
 function M.animate.jitter(opts)
 	M.animate_start(opts, function(_)
 		---@param rgb UndoGlow.RGBColor
@@ -157,7 +157,7 @@ end
 
 ---Pulses a highlight group by rhythmically blending the start and end colors.
 ---@param opts UndoGlow.Animation The animation options.
----@return nil
+---@return boolean|nil status Return `false` to fallback to fade
 function M.animate.pulse(opts)
 	M.animate_start(opts, function(progress)
 		local systolic_duration = 0.5
@@ -192,7 +192,7 @@ end
 
 ---Applies a spring effect that overshoots the target color before settling.
 ---@param opts UndoGlow.Animation The animation options.
----@return nil
+---@return boolean|nil status Return `false` to fallback to fade
 function M.animate.spring(opts)
 	M.animate_start(opts, function(progress)
 		local t = math.sin(
@@ -219,7 +219,7 @@ end
 
 ---Gradually desaturates the highlight color.
 ---@param opts UndoGlow.Animation The animation options.
----@return nil
+---@return boolean|nil status Return `false` to fallback to fade
 function M.animate.desaturate(opts)
 	M.animate_start(opts, function(progress)
 		---@param rgb UndoGlow.RGBColor
@@ -241,7 +241,7 @@ end
 
 ---Applies a strobe effect by rapidly toggling between the start and end colors.
 ---@param opts UndoGlow.Animation The animation options.
----@return nil
+---@return boolean|nil status Return `false` to fallback to fade
 function M.animate.strobe(opts)
 	M.animate_start(opts, function(progress)
 		local use_start = math.floor(progress * 10) % 2 == 0
@@ -265,7 +265,7 @@ end
 
 ---Simulates a zoom effect by quickly increasing brightness and then returning to normal.
 ---@param opts UndoGlow.Animation The animation options.
----@return nil
+---@return boolean|nil status Return `false` to fallback to fade
 function M.animate.zoom(opts)
 	M.animate_start(opts, function(progress)
 		local t = math.sin(progress * math.pi)
