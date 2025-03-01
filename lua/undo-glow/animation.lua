@@ -288,5 +288,19 @@ function M.animate.zoom(opts)
 		}
 	end)
 end
+---Simulates a rainbow effect by cycling through hues.
+---@param opts UndoGlow.Animation The animation options.
+---@return boolean|nil status Return `false` to fallback to fade
+function M.animate.rainbow(opts)
+	M.animate_start(opts, function(progress)
+		local hue = progress * 360 -- cycle through hues
+		local rgb =
+			require("undo-glow.color").hsl_to_rgb({ h = hue, s = 1, l = 0.5 })
+		return {
+			bg = require("undo-glow.color").rgb_to_hex(rgb),
+			fg = opts.start_fg,
+		}
+	end)
+end
 
 return M
