@@ -114,17 +114,24 @@ describe("undo-glow.utils", function()
 
 		it("adds a highlight correctly", function()
 			local hlgroup = "Visual"
-			local s_row, s_col = 0, 5
-			local e_row, e_col = 0, 10
-			local extmark_id = utils.highlight_range(
-				bufnr,
-				hlgroup,
-				s_row,
-				s_col,
-				e_row,
-				e_col,
-				false
-			)
+			---@type UndoGlow.HandleHighlight
+			local opts = {
+				bufnr = bufnr,
+				config = {
+					priority = 4096,
+				},
+				state = {
+					force_edge = false,
+					should_detach = false,
+					current_hlgroup = hlgroup,
+				},
+				s_row = 0,
+				s_col = 5,
+				e_row = 0,
+				e_col = 10,
+			}
+
+			local extmark_id = utils.highlight_range(opts, hlgroup)
 
 			local extmark = vim.api.nvim_buf_get_extmark_by_id(
 				bufnr,
@@ -133,23 +140,30 @@ describe("undo-glow.utils", function()
 				{ details = true }
 			)
 			assert.equals(extmark[3].hl_group, hlgroup)
-			assert.equals(extmark[3].end_row, e_row)
-			assert.equals(extmark[3].end_col, e_col)
+			assert.equals(extmark[3].end_row, opts.e_row)
+			assert.equals(extmark[3].end_col, opts.e_col)
 		end)
 
 		it("handles force_edge correctly", function()
 			local hlgroup = "Visual"
-			local s_row, s_col = 0, 5
-			local e_row, e_col = 0, 10
-			local extmark_id = utils.highlight_range(
-				bufnr,
-				hlgroup,
-				s_row,
-				s_col,
-				e_row,
-				e_col,
-				true
-			)
+			---@type UndoGlow.HandleHighlight
+			local opts = {
+				bufnr = bufnr,
+				config = {
+					priority = 4096,
+				},
+				state = {
+					force_edge = true,
+					should_detach = false,
+					current_hlgroup = hlgroup,
+				},
+				s_row = 0,
+				s_col = 5,
+				e_row = 0,
+				e_col = 10,
+			}
+
+			local extmark_id = utils.highlight_range(opts, hlgroup)
 
 			local extmark = vim.api.nvim_buf_get_extmark_by_id(
 				bufnr,
@@ -159,8 +173,8 @@ describe("undo-glow.utils", function()
 			)
 
 			assert.equals(extmark[3].hl_group, hlgroup)
-			assert.equals(extmark[3].end_row, e_row)
-			assert.equals(extmark[3].end_col, e_col)
+			assert.equals(extmark[3].end_row, opts.e_row)
+			assert.equals(extmark[3].end_col, opts.e_col)
 			assert.not_nil(extmark[3].virt_text)
 		end)
 	end)
@@ -339,26 +353,39 @@ describe("undo-glow.utils", function()
 	end)
 
 	describe("animate_or_clear_highlights", function()
-		local bufnr, state, hlgroup, extmark_id, start_bg, start_fg, config
+		local opts, hlgroup, extmark_id, start_bg, start_fg
 
 		before_each(function()
-			bufnr = vim.api.nvim_create_buf(false, true)
-			state = {
-				animation = {
-					enabled = false,
-					duration = 100,
-					animation_type = function() end,
+			---@type UndoGlow.HandleHighlight
+			opts = {
+				bufnr = vim.api.nvim_create_buf(false, true),
+				config = {
+					priority = 4096,
 				},
+				state = {
+					force_edge = false,
+					should_detach = false,
+					current_hlgroup = hlgroup,
+					animation = {
+						enabled = false,
+						duration = 100,
+						animation_type = function() end,
+					},
+				},
+				s_row = 0,
+				s_col = 5,
+				e_row = 0,
+				e_col = 10,
 			}
+
 			hlgroup = "TestHighlight"
 			extmark_id = 1
 			start_bg = "#ff0000"
 			start_fg = "#ffffff"
-			config = {}
 		end)
 
 		after_each(function()
-			vim.api.nvim_buf_delete(bufnr, { force = true })
+			vim.api.nvim_buf_delete(opts.bufnr, { force = true })
 		end)
 
 		it(
@@ -368,31 +395,27 @@ describe("undo-glow.utils", function()
 				vim.defer_fn = spy
 				vim.api.nvim_buf_del_extmark = spy
 				utils.animate_or_clear_highlights(
-					bufnr,
-					state,
+					opts,
 					hlgroup,
 					extmark_id,
 					start_bg,
-					start_fg,
-					config
+					start_fg
 				)
 				assert.spy(vim.api.nvim_buf_del_extmark).was_called()
 			end
 		)
 
 		it("should call animation function if enabled", function()
-			state.animation.enabled = true
-			state.animation.animation_type = spy.new(function() end)
+			opts.state.animation.enabled = true
+			opts.state.animation.animation_type = spy.new(function() end)
 			utils.animate_or_clear_highlights(
-				bufnr,
-				state,
+				opts,
 				hlgroup,
 				extmark_id,
 				start_bg,
-				start_fg,
-				config
+				start_fg
 			)
-			assert.spy(state.animation.animation_type).was_called()
+			assert.spy(opts.state.animation.animation_type).was_called()
 		end)
 	end)
 
