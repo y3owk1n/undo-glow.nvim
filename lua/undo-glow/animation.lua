@@ -100,6 +100,34 @@ function M.animate.fade(opts)
 	end)
 end
 
+---Fades in a highlight group from the normal background to the start color.
+---@param opts UndoGlow.Animation The animation options.
+---@return boolean|nil status Return `false` to fallback to fade
+function M.animate.fade_reverse(opts)
+	M.animate_start(opts, function(progress)
+		local eased = opts.state.animation.easing({
+			time = progress,
+			begin = 0,
+			change = 1,
+			duration = 1,
+		})
+		return {
+			bg = require("undo-glow.color").blend_color(
+				opts.end_bg, -- starting with normal background
+				opts.start_bg, -- blending toward the original highlight color
+				eased
+			),
+			fg = (opts.start_fg and opts.end_fg)
+					and require("undo-glow.color").blend_color(
+						opts.end_fg,
+						opts.start_fg,
+						eased
+					)
+				or nil,
+		}
+	end)
+end
+
 ---Blinks a highlight group by alternating between the start and end colors.
 ---@param opts UndoGlow.Animation The animation options.
 ---@return boolean|nil status Return `false` to fallback to fade
@@ -288,6 +316,7 @@ function M.animate.zoom(opts)
 		}
 	end)
 end
+
 ---Simulates a rainbow effect by cycling through hues.
 ---@param opts UndoGlow.Animation The animation options.
 ---@return boolean|nil status Return `false` to fallback to fade
