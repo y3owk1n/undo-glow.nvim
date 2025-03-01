@@ -76,51 +76,53 @@ end
 
 ---Highlights a range in the buffer using an extmark.
 ---Optionally forces edge highlighting by padding the virtual text.
----@param bufnr integer Buffer number.
+---@param opts UndoGlow.HandleHighlight Opts from handle highlight.
 ---@param hlgroup string Highlight group name.
----@param s_row integer Start row.
----@param s_col integer Start column.
----@param e_row integer End row.
----@param e_col integer End column.
----@param force_edge? boolean Optional flag to force edge highlighting.
----@param priority? integer Extmark priority to render the highlight (Default 4096)
 ---@return integer extmark_id Extmark ID for the created highlight.
-function M.highlight_range(
-	bufnr,
-	hlgroup,
-	s_row,
-	s_col,
-	e_row,
-	e_col,
-	force_edge,
-	priority
-)
-	s_row, s_col, e_row, e_col =
-		M.sanitize_coords(bufnr, s_row, s_col, e_row, e_col)
+function M.highlight_range(opts, hlgroup)
+	local s_row, s_col, e_row, e_col = M.sanitize_coords(
+		opts.bufnr,
+		opts.s_row,
+		opts.s_col,
+		opts.e_row,
+		opts.e_col
+	)
 
 	---@type vim.api.keyset.set_extmark
-	local opts = {
+	local extmark_opts = {
 		end_row = e_row,
 		end_col = e_col,
 		hl_group = hlgroup,
 		hl_mode = "combine",
-		priority = priority,
+		priority = opts.config.priority,
 	}
 
-	if type(force_edge) == "boolean" and force_edge == true then
-		local line = vim.api.nvim_buf_get_lines(bufnr, s_row, s_row + 1, false)[1]
-			or ""
+	if
+		type(opts.state.force_edge) == "boolean"
+		and opts.state.force_edge == true
+	then
+		local line = vim.api.nvim_buf_get_lines(
+			opts.bufnr,
+			s_row,
+			s_row + 1,
+			false
+		)[1] or ""
 		local text_width = vim.fn.strdisplaywidth(line)
 		local win_width = vim.api.nvim_win_get_width(0)
 		local pad = win_width - text_width
 		if pad > 0 then
-			opts.virt_text = { { string.rep(" ", pad), hlgroup } }
-			opts.virt_text_win_col = text_width
+			extmark_opts.virt_text = { { string.rep(" ", pad), hlgroup } }
+			extmark_opts.virt_text_win_col = text_width
 		end
 	end
 
-	local extmark_id =
-		vim.api.nvim_buf_set_extmark(bufnr, M.ns, s_row, s_col, opts)
+	local extmark_id = vim.api.nvim_buf_set_extmark(
+		opts.bufnr,
+		M.ns,
+		s_row,
+		s_col,
+		extmark_opts
+	)
 	return extmark_id
 end
 
@@ -149,25 +151,14 @@ function M.handle_highlight(opts)
 		local init_color =
 			require("undo-glow.color").init_colors(current_hlgroup_detail)
 
-		local extmark_id = M.highlight_range(
-			opts.bufnr,
-			unique_hlgroup,
-			opts.s_row,
-			opts.s_col,
-			opts.e_row,
-			opts.e_col,
-			opts.state.force_edge,
-			opts.config.priority
-		)
+		local extmark_id = M.highlight_range(opts, unique_hlgroup)
 
 		M.animate_or_clear_highlights(
-			opts.bufnr,
-			opts.state,
+			opts,
 			unique_hlgroup,
 			extmark_id,
 			init_color.bg,
-			init_color.fg,
-			opts.config
+			init_color.fg
 		)
 	end
 end
@@ -263,30 +254,26 @@ end
 
 ---Animates or clears highlights after a duration based on the state configuration.
 ---If animations are enabled, it invokes the animation callback; otherwise, it defers the removal of the extmark.
----@param bufnr integer Buffer number.
----@param state UndoGlow.State The state containing animation configuration.
+---@param opts UndoGlow.HandleHighlight Opts from handle highlight.
 ---@param hlgroup string Unique highlight group name.
 ---@param extmark_id integer The extmark ID of the highlight.
 ---@param start_bg string The starting background color (hex).
 ---@param start_fg? string The starting foreground color (hex).
----@param config UndoGlow.Config The configuration options.
 ---@return nil
 function M.animate_or_clear_highlights(
-	bufnr,
-	state,
+	opts,
 	hlgroup,
 	extmark_id,
 	start_bg,
-	start_fg,
-	config
+	start_fg
 )
 	local end_bg = require("undo-glow.color").get_normal_bg()
 	local end_fg = require("undo-glow.color").get_normal_fg()
 
-	if state.animation.enabled then
+	if opts.state.animation.enabled then
 		---@type UndoGlow.Animation
 		local animation_opts = {
-			bufnr = bufnr,
+			bufnr = opts.bufnr,
 			hlgroup = hlgroup,
 			extmark_id = extmark_id,
 			start_bg = require("undo-glow.color").hex_to_rgb(start_bg),
@@ -296,25 +283,25 @@ function M.animate_or_clear_highlights(
 			) or nil,
 			end_fg = start_fg and require("undo-glow.color").hex_to_rgb(end_fg)
 				or nil,
-			duration = state.animation.duration,
-			config = config,
-			state = state,
+			duration = opts.state.animation.duration,
+			config = opts.config,
+			state = opts.state,
 		}
 
-		state.animation.animation_type(animation_opts)
+		opts.state.animation.animation_type(animation_opts)
 	else
 		vim.defer_fn(function()
-			if vim.api.nvim_buf_is_valid(bufnr) then
+			if vim.api.nvim_buf_is_valid(opts.bufnr) then
 				vim.api.nvim_buf_del_extmark(
-					bufnr,
+					opts.bufnr,
 					require("undo-glow.utils").ns,
 					extmark_id
 				)
 			end
-		end, state.animation.duration)
+		end, opts.state.animation.duration)
 	end
 
-	state.should_detach = true
+	opts.state.should_detach = true
 end
 
 ---Merges a given highlight group into the command options.
