@@ -187,276 +187,184 @@ require("undo-glow").setup({
 }
 ```
 
-<details><summary>My setup in my config</summary>
+## 🚀 Quick Start
 
-<!-- config:start -->
+> [!note]
+> This is the exactly configuration that author is dailydriving.
+
+See the example below for how to configure **undo-glow.nvim**.
 
 ```lua
----@type LazySpec
-return {
- {
-  "y3owk1n/undo-glow.nvim",
-  event = { "VeryLazy" },
-  ---@type UndoGlow.Config
-  opts = {
-   animation = {
-    enabled = true,
-    duration = 500,
-    animtion_type = "zoom",
-   },
-   highlights = {
-    undo = {
-     hl_color = { bg = "#693232" }, -- Dark muted red
-    },
-    redo = {
-     hl_color = { bg = "#2F4640" }, -- Dark muted green
-    },
-    yank = {
-     hl_color = { bg = "#7A683A" }, -- Dark muted yellow
-    },
-    paste = {
-     hl_color = { bg = "#325B5B" }, -- Dark muted cyan
-    },
-    search = {
-     hl_color = { bg = "#5C475C" }, -- Dark muted purple
-    },
-    comment = {
-     hl_color = { bg = "#7A5A3D" }, -- Dark muted orange
-    },
-    cursor = {
-     hl_color = { bg = "#793D54" }, -- Dark muted pink
-    },
-   },
-   priority = 2048 * 3,
+{
+ "y3owk1n/undo-glow.nvim",
+ event = { "VeryLazy" },
+ ---@type UndoGlow.Config
+ opts = {
+  animation = {
+   enabled = true,
+   duration = 300,
+   animtion_type = "zoom",
   },
-  keys = {
-   {
-    "u",
-    function()
-     require("undo-glow").undo()
-    end,
-    mode = "n",
-    desc = "Undo with highlight",
-    noremap = true,
+  highlights = {
+   undo = {
+    hl_color = { bg = "#693232" }, -- Dark muted red
    },
-   {
-    "U",
-    function()
-     require("undo-glow").redo()
-    end,
-    mode = "n",
-    desc = "Redo with highlight",
-    noremap = true,
+   redo = {
+    hl_color = { bg = "#2F4640" }, -- Dark muted green
    },
-   {
-    "p",
-    function()
-     require("undo-glow").paste_below()
-    end,
-    mode = "n",
-    desc = "Paste below with highlight",
-    noremap = true,
+   yank = {
+    hl_color = { bg = "#7A683A" }, -- Dark muted yellow
    },
-   {
-    "P",
-    function()
-     require("undo-glow").paste_above()
-    end,
-    mode = "n",
-    desc = "Paste above with highlight",
-    noremap = true,
+   paste = {
+    hl_color = { bg = "#325B5B" }, -- Dark muted cyan
    },
-   {
-    "n",
-    function()
-     require("undo-glow").search_next({
-      animation = {
-       animation_type = "strobe",
-      },
-     })
-    end,
-    mode = "n",
-    desc = "Search next with highlight",
-    noremap = true,
+   search = {
+    hl_color = { bg = "#5C475C" }, -- Dark muted purple
    },
-   {
-    "N",
-    function()
-     require("undo-glow").search_prev({
-      animation = {
-       animation_type = "strobe",
-      },
-     })
-    end,
-    mode = "n",
-    desc = "Search prev with highlight",
-    noremap = true,
+   comment = {
+    hl_color = { bg = "#7A5A3D" }, -- Dark muted orange
    },
-   {
-    "*",
-    function()
-     require("undo-glow").search_star({
-      animation = {
-       animation_type = "strobe",
-      },
-     })
-    end,
-    mode = "n",
-    desc = "Search star with highlight",
-    noremap = true,
-   },
-   {
-    "gc",
-    function()
-     local pos = vim.fn.getpos(".")
-     vim.schedule(function()
-      vim.fn.setpos(".", pos)
-     end)
-     return require("undo-glow").comment()
-    end,
-    mode = { "n", "x" },
-    desc = "Toggle comment with highlight",
-    expr = true,
-    noremap = true,
-   },
-   {
-    "gc",
-    function()
-     require("undo-glow").comment_textobject()
-    end,
-    mode = "o",
-    desc = "Comment textobject with highlight",
-    noremap = true,
-   },
-   {
-    "gcc",
-    function()
-     return require("undo-glow").comment_line()
-    end,
-    mode = "n",
-    desc = "Toggle comment line with highlight",
-    expr = true,
-    noremap = true,
+   cursor = {
+    hl_color = { bg = "#793D54" }, -- Dark muted pink
    },
   },
-  init = function()
-   vim.api.nvim_create_autocmd("TextYankPost", {
-    desc = "Highlight when yanking (copying) text",
-    callback = function()
-     vim.schedule(function()
-      require("undo-glow").yank()
-     end)
-    end,
-   })
-
-   vim.api.nvim_create_autocmd("CursorMoved", {
-    desc = "Highlight when cursor moved significantly",
-    callback = function()
-     vim.schedule(function()
-      require("undo-glow").cursor_moved({
-       animation = {
-        animation_type = "slide",
-       },
-      })
-     end)
-    end,
-   })
-  end
+  priority = 2048 * 3,
  },
+ keys = {
+  {
+   "u",
+   function()
+    require("undo-glow").undo()
+   end,
+   mode = "n",
+   desc = "Undo with highlight",
+   noremap = true,
+  },
+  {
+   "U",
+   function()
+    require("undo-glow").redo()
+   end,
+   mode = "n",
+   desc = "Redo with highlight",
+   noremap = true,
+  },
+  {
+   "p",
+   function()
+    require("undo-glow").paste_below()
+   end,
+   mode = "n",
+   desc = "Paste below with highlight",
+   noremap = true,
+  },
+  {
+   "P",
+   function()
+    require("undo-glow").paste_above()
+   end,
+   mode = "n",
+   desc = "Paste above with highlight",
+   noremap = true,
+  },
+  {
+   "n",
+   function()
+    require("undo-glow").search_next({
+     animation = {
+      animation_type = "strobe",
+     },
+    })
+   end,
+   mode = "n",
+   desc = "Search next with highlight",
+   noremap = true,
+  },
+  {
+   "N",
+   function()
+    require("undo-glow").search_prev({
+     animation = {
+      animation_type = "strobe",
+     },
+    })
+   end,
+   mode = "n",
+   desc = "Search prev with highlight",
+   noremap = true,
+  },
+  {
+   "*",
+   function()
+    require("undo-glow").search_star({
+     animation = {
+      animation_type = "strobe",
+     },
+    })
+   end,
+   mode = "n",
+   desc = "Search star with highlight",
+   noremap = true,
+  },
+  {
+   "gc",
+   function()
+    local pos = vim.fn.getpos(".")
+    vim.schedule(function()
+     vim.fn.setpos(".", pos)
+    end)
+    return require("undo-glow").comment()
+   end,
+   mode = { "n", "x" },
+   desc = "Toggle comment with highlight",
+   expr = true,
+   noremap = true,
+  },
+  {
+   "gc",
+   function()
+    require("undo-glow").comment_textobject()
+   end,
+   mode = "o",
+   desc = "Comment textobject with highlight",
+   noremap = true,
+  },
+  {
+  "gcc",
+   function()
+    return require("undo-glow").comment_line()
+   end,
+   mode = "n",
+   desc = "Toggle comment line with highlight",
+   expr = true,
+   noremap = true,
+  },
+ },
+ init = function()
+  vim.api.nvim_create_autocmd("TextYankPost", {
+   desc = "Highlight when yanking (copying) text",
+   callback = function()
+    vim.schedule(function()
+     require("undo-glow").yank()
+    end)
+   end,
+  })
+
+  vim.api.nvim_create_autocmd("CursorMoved", {
+   desc = "Highlight when cursor moved significantly",
+   callback = function()
+    vim.schedule(function()
+     require("undo-glow").cursor_moved({
+      animation = {
+       animation_type = "slide",
+      },
+     })
+    end)
+   end,
+  })
+ end
 }
 ```
-
-<!-- config:end -->
-
-</details>
-
-## 🎨 Hlgroups
-
-### Existing hlgroups
-
-The default colors are fairly ugly in my opinion, but they are sharp enough for any themes. You should change the color to whatever you like.
-
-<!-- colors:start -->
-
-| Opts Key | Default Group | Color Code (Background) |
-| --- | --- | --- |
-| **undo** | ***UgUndo*** | #FF5555  |
-| **redo** | ***UguRedo*** | #50FA7B |
-| **yank** | ***UgYank*** | #F1FA8C |
-| **paste** | ***UgPaste*** | #8BE9FD |
-| **search** | ***UgSearch*** | #BD93F9 |
-| **comment** | ***UgComment*** | #FFB86C  |
-| **cursor** | ***UgCursor*** | #FF79C6  |
-
-<!-- colors:end -->
-
-### Overiding hlgroups and colors (internally)
-
-You can easily override the colors from configuration `opts`. And the types are as below:
-
-```lua
----@field highlights? table<"undo" | "redo" | "yank" | "paste" | "search" | "comment", { hl: string, hl_color: UndoGlow.HlColor }>
-
----Highlight color information.
----@class UndoGlow.HlColor
----@field bg string Background color as a hex string.
----@field fg? string Optional foreground color as a hex string.
-```
-
-By setting hlgroup name to other value, the plugin will grab the colors of the target hlgroup and apply to it. For example:
-
-> [!note]
-> If you specify a hl other than the default, you no longer need to specify the hl_color key, as it will be ignored.
-
-```lua
--- ✅ Valid
-{
-  undo = {
-   hl = "Cursor",
- }
-}
-
--- ✅ Valid
-{
-  undo = {
-   hl_color = { bg = "#FF5555" },
- }
-}
-
--- ✅ Valid but hl_color with be ignored
-{
-  undo = {
-   hl = "Cursor",
-   hl_color = { bg = "#FF5555" },
- }
-}
-```
-
-### Overiding hlgroups and colors (externally)
-
-> [!note]
-> It's recommended to set the colors from the configuration table.
-
-The most common way to override the colors externally are with `vim.api.nvim_set_hl`. Note that setting up this way will take precedent than **undo-glow.nvim** configurations.
-
-```lua
--- Link to other hlgroups
-vim.api.nvim_set_hl(0, "UgYank", { link = "CurSearch" })
--- Set specific colors directly
-vim.api.nvim_set_hl(0, "UgYank", { bg = "#F4DBD6", fg = "#24273A" })
-```
-
-Or if you're using `snacks.nvim`, you can do as below:
-
-```lua
--- Link to other hlgroups
-Snacks.util.set_hl({ UgYank = "Cursor" }, { default = true })
--- Set specific colors directly
-Snacks.util.set_hl({ UgYank = { bg = "#CBA6F7", fg = "#11111B" } }, { default = true })
-```
-
-> [!note]
-> You don't have to set anything for the configuration opts if you're setting it in other places.
 
 ## 🌎 API
 
@@ -880,6 +788,94 @@ vim.api.nvim_create_autocmd({ "BufReadPost", "TextChanged" }, {
  end,
 })
 ```
+
+## 🎨 Hlgroups
+
+### Existing hlgroups
+
+The default colors are fairly ugly in my opinion, but they are sharp enough for any themes. You should change the color to whatever you like.
+
+<!-- colors:start -->
+
+| Opts Key | Default Group | Color Code (Background) |
+| --- | --- | --- |
+| **undo** | ***UgUndo*** | #FF5555  |
+| **redo** | ***UguRedo*** | #50FA7B |
+| **yank** | ***UgYank*** | #F1FA8C |
+| **paste** | ***UgPaste*** | #8BE9FD |
+| **search** | ***UgSearch*** | #BD93F9 |
+| **comment** | ***UgComment*** | #FFB86C  |
+| **cursor** | ***UgCursor*** | #FF79C6  |
+
+<!-- colors:end -->
+
+### Overiding hlgroups and colors (internally)
+
+You can easily override the colors from configuration `opts`. And the types are as below:
+
+```lua
+---@field highlights? table<"undo" | "redo" | "yank" | "paste" | "search" | "comment", { hl: string, hl_color: UndoGlow.HlColor }>
+
+---Highlight color information.
+---@class UndoGlow.HlColor
+---@field bg string Background color as a hex string.
+---@field fg? string Optional foreground color as a hex string.
+```
+
+By setting hlgroup name to other value, the plugin will grab the colors of the target hlgroup and apply to it. For example:
+
+> [!note]
+> If you specify a hl other than the default, you no longer need to specify the hl_color key, as it will be ignored.
+
+```lua
+-- ✅ Valid
+{
+  undo = {
+   hl = "Cursor",
+ }
+}
+
+-- ✅ Valid
+{
+  undo = {
+   hl_color = { bg = "#FF5555" },
+ }
+}
+
+-- ✅ Valid but hl_color with be ignored
+{
+  undo = {
+   hl = "Cursor",
+   hl_color = { bg = "#FF5555" },
+ }
+}
+```
+
+### Overiding hlgroups and colors (externally)
+
+> [!note]
+> It's recommended to set the colors from the configuration table.
+
+The most common way to override the colors externally are with `vim.api.nvim_set_hl`. Note that setting up this way will take precedent than **undo-glow.nvim** configurations.
+
+```lua
+-- Link to other hlgroups
+vim.api.nvim_set_hl(0, "UgYank", { link = "CurSearch" })
+-- Set specific colors directly
+vim.api.nvim_set_hl(0, "UgYank", { bg = "#F4DBD6", fg = "#24273A" })
+```
+
+Or if you're using `snacks.nvim`, you can do as below:
+
+```lua
+-- Link to other hlgroups
+Snacks.util.set_hl({ UgYank = "Cursor" }, { default = true })
+-- Set specific colors directly
+Snacks.util.set_hl({ UgYank = { bg = "#CBA6F7", fg = "#11111B" } }, { default = true })
+```
+
+> [!note]
+> You don't have to set anything for the configuration opts if you're setting it in other places.
 
 ## 💎 Animations & Easings
 
