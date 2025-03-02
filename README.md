@@ -934,7 +934,7 @@ Alternates the highlight intensity in a rhythmic manner, creating a breathing ef
 
 Rapidly moves or shifts the highlight slightly, giving a shaky or vibrating appearance.
 
-<https://github.com/user-attachments/assets/8627ee17-2ac7-4571-a897-3422cebe0e1b>
+<https://github.com/user-attachments/assets/baddc92f-9fdb-4e68-ae36-24673c85f977>
 
 ##### Spring
 

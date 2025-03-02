@@ -168,9 +168,9 @@ function M.animate.jitter(opts)
 			end
 
 			local converted_rgb = {
-				r = clamp(rgb.r + math.random(-15, 15)),
-				g = clamp(rgb.g + math.random(-15, 15)),
-				b = clamp(rgb.b + math.random(-15, 15)),
+				r = clamp(rgb.r + math.random(-30, 30)),
+				g = clamp(rgb.g + math.random(-30, 30)),
+				b = clamp(rgb.b + math.random(-30, 30)),
 			}
 
 			return require("undo-glow.color").rgb_to_hex(converted_rgb)
