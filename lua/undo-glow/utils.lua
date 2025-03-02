@@ -181,10 +181,13 @@ function M.get_search_region()
 		return
 	end
 
+	local line_lower = line:lower()
+	local pattern_lower = search_pattern:lower()
+
 	local match_start, match_end
 	local offset = 1
 	while true do
-		local s, e = line:find(search_pattern, offset)
+		local s, e = line_lower:find(pattern_lower, offset)
 		if not s then
 			break
 		end
@@ -204,7 +207,7 @@ function M.get_search_region()
 	end
 
 	if not match_start or not match_end then
-		match_start, match_end = line:find(search_pattern)
+		match_start, match_end = line_lower:find(pattern_lower)
 		if not match_start or not match_end then
 			return
 		end
@@ -235,13 +238,16 @@ function M.get_search_star_region()
 		return
 	end
 
-	local reg = vim.regex(search_pattern)
-	local match_start = reg:match_str(line)
+	local line_lower = line:lower()
+	local pattern_lower = search_pattern:lower()
+
+	local reg = vim.regex(pattern_lower)
+	local match_start = reg:match_str(line_lower)
 	if match_start == nil then
 		return
 	end
 
-	local matched_text = vim.fn.matchstr(line, search_pattern)
+	local matched_text = vim.fn.matchstr(line_lower, pattern_lower)
 	local match_end = match_start + #matched_text
 
 	return {
