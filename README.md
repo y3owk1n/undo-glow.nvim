@@ -45,27 +45,27 @@ There are alot of similars plugins that you can simply find from github. The mai
 
 ### Undo
 
-<https://github.com/user-attachments/assets/60d0cb17-78fb-414f-ab7f-870397b13d5e>
+<https://github.com/user-attachments/assets/e66f60f6-bfd9-4fc0-8ffd-4c8a0b915ff4>
 
 ### Redo
 
-<https://github.com/user-attachments/assets/4fd54266-b116-4da3-8fee-186b44baf6a5>
+<https://github.com/user-attachments/assets/b38ee735-b287-4c72-ae56-750eb1c8850d>
 
 ### Yank
 
-<https://github.com/user-attachments/assets/1c55324a-1a1a-4bdd-b766-cc7ad4972b1b>
+<https://github.com/user-attachments/assets/6716c53e-953c-468c-b368-5575a3182356>
 
 ### Paste
 
-<https://github.com/user-attachments/assets/cc32dfa7-1c00-4f07-885a-7ca4c9ae6649>
+<https://github.com/user-attachments/assets/39d14353-518d-4c8c-b465-b85e3beb4a60>
 
 ### Search
 
-<https://github.com/user-attachments/assets/9c99e635-e4d7-490a-8ae6-ca2749656f57>
+<https://github.com/user-attachments/assets/1da5a63d-8a2e-42b7-b933-6dcf90b9fb7d>
 
 ### Comment
 
-<https://github.com/user-attachments/assets/624db7db-6b50-437b-a92c-966ad2246d70>
+<https://github.com/user-attachments/assets/e837b8d8-2e0f-4c3d-8a08-811f9e68d597>
 
 ### Significant Cursor Movement (Like beacon.nvim)
 
