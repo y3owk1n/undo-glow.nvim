@@ -45,31 +45,31 @@ There are alot of similars plugins that you can simply find from github. The mai
 
 ### Undo
 
-<https://github.com/user-attachments/assets/e66f60f6-bfd9-4fc0-8ffd-4c8a0b915ff4>
+<https://github.com/user-attachments/assets/d88fc7c0-9b2c-4ad5-b407-8e74ef9ba625>
 
 ### Redo
 
-<https://github.com/user-attachments/assets/b38ee735-b287-4c72-ae56-750eb1c8850d>
+<https://github.com/user-attachments/assets/cbaae19d-5152-482c-b2f6-53f3ea6cafe6>
 
 ### Yank
 
-<https://github.com/user-attachments/assets/6716c53e-953c-468c-b368-5575a3182356>
+<https://github.com/user-attachments/assets/97cc83fe-64b7-4f7f-86cb-55de00542a63>
 
 ### Paste
 
-<https://github.com/user-attachments/assets/39d14353-518d-4c8c-b465-b85e3beb4a60>
+<https://github.com/user-attachments/assets/281a8e94-1afc-4d1a-b929-ce44235412ea>
 
 ### Search
 
-<https://github.com/user-attachments/assets/1da5a63d-8a2e-42b7-b933-6dcf90b9fb7d>
+<https://github.com/user-attachments/assets/3d9a3719-eb5f-49d0-a5c5-50cf7a8fab06>
 
 ### Comment
 
-<https://github.com/user-attachments/assets/e837b8d8-2e0f-4c3d-8a08-811f9e68d597>
+<https://github.com/user-attachments/assets/b9456269-847d-4a9c-a10e-d311638c7546>
 
 ### Significant Cursor Movement (Like beacon.nvim)
 
-<https://github.com/user-attachments/assets/6cc42cec-fb01-48ad-b069-68779c42726f>
+<https://github.com/user-attachments/assets/1a50b5e6-ed80-44e8-a5a3-a75dcd8fe4aa>
 
 <!-- panvimdoc-ignore-end -->
 
@@ -904,67 +904,67 @@ Snacks.util.set_hl({ UgYank = { bg = "#CBA6F7", fg = "#11111B" } }, { default = 
 
 Static highlight and will be cleared after a duration immediately.
 
-<https://github.com/user-attachments/assets/7ea4b7fb-9c04-445c-a397-914b76c240f1>
+<https://github.com/user-attachments/assets/a1c13aba-2d9f-4f63-960a-cff5b00689a7>
 
 ##### Fade (Default)
 
 Gradually decreases the opacity of the highlight, creating a smooth fade-out effect.
 
-<https://github.com/user-attachments/assets/06820af3-1c37-445c-9e3d-946c277d946a>
+<https://github.com/user-attachments/assets/a6b1d421-f506-4427-9284-580b0be8c932>
 
 ##### Fade Reverse
 
 Opposite of fade, gradually increases opacity of the highlight, creating a smooth fade-in effect.
 
-<https://github.com/user-attachments/assets/9fd6af7c-37d1-4b86-b2a2-3f0543787c52>
+<https://github.com/user-attachments/assets/48c8efd2-2087-4dbf-bb64-d75b1ed3aa41>
 
 ##### Blink
 
 Toggles the highlight on and off at a fixed interval, similar to a cursor blink.
 
-<https://github.com/user-attachments/assets/8afee494-f9a0-4eef-9c9e-86a5c0c56eae>
+<https://github.com/user-attachments/assets/b9325d9f-a927-4ecf-857c-6f1bc803bb9f>
 
 ##### Pulse
 
 Alternates the highlight intensity in a rhythmic manner, creating a breathing effect.
 
-<https://github.com/user-attachments/assets/68145ed1-326e-4f64-8dcf-3edae8baeb31>
+<https://github.com/user-attachments/assets/b29e35a2-9614-482d-8ebe-66ae7a1bf920>
 
 ##### Jitter
 
 Rapidly moves or shifts the highlight slightly, giving a shaky or vibrating appearance.
 
-<https://github.com/user-attachments/assets/baddc92f-9fdb-4e68-ae36-24673c85f977>
+<https://github.com/user-attachments/assets/9a12c056-64df-4d77-b76f-675a3205f70a>
 
 ##### Spring
 
 Overshoots the target color and then settles, mimicking a spring-like motion.
 
-<https://github.com/user-attachments/assets/bd19d4d6-0585-4705-bd56-1efcf18f3565>
+<https://github.com/user-attachments/assets/aa0beb32-e93c-48ea-aa99-fca1a300bb3f>
 
 ##### Desaturate
 
 Gradually reduces the color saturation, muting the highlight over time.
 
-<https://github.com/user-attachments/assets/a16ec21f-524d-4805-83d4-b56d0c59f1d1>
+<https://github.com/user-attachments/assets/0ab70950-ff5a-42c8-95e8-92b698658950>
 
 ##### Strobe
 
 Rapidly toggles between two colors to simulate a strobe light effect.
 
-<https://github.com/user-attachments/assets/8e0fd3bf-2a8b-4e0a-a5c1-8430e06bdba2>
+<https://github.com/user-attachments/assets/1a77e9b7-573b-4da5-8307-d50ad712583b>
 
 ##### Zoom
 
 Briefly increases brightness to simulate a zoom or spotlight effect before returning to normal.
 
-<https://github.com/user-attachments/assets/93e9da9a-771c-4988-acdd-2c796f04b306>
+<https://github.com/user-attachments/assets/26a71d02-1cab-45c4-b044-2cc02cad1a30>
 
 ##### Rainbow
 
 Cycles through hues smoothly, creating a rainbow-like transition effect.
 
-<https://github.com/user-attachments/assets/d287ad33-de80-47e1-8f93-7bfa7215afff>
+<https://github.com/user-attachments/assets/a9147a10-4923-410a-8f1e-6afecaf895fc>
 
 ##### Slide
 
@@ -973,7 +973,7 @@ Moves the highlight horizontally to the right across the text before fading out.
 > [!note]
 > Only supports single-line highlights.
 
-<https://github.com/user-attachments/assets/92d9b490-7f8c-4a06-a9ff-6a15af2ad531>
+<https://github.com/user-attachments/assets/57392e2b-80e7-4cb7-af90-e21cd0238c87>
 
 ##### Slide Reverse
 
@@ -982,7 +982,7 @@ Moves the highlight horizontally to the left, reversing the slide effect. Only s
 > [!note]
 > Only supports single-line highlights.
 
-<https://github.com/user-attachments/assets/40e6036d-ad77-4fb0-ae3f-3056ea77659c>
+<https://github.com/user-attachments/assets/3e7df3bd-a5ee-4a9d-9a4d-fe1f7b224971>
 
 <!-- panvimdoc-ignore-end -->
 
