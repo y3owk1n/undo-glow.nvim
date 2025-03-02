@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.6.0](https://github.com/y3owk1n/undo-glow.nvim/compare/v1.5.0...v1.6.0) (2025-03-02)
+
+
+### Features
+
+* **animation:** add fade_reverse animation ([#178](https://github.com/y3owk1n/undo-glow.nvim/issues/178)) ([698bc9f](https://github.com/y3owk1n/undo-glow.nvim/commit/698bc9fa50feaa56c9d867f89c2e24df26b2f52c))
+* **animation:** add rainbow animation ([#172](https://github.com/y3owk1n/undo-glow.nvim/issues/172)) ([534f0b6](https://github.com/y3owk1n/undo-glow.nvim/commit/534f0b603d401758e5ad7530de22bd0ce5eb222c))
+* **animation:** add slide animation ([#173](https://github.com/y3owk1n/undo-glow.nvim/issues/173)) ([7e6d87a](https://github.com/y3owk1n/undo-glow.nvim/commit/7e6d87a3603633a5e172e22bd9f9fc0278faf2b4))
+* **animation:** add slide_reverse animation ([#174](https://github.com/y3owk1n/undo-glow.nvim/issues/174)) ([e8b8fad](https://github.com/y3owk1n/undo-glow.nvim/commit/e8b8fad30ed2a3fa1e03ca5fb8e9331b2b946718))
+* **animation:** allow abort current animation and fallback to default ([#171](https://github.com/y3owk1n/undo-glow.nvim/issues/171)) ([0d1fb1c](https://github.com/y3owk1n/undo-glow.nvim/commit/0d1fb1c40fd69e9f3ea4357f413ac23a381a5d3a))
+* **animation:** allow animate_fn to return nil ([#170](https://github.com/y3owk1n/undo-glow.nvim/issues/170)) ([adc3f43](https://github.com/y3owk1n/undo-glow.nvim/commit/adc3f43e801bd3ca265a788e524a2d0d54a78ca2))
+
+
+### Bug Fixes
+
+* add priority to work properly with render-markdown.nvim ([#166](https://github.com/y3owk1n/undo-glow.nvim/issues/166)) ([80ddfce](https://github.com/y3owk1n/undo-glow.nvim/commit/80ddfce3dde741695ac8bd4e6a5a5f884201c96c))
+* **animation.slide:** abort animation when multiple lines ([#175](https://github.com/y3owk1n/undo-glow.nvim/issues/175)) ([1b67f73](https://github.com/y3owk1n/undo-glow.nvim/commit/1b67f73ad47b28ca176c8b555a09db91e6a0795a))
+
 ## [1.5.0](https://github.com/y3owk1n/undo-glow.nvim/compare/v1.4.0...v1.5.0) (2025-02-28)
 
 
