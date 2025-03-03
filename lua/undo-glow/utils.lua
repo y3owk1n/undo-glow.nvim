@@ -227,6 +227,7 @@ function M.get_search_star_region()
 	local bufnr = vim.api.nvim_get_current_buf()
 	local cursor = vim.api.nvim_win_get_cursor(0)
 	local row = cursor[1] - 1
+	local col = cursor[2]
 
 	local search_pattern = vim.fn.getreg("/")
 	if search_pattern == "" then
@@ -242,12 +243,15 @@ function M.get_search_star_region()
 	local pattern_lower = search_pattern:lower()
 
 	local reg = vim.regex(pattern_lower)
-	local match_start = reg:match_str(line_lower)
-	if match_start == nil then
+	local substring = line_lower:sub(col + 1) -- Lua's string.sub is 1-indexed
+	local offset = reg:match_str(substring)
+	if offset == nil then
 		return
 	end
 
-	local matched_text = vim.fn.matchstr(line_lower, pattern_lower)
+	local match_start = col + offset
+	local matched_text =
+		vim.fn.matchstr(line_lower:sub(match_start + 1), pattern_lower)
 	local match_end = match_start + #matched_text
 
 	return {
