@@ -1,21 +1,20 @@
 local M = {}
 
-local counter = 0 -- For unique highlight groups
-
 M.ns = vim.api.nvim_create_namespace("undo-glow")
+
+local hl_pool_size = 50
+local hl_pool_index = 1
+
+local regex_cache = {}
 
 ---Generates a unique highlight group name based on the given base.
 ---Increments an internal counter and appends it to the base string.
 ---@param base string The base name for the highlight group.
 ---@return string unique_hlgroup The unique highlight group name.
 function M.get_unique_hlgroup(base)
-	counter = counter + 1
-
-	-- Reset counter if it becomes too high
-	if counter > 1e6 then
-		counter = 1
-	end
-	return base .. "_" .. counter
+	local key = base .. "_" .. hl_pool_index
+	hl_pool_index = (hl_pool_index % hl_pool_size) + 1
+	return key
 end
 
 ---Sanitizes coordinates to ensure they fall within the valid range for the given buffer.
@@ -31,44 +30,21 @@ end
 function M.sanitize_coords(bufnr, s_row, s_col, e_row, e_col)
 	local line_count = vim.api.nvim_buf_line_count(bufnr)
 
-	-- Make sure s_row is within range
-	if s_row < 0 then
-		s_row = 0
-	end
-	if s_row > line_count then
-		s_row = line_count
-	end
+	s_row = math.max(0, math.min(s_row, line_count))
+	e_row = math.max(s_row, math.min(e_row, line_count))
 
-	-- Clamp s_col
-	local start_line = vim.api.nvim_buf_get_lines(
-		bufnr,
-		s_row,
-		s_row + 1,
-		false
-	)[1] or ""
-	if s_col < 0 then
-		s_col = 0
-	end
-	if s_col > #start_line then
-		s_col = #start_line
-	end
-
-	-- Make sure e_row is within range
-	if e_row < s_row then
-		e_row = s_row
-	end
-	if e_row > line_count then
-		e_row = line_count
-	end
-
-	-- Clamp e_col
-	local end_line = vim.api.nvim_buf_get_lines(bufnr, e_row, e_row + 1, false)[1]
-		or ""
-	if e_col < 0 then
-		e_col = 0
-	end
-	if e_col > #end_line then
-		e_col = #end_line
+	local lines
+	if s_row == e_row then
+		lines = vim.api.nvim_buf_get_lines(bufnr, s_row, s_row + 1, false)
+		local line = lines[1] or ""
+		s_col = math.max(0, math.min(s_col, #line))
+		e_col = math.max(0, math.min(e_col, #line))
+	else
+		lines = vim.api.nvim_buf_get_lines(bufnr, s_row, e_row + 1, false)
+		local start_line = lines[1] or ""
+		local end_line = lines[e_row - s_row + 1] or ""
+		s_col = math.max(0, math.min(s_col, #start_line))
+		e_col = math.max(0, math.min(e_col, #end_line))
 	end
 
 	return s_row, s_col, e_row, e_col
@@ -131,36 +107,38 @@ end
 ---@param opts UndoGlow.HandleHighlight The handle highlight options.
 ---@return nil
 function M.handle_highlight(opts)
-	if vim.api.nvim_buf_is_valid(opts.bufnr) then
-		opts = M.validate_state_for_highlight(opts)
-
-		-- If animation is off, use the existing hlgroup else use unique hlgroups.
-		-- Unique hlgroups is needed for animated version, because we will be changing the hlgroup colors during
-		-- animation.
-		local unique_hlgroup = opts.state.animation.enabled
-				and M.get_unique_hlgroup(opts.state.current_hlgroup)
-			or opts.state.current_hlgroup
-
-		-- TODO: Think of any other way that don't need to follow links or faster
-		-- Follow links if exists and get the actual color code for bg and fg
-		local current_hlgroup_detail =
-			require("undo-glow.highlight").resolve_hlgroup(
-				opts.state.current_hlgroup
-			)
-
-		local init_color =
-			require("undo-glow.color").init_colors(current_hlgroup_detail)
-
-		local extmark_id = M.highlight_range(opts, unique_hlgroup)
-
-		M.animate_or_clear_highlights(
-			opts,
-			unique_hlgroup,
-			extmark_id,
-			init_color.bg,
-			init_color.fg
-		)
+	if not vim.api.nvim_buf_is_valid(opts.bufnr) then
+		return
 	end
+
+	opts = M.validate_state_for_highlight(opts)
+
+	-- If animation is off, use the existing hlgroup else use unique hlgroups.
+	-- Unique hlgroups is needed for animated version, because we will be changing the hlgroup colors during
+	-- animation.
+	local unique_hlgroup = opts.state.animation.enabled
+			and M.get_unique_hlgroup(opts.state.current_hlgroup)
+		or opts.state.current_hlgroup
+
+	-- TODO: Think of any other way that don't need to follow links or faster
+	-- Follow links if exists and get the actual color code for bg and fg
+	local current_hlgroup_detail =
+		require("undo-glow.highlight").resolve_hlgroup(
+			opts.state.current_hlgroup
+		)
+
+	local init_color =
+		require("undo-glow.color").init_colors(current_hlgroup_detail)
+
+	local extmark_id = M.highlight_range(opts, unique_hlgroup)
+
+	M.animate_or_clear_highlights(
+		opts,
+		unique_hlgroup,
+		extmark_id,
+		init_color.bg,
+		init_color.fg
+	)
 end
 
 ---Determines the region of the current search pattern based on the cursor position.
@@ -186,6 +164,7 @@ function M.get_search_region()
 
 	local match_start, match_end
 	local offset = 1
+
 	while true do
 		local s, e = line_lower:find(pattern_lower, offset)
 		if not s then
@@ -221,6 +200,23 @@ function M.get_search_region()
 	}
 end
 
+--- Retrieves a cached vim.regex object for the given pattern.
+--- The pattern is converted to lowercase before compiling. If the cache exceeds 50 entries,
+--- the cache is cleared and rebuilt with the current pattern.
+---@param pattern string The pattern to compile into a case-insensitive vim.regex object.
+---@return vim.regex The compiled vim.regex object for the given pattern.
+function M.get_regex_for_pattern(pattern)
+	if not regex_cache[pattern] then
+		regex_cache[pattern] = vim.regex(pattern:lower())
+
+		if vim.tbl_count(regex_cache) > 50 then
+			regex_cache = {}
+			regex_cache[pattern] = vim.regex(pattern:lower())
+		end
+	end
+	return regex_cache[pattern]
+end
+
 ---Determines the "search star" region based on the current search pattern and cursor position.
 ---@return UndoGlow.RowCol|nil region A table containing s_row, s_col, e_row, and e_col for the search star region, or nil if not found.
 function M.get_search_star_region()
@@ -242,8 +238,8 @@ function M.get_search_star_region()
 	local line_lower = line:lower()
 	local pattern_lower = search_pattern:lower()
 
-	local reg = vim.regex(pattern_lower)
-	local substring = line_lower:sub(col + 1) -- Lua's string.sub is 1-indexed
+	local reg = M.get_regex_for_pattern(pattern_lower)
+	local substring = line_lower:sub(col + 1)
 	local offset = reg:match_str(substring)
 	if offset == nil then
 		return
@@ -322,19 +318,24 @@ end
 ---@param opts? UndoGlow.CommandOpts Optional command options.
 ---@return UndoGlow.CommandOpts The merged command options.
 function M.merge_command_opts(hlgroup, opts)
-	opts = (type(opts) == "table") and opts or {}
+	if type(opts) ~= "table" then
+		opts = {}
+	end
 
-	opts = vim.tbl_extend("force", {
-		hlgroup = hlgroup,
-		animation = {
+	if not opts.animation then
+		opts.animation = {
 			enabled = nil,
 			animation_type = nil,
 			duration = nil,
 			easing = nil,
 			fps = nil,
-		},
-		force_edge = nil,
-	}, opts)
+		}
+	end
+
+	opts.hlgroup = hlgroup
+	if type(opts.force_edge) == "nil" then
+		opts.force_edge = nil
+	end
 
 	return opts
 end
@@ -344,7 +345,10 @@ end
 ---@return UndoGlow.State The created state table.
 function M.create_state(opts)
 	opts = opts or {}
-	opts.animation = opts.animation or {}
+
+	if not opts.animation then
+		opts.animation = {}
+	end
 
 	return {
 		should_detach = false,
