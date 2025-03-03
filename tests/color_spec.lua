@@ -93,21 +93,23 @@ describe("undo-glow.color", function()
 
 	describe("get_normal_bg", function()
 		before_each(function()
+			color.clear_cache()
 			vim.api.nvim_set_hl(0, "Normal", { bg = "NONE" })
+		end)
+
+		it("should return default when no background set", function()
+			assert.are.equal(color.default_bg, color.get_normal_bg())
 		end)
 
 		it("should return Normal highlight background", function()
 			vim.api.nvim_set_hl(0, "Normal", { bg = "#123456" })
 			assert.are.equal("#123456", color.get_normal_bg())
 		end)
-
-		it("should return default when no background set", function()
-			assert.are.equal(color.default_bg, color.get_normal_bg())
-		end)
 	end)
 
 	describe("get_normal_fg", function()
 		before_each(function()
+			color.clear_cache()
 			vim.api.nvim_set_hl(0, "Normal", { fg = "NONE" })
 		end)
 
