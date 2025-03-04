@@ -77,7 +77,7 @@ function M.search_cmd(opts)
 
 	local current_win = vim.api.nvim_get_current_win()
 	local cursor = vim.api.nvim_win_get_cursor(current_win)
-	local current_row = cursor[1] - 1 -- zero-indexed for the highlight_region
+	local current_row = cursor[1] - 1
 	local line = vim.api.nvim_get_current_line()
 
 	require("undo-glow").highlight_region(vim.tbl_extend("force", opts, {
