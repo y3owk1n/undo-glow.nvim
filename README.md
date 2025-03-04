@@ -69,7 +69,7 @@ There are alot of similars plugins that you can simply find from github. The mai
 
 ### Significant Cursor Movement (Like beacon.nvim)
 
-<https://github.com/user-attachments/assets/1a50b5e6-ed80-44e8-a5a3-a75dcd8fe4aa>
+<https://github.com/user-attachments/assets/282e83e6-0223-4336-a3be-6bf15f34ee4d>
 
 <!-- panvimdoc-ignore-end -->
 
@@ -990,18 +990,9 @@ Cycles through hues smoothly, creating a rainbow-like transition effect.
 Moves the highlight horizontally to the right across the text before fading out.
 
 > [!note]
-> Only supports single-line highlights.
+> Only supports single-line highlights for now. Havent be able find a way to make it work with multiline.
 
-<https://github.com/user-attachments/assets/57392e2b-80e7-4cb7-af90-e21cd0238c87>
-
-##### Slide Reverse
-
-Moves the highlight horizontally to the left, reversing the slide effect. Only supports single-line highlights.
-
-> [!note]
-> Only supports single-line highlights.
-
-<https://github.com/user-attachments/assets/3e7df3bd-a5ee-4a9d-9a4d-fe1f7b224971>
+<https://github.com/user-attachments/assets/086056c2-4923-4ef5-85a7-378894248fc7>
 
 <!-- panvimdoc-ignore-end -->
 
