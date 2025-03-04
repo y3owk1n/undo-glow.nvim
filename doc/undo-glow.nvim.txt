@@ -917,7 +917,7 @@ ANIMATION TYPE IN FUNCTION
     ---@class UndoGlow.Animation
     ---@field bufnr integer Buffer number.
     ---@field hlgroup string Highlight group name.
-    ---@field extmark_id integer Extmark identifier.
+    ---@field extmark_id? integer Extmark identifier.
     ---@field start_bg UndoGlow.RGBColor Starting background color.
     ---@field end_bg UndoGlow.RGBColor Ending background color.
     ---@field start_fg? UndoGlow.RGBColor Optional starting foreground color.
@@ -925,6 +925,14 @@ ANIMATION TYPE IN FUNCTION
     ---@field duration number Animation duration in milliseconds.
     ---@field config UndoGlow.Config Configuration for undo-glow.
     ---@field state UndoGlow.State Current state of the highlight.
+    ---@field coordinates UndoGlow.RowCol Current sanitized coordinates
+    
+    ---Represents a region (row/column coordinates) in the buffer.
+    ---@class UndoGlow.RowCol
+    ---@field s_row integer Start row.
+    ---@field s_col integer Start column.
+    ---@field e_row integer End row.
+    ---@field e_col integer End column.
     
     -- configuration opts
     {
@@ -934,6 +942,10 @@ ANIMATION TYPE IN FUNCTION
       ---@return boolean|nil status Return `false` to fallback to fade
       animation_type = function(opts)
        --- Sometimes thing just don't work and if your custom animation don't support certain thing
+    
+       --- First create an extmark to be used later by appending the opts for `extmark_id`
+       opts.extmark_id = vim.api.nvim_buf_set_extmark() -- refer next section for detail on how
+    
        --- You can return false, and it will fallback to `fade` animation.
        --- E.g. since `e_col` will always be 0 if you highlight with visual block, it will be troublesome to do calculation.
        if should_fallback then
@@ -966,23 +978,49 @@ EXAMPLE USING BLINK ANIMATION FROM SOURCE CODE
      animation = {
       --- rest of configurations
       animation_type = function(opts)
-       require("undo-glow").animate_start(opts, function(progress)
-          local blink_period = 200
-          local phase = (progress * opts.duration % blink_period) < (blink_period / 2)
+       local extmark_opts = require("undo-glow.utils").create_extmark_opts({
+        bufnr = opts.bufnr,
+        hlgroup = opts.hlgroup,
+        s_row = opts.coordinates.s_row,
+        s_col = opts.coordinates.s_col,
+        e_row = opts.coordinates.e_row,
+        e_col = opts.coordinates.e_col,
+        priority = opts.config.priority,
+        force_edge = opts.state.force_edge,
+       })
     
-          if phase then
-            return {
-              bg = require("undo-glow.color").rgb_to_hex(opts.start_bg),
-              fg = opts.start_fg and require("undo-glow.color").rgb_to_hex(opts.start_fg) or nil,
-            }
-          else
-            return {
-              bg = require("undo-glow.color").rgb_to_hex(opts.end_bg),
-              fg = opts.end_fg and require("undo-glow.color").rgb_to_hex(opts.end_fg) or nil,
-            }
-          end
+       opts.extmark_id = vim.api.nvim_buf_set_extmark(
+        opts.bufnr,
+        require("undo-glow.utils").ns,
+        opts.coordinates.s_row,
+        opts.coordinates.s_col,
+        extmark_opts
+       )
+    
+       require("undo-glow").animate_start(opts, function(progress)
+        local blink_period = 200
+        local phase = (progress * opts.duration % blink_period)
+         < (blink_period / 2)
+    
+        if phase then
+         return {
+          bg = require("undo-glow.color").rgb_to_hex(opts.start_bg),
+          fg = opts.start_fg
+            and require("undo-glow.color").rgb_to_hex(
+             opts.start_fg
+            )
+           or nil,
+         }
+        else
+         return {
+          bg = require("undo-glow.color").rgb_to_hex(opts.end_bg),
+          fg = opts.end_fg and require("undo-glow.color").rgb_to_hex(
+           opts.end_fg
+          ) or nil,
+         }
+        end
        end)
-      end
+      end,
       --- rest of configurations
      }
     }
