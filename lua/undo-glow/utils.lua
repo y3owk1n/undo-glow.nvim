@@ -258,7 +258,17 @@ function M.animate_or_clear_highlights(
 			},
 		}
 
-		local status = opts.state.animation.animation_type(animation_opts)
+		local success, status =
+			pcall(opts.state.animation.animation_type, animation_opts)
+
+		if not success then
+			vim.notify(
+				"[UndoGlow]: Animation type must be one of the builtin or a function... Fallback to fade",
+				vim.log.levels.ERROR
+			)
+			status = false
+		end
+
 		if status == false then
 			require("undo-glow.animation").animate.fade(animation_opts)
 		end
