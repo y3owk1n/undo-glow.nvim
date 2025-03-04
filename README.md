@@ -330,7 +330,7 @@ See the example below for how to configure **undo-glow.nvim**.
    noremap = true,
   },
   {
-  "gcc",
+   "gcc",
    function()
     return require("undo-glow").comment_line()
    end,
@@ -344,25 +344,21 @@ See the example below for how to configure **undo-glow.nvim**.
   vim.api.nvim_create_autocmd("TextYankPost", {
    desc = "Highlight when yanking (copying) text",
    callback = function()
-    vim.schedule(function()
-     require("undo-glow").yank()
-    end)
+    require("undo-glow").yank()
    end,
   })
 
   vim.api.nvim_create_autocmd("CursorMoved", {
    desc = "Highlight when cursor moved significantly",
    callback = function()
-    vim.schedule(function()
-     require("undo-glow").cursor_moved({
-      animation = {
-       animation_type = "slide",
-      },
-     })
-    end)
+    require("undo-glow").cursor_moved({
+     animation = {
+      animation_type = "slide",
+     },
+    })
    end,
   })
- end
+ end,
 }
 ```
 
@@ -456,9 +452,7 @@ require("undo-glow").yank(opts)
 vim.api.nvim_create_autocmd("TextYankPost", {
  desc = "Highlight when yanking (copying) text",
  callback = function()
-  vim.schedule(function()
   require("undo-glow").yank()
-  end)
  end,
 })
 ```
@@ -597,9 +591,7 @@ require("undo-glow").cursor_moved(opts, ignored_ft)
 vim.api.nvim_create_autocmd("CursorMoved", {
  desc = "Highlight when cursor moved significantly",
  callback = function()
-  vim.schedule(function()
-   require("undo-glow").cursor_moved()
-  end)
+  require("undo-glow").cursor_moved()
  end,
 })
 
@@ -607,9 +599,7 @@ vim.api.nvim_create_autocmd("CursorMoved", {
 vim.api.nvim_create_autocmd("CursorMoved", {
  desc = "Highlight when cursor moved significantly",
  callback = function()
-  vim.schedule(function()
-   require("undo-glow").cursor_moved(_, { "mason", "lazy", ... })
-  end)
+  require("undo-glow").cursor_moved(_, { "mason", "lazy", ... })
  end,
 })
 ```
@@ -780,11 +770,9 @@ vim.api.nvim_create_autocmd({ "BufReadPost", "TextChanged" }, {
   end
 
   -- then run undo-glow with your desired hlgroup
-  vim.schedule(function()
-   require("undo-glow").highlight_changes({
-    hlgroup = "UgUndo",
-   })
-  end)
+  require("undo-glow").highlight_changes({
+   hlgroup = "UgUndo",
+  })
  end,
 })
 ```
