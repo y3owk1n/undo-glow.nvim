@@ -58,6 +58,37 @@ function M.paste_above(opts)
 	pcall(vim.cmd, string.format('normal! "%sP"', register))
 end
 
+---Highlight current line after a search is performed.
+---For autocmd usage only.
+---@param opts? UndoGlow.CommandOpts Optional command option
+---@return nil
+function M.search_cmd(opts)
+	local is_search_cmd = vim.v.event.cmdtype == "/"
+		or vim.v.event.cmdtype == "?"
+
+	local is_search_abort = vim.v.event.abort
+
+	if not is_search_cmd or is_search_abort then
+		return
+	end
+
+	vim.g.ug_ignore_cursor_moved = true
+	opts = require("undo-glow.utils").merge_command_opts("UgSearch", opts)
+
+	local current_win = vim.api.nvim_get_current_win()
+	local cursor = vim.api.nvim_win_get_cursor(current_win)
+	local current_row = cursor[1] - 1
+	local line = vim.api.nvim_get_current_line()
+
+	require("undo-glow").highlight_region(vim.tbl_extend("force", opts, {
+		s_row = current_row,
+		s_col = 0,
+		e_row = current_row,
+		e_col = #line,
+		force_edge = type(opts.force_edge) == "nil" and true or opts.force_edge,
+	}))
+end
+
 ---Search next command with highlights.
 ---@param opts? UndoGlow.CommandOpts Optional command option
 ---@return nil
