@@ -70,7 +70,7 @@
 ---@class UndoGlow.Animation
 ---@field bufnr integer Buffer number.
 ---@field hlgroup string Highlight group name.
----@field extmark_id integer Extmark identifier.
+---@field extmark_id? integer Extmark identifier.
 ---@field start_bg UndoGlow.RGBColor Starting background color.
 ---@field end_bg UndoGlow.RGBColor Ending background color.
 ---@field start_fg? UndoGlow.RGBColor Optional starting foreground color.
@@ -78,6 +78,7 @@
 ---@field duration number Animation duration in milliseconds.
 ---@field config UndoGlow.Config Configuration for undo-glow.
 ---@field state UndoGlow.State Current state of the highlight.
+---@field coordinates UndoGlow.RowCol Current sanitized coordinates
 
 ---Handle for highlighting operations, including region coordinates.
 ---@class UndoGlow.HandleHighlight : UndoGlow.RowCol
@@ -91,3 +92,10 @@
 ---@field s_col integer Start column.
 ---@field e_row integer End row.
 ---@field e_col integer End column.
+
+---Opts to create an extmark
+---@class UndoGlow.ExtmarkOpts : UndoGlow.RowCol
+---@field bufnr integer Buffer number.
+---@field hlgroup string Highlight group name.
+---@field priority integer Extmark priority to render the highlight (Default 4096).
+---@field force_edge? boolean Whether to force edge highlighting.

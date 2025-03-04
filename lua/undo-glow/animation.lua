@@ -75,6 +75,25 @@ end
 ---@param opts UndoGlow.Animation The animation options.
 ---@return boolean|nil status Return `false` to fallback to fade
 function M.animate.fade(opts)
+	local extmark_opts = require("undo-glow.utils").create_extmark_opts({
+		bufnr = opts.bufnr,
+		hlgroup = opts.hlgroup,
+		s_row = opts.coordinates.s_row,
+		s_col = opts.coordinates.s_col,
+		e_row = opts.coordinates.e_row,
+		e_col = opts.coordinates.e_col,
+		priority = opts.config.priority,
+		force_edge = opts.state.force_edge,
+	})
+
+	opts.extmark_id = vim.api.nvim_buf_set_extmark(
+		opts.bufnr,
+		require("undo-glow.utils").ns,
+		opts.coordinates.s_row,
+		opts.coordinates.s_col,
+		extmark_opts
+	)
+
 	M.animate_start(opts, function(progress)
 		local eased = opts.state.animation.easing({
 			time = progress,
@@ -104,6 +123,25 @@ end
 ---@param opts UndoGlow.Animation The animation options.
 ---@return boolean|nil status Return `false` to fallback to fade
 function M.animate.fade_reverse(opts)
+	local extmark_opts = require("undo-glow.utils").create_extmark_opts({
+		bufnr = opts.bufnr,
+		hlgroup = opts.hlgroup,
+		s_row = opts.coordinates.s_row,
+		s_col = opts.coordinates.s_col,
+		e_row = opts.coordinates.e_row,
+		e_col = opts.coordinates.e_col,
+		priority = opts.config.priority,
+		force_edge = opts.state.force_edge,
+	})
+
+	opts.extmark_id = vim.api.nvim_buf_set_extmark(
+		opts.bufnr,
+		require("undo-glow.utils").ns,
+		opts.coordinates.s_row,
+		opts.coordinates.s_col,
+		extmark_opts
+	)
+
 	M.animate_start(opts, function(progress)
 		local eased = opts.state.animation.easing({
 			time = progress,
@@ -132,6 +170,25 @@ end
 ---@param opts UndoGlow.Animation The animation options.
 ---@return boolean|nil status Return `false` to fallback to fade
 function M.animate.blink(opts)
+	local extmark_opts = require("undo-glow.utils").create_extmark_opts({
+		bufnr = opts.bufnr,
+		hlgroup = opts.hlgroup,
+		s_row = opts.coordinates.s_row,
+		s_col = opts.coordinates.s_col,
+		e_row = opts.coordinates.e_row,
+		e_col = opts.coordinates.e_col,
+		priority = opts.config.priority,
+		force_edge = opts.state.force_edge,
+	})
+
+	opts.extmark_id = vim.api.nvim_buf_set_extmark(
+		opts.bufnr,
+		require("undo-glow.utils").ns,
+		opts.coordinates.s_row,
+		opts.coordinates.s_col,
+		extmark_opts
+	)
+
 	M.animate_start(opts, function(progress)
 		local blink_period = 200
 		local phase = (progress * opts.duration % blink_period)
@@ -159,6 +216,25 @@ end
 ---@param opts UndoGlow.Animation The animation options.
 ---@return boolean|nil status Return `false` to fallback to fade
 function M.animate.jitter(opts)
+	local extmark_opts = require("undo-glow.utils").create_extmark_opts({
+		bufnr = opts.bufnr,
+		hlgroup = opts.hlgroup,
+		s_row = opts.coordinates.s_row,
+		s_col = opts.coordinates.s_col,
+		e_row = opts.coordinates.e_row,
+		e_col = opts.coordinates.e_col,
+		priority = opts.config.priority,
+		force_edge = opts.state.force_edge,
+	})
+
+	opts.extmark_id = vim.api.nvim_buf_set_extmark(
+		opts.bufnr,
+		require("undo-glow.utils").ns,
+		opts.coordinates.s_row,
+		opts.coordinates.s_col,
+		extmark_opts
+	)
+
 	M.animate_start(opts, function(_)
 		---@param rgb UndoGlow.RGBColor
 		---@return string hex
@@ -187,6 +263,25 @@ end
 ---@param opts UndoGlow.Animation The animation options.
 ---@return boolean|nil status Return `false` to fallback to fade
 function M.animate.pulse(opts)
+	local extmark_opts = require("undo-glow.utils").create_extmark_opts({
+		bufnr = opts.bufnr,
+		hlgroup = opts.hlgroup,
+		s_row = opts.coordinates.s_row,
+		s_col = opts.coordinates.s_col,
+		e_row = opts.coordinates.e_row,
+		e_col = opts.coordinates.e_col,
+		priority = opts.config.priority,
+		force_edge = opts.state.force_edge,
+	})
+
+	opts.extmark_id = vim.api.nvim_buf_set_extmark(
+		opts.bufnr,
+		require("undo-glow.utils").ns,
+		opts.coordinates.s_row,
+		opts.coordinates.s_col,
+		extmark_opts
+	)
+
 	M.animate_start(opts, function(progress)
 		local systolic_duration = 0.5
 
@@ -222,6 +317,25 @@ end
 ---@param opts UndoGlow.Animation The animation options.
 ---@return boolean|nil status Return `false` to fallback to fade
 function M.animate.spring(opts)
+	local extmark_opts = require("undo-glow.utils").create_extmark_opts({
+		bufnr = opts.bufnr,
+		hlgroup = opts.hlgroup,
+		s_row = opts.coordinates.s_row,
+		s_col = opts.coordinates.s_col,
+		e_row = opts.coordinates.e_row,
+		e_col = opts.coordinates.e_col,
+		priority = opts.config.priority,
+		force_edge = opts.state.force_edge,
+	})
+
+	opts.extmark_id = vim.api.nvim_buf_set_extmark(
+		opts.bufnr,
+		require("undo-glow.utils").ns,
+		opts.coordinates.s_row,
+		opts.coordinates.s_col,
+		extmark_opts
+	)
+
 	M.animate_start(opts, function(progress)
 		local t = math.sin(
 			progress * math.pi * (0.2 + 2.5 * progress * progress * progress)
@@ -249,6 +363,25 @@ end
 ---@param opts UndoGlow.Animation The animation options.
 ---@return boolean|nil status Return `false` to fallback to fade
 function M.animate.desaturate(opts)
+	local extmark_opts = require("undo-glow.utils").create_extmark_opts({
+		bufnr = opts.bufnr,
+		hlgroup = opts.hlgroup,
+		s_row = opts.coordinates.s_row,
+		s_col = opts.coordinates.s_col,
+		e_row = opts.coordinates.e_row,
+		e_col = opts.coordinates.e_col,
+		priority = opts.config.priority,
+		force_edge = opts.state.force_edge,
+	})
+
+	opts.extmark_id = vim.api.nvim_buf_set_extmark(
+		opts.bufnr,
+		require("undo-glow.utils").ns,
+		opts.coordinates.s_row,
+		opts.coordinates.s_col,
+		extmark_opts
+	)
+
 	M.animate_start(opts, function(progress)
 		---@param rgb UndoGlow.RGBColor
 		---@return string hex
@@ -271,6 +404,25 @@ end
 ---@param opts UndoGlow.Animation The animation options.
 ---@return boolean|nil status Return `false` to fallback to fade
 function M.animate.strobe(opts)
+	local extmark_opts = require("undo-glow.utils").create_extmark_opts({
+		bufnr = opts.bufnr,
+		hlgroup = opts.hlgroup,
+		s_row = opts.coordinates.s_row,
+		s_col = opts.coordinates.s_col,
+		e_row = opts.coordinates.e_row,
+		e_col = opts.coordinates.e_col,
+		priority = opts.config.priority,
+		force_edge = opts.state.force_edge,
+	})
+
+	opts.extmark_id = vim.api.nvim_buf_set_extmark(
+		opts.bufnr,
+		require("undo-glow.utils").ns,
+		opts.coordinates.s_row,
+		opts.coordinates.s_col,
+		extmark_opts
+	)
+
 	M.animate_start(opts, function(progress)
 		local use_start = math.floor(progress * 10) % 2 == 0
 		if use_start then
@@ -295,6 +447,25 @@ end
 ---@param opts UndoGlow.Animation The animation options.
 ---@return boolean|nil status Return `false` to fallback to fade
 function M.animate.zoom(opts)
+	local extmark_opts = require("undo-glow.utils").create_extmark_opts({
+		bufnr = opts.bufnr,
+		hlgroup = opts.hlgroup,
+		s_row = opts.coordinates.s_row,
+		s_col = opts.coordinates.s_col,
+		e_row = opts.coordinates.e_row,
+		e_col = opts.coordinates.e_col,
+		priority = opts.config.priority,
+		force_edge = opts.state.force_edge,
+	})
+
+	opts.extmark_id = vim.api.nvim_buf_set_extmark(
+		opts.bufnr,
+		require("undo-glow.utils").ns,
+		opts.coordinates.s_row,
+		opts.coordinates.s_col,
+		extmark_opts
+	)
+
 	M.animate_start(opts, function(progress)
 		local t = math.sin(progress * math.pi)
 		local brightness = 1 + 0.5 * t
@@ -321,6 +492,25 @@ end
 ---@param opts UndoGlow.Animation The animation options.
 ---@return boolean|nil status Return `false` to fallback to fade
 function M.animate.rainbow(opts)
+	local extmark_opts = require("undo-glow.utils").create_extmark_opts({
+		bufnr = opts.bufnr,
+		hlgroup = opts.hlgroup,
+		s_row = opts.coordinates.s_row,
+		s_col = opts.coordinates.s_col,
+		e_row = opts.coordinates.e_row,
+		e_col = opts.coordinates.e_col,
+		priority = opts.config.priority,
+		force_edge = opts.state.force_edge,
+	})
+
+	opts.extmark_id = vim.api.nvim_buf_set_extmark(
+		opts.bufnr,
+		require("undo-glow.utils").ns,
+		opts.coordinates.s_row,
+		opts.coordinates.s_col,
+		extmark_opts
+	)
+
 	M.animate_start(opts, function(progress)
 		local hue = progress * 360 -- cycle through hues
 		local rgb =
@@ -339,23 +529,29 @@ end
 function M.animate.slide(opts)
 	local buf = opts.bufnr
 	local ns = require("undo-glow.utils").ns
-	local coords = vim.api.nvim_buf_get_extmark_by_id(
-		opts.bufnr,
+
+	local extmark_opts = require("undo-glow.utils").create_extmark_opts({
+		bufnr = buf,
+		hlgroup = opts.hlgroup,
+		s_row = opts.coordinates.s_row,
+		s_col = opts.coordinates.s_col,
+		e_row = opts.coordinates.e_row,
+		e_col = opts.coordinates.e_col,
+		priority = opts.config.priority,
+		force_edge = opts.state.force_edge,
+	})
+
+	opts.extmark_id = vim.api.nvim_buf_set_extmark(
+		buf,
 		ns,
-		opts.extmark_id,
-		{ details = true }
+		opts.coordinates.s_row,
+		opts.coordinates.s_col,
+		extmark_opts
 	)
-	if not coords or #coords == 0 then
-		return
-	end
 
-	local original_row = coords[1]
-	local original_col = coords[2]
-	local preserved_opts = coords[3] or {}
-
-	-- These should not be set in extmark, will cause error
-	preserved_opts["ns_id"] = nil
-	preserved_opts["virt_text_pos"] = nil
+	local original_row = opts.coordinates.s_row
+	local original_col = opts.coordinates.s_col
+	local preserved_opts = extmark_opts
 
 	if preserved_opts.end_row - original_row > 1 then
 		vim.notify(
@@ -441,23 +637,29 @@ end
 function M.animate.slide_reverse(opts)
 	local ns = require("undo-glow.utils").ns
 	local buf = opts.bufnr
-	local coords = vim.api.nvim_buf_get_extmark_by_id(
+
+	local extmark_opts = require("undo-glow.utils").create_extmark_opts({
+		bufnr = buf,
+		hlgroup = opts.hlgroup,
+		s_row = opts.coordinates.s_row,
+		s_col = opts.coordinates.s_col,
+		e_row = opts.coordinates.e_row,
+		e_col = opts.coordinates.e_col,
+		priority = opts.config.priority,
+		force_edge = opts.state.force_edge,
+	})
+
+	opts.extmark_id = vim.api.nvim_buf_set_extmark(
 		buf,
 		ns,
-		opts.extmark_id,
-		{ details = true }
+		opts.coordinates.s_row,
+		opts.coordinates.s_col,
+		extmark_opts
 	)
-	if not coords or #coords == 0 then
-		return
-	end
 
-	local original_row = coords[1]
-	local original_col = coords[2] -- byte index of start
-	local preserved_opts = coords[3] or {}
-
-	-- These should not be set in extmark, will cause error
-	preserved_opts["ns_id"] = nil
-	preserved_opts["virt_text_pos"] = nil
+	local original_row = opts.coordinates.s_row
+	local original_col = opts.coordinates.s_col
+	local preserved_opts = extmark_opts
 
 	if preserved_opts.end_row - original_row > 1 then
 		vim.notify(
