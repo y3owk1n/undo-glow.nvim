@@ -25,6 +25,7 @@ end
 ---@param opts? UndoGlow.CommandOpts Optional command option
 ---@return nil
 function M.yank(opts)
+	vim.g.ug_ignore_cursor_moved = true
 	opts = require("undo-glow.utils").merge_command_opts("UgYank", opts)
 
 	local pos = vim.fn.getpos("'[")
@@ -176,6 +177,7 @@ end
 ---@param opts? UndoGlow.CommandOpts Optional command option
 ---@return string|nil expression String for expression and nil for non-expression
 function M.comment(opts)
+	vim.g.ug_ignore_cursor_moved = true
 	opts = require("undo-glow.utils").merge_command_opts("UgComment", opts)
 	require("undo-glow").highlight_changes(opts)
 	return require("vim._comment").operator()
@@ -185,6 +187,7 @@ end
 ---@param opts? UndoGlow.CommandOpts Optional command option
 ---@return nil
 function M.comment_textobject(opts)
+	vim.g.ug_ignore_cursor_moved = true
 	opts = require("undo-glow.utils").merge_command_opts("UgComment", opts)
 	require("undo-glow").highlight_changes(opts)
 	return require("vim._comment").textobject()
