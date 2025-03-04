@@ -93,7 +93,6 @@ describe("undo-glow.color", function()
 
 	describe("get_normal_bg", function()
 		before_each(function()
-			color.clear_cache()
 			vim.api.nvim_set_hl(0, "Normal", { bg = "NONE" })
 		end)
 
@@ -109,7 +108,6 @@ describe("undo-glow.color", function()
 
 	describe("get_normal_fg", function()
 		before_each(function()
-			color.clear_cache()
 			vim.api.nvim_set_hl(0, "Normal", { fg = "NONE" })
 		end)
 

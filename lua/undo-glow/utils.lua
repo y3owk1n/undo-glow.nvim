@@ -5,8 +5,6 @@ M.ns = vim.api.nvim_create_namespace("undo-glow")
 local hl_pool_size = 50
 local hl_pool_index = 1
 
-local regex_cache = {}
-
 ---Generates a unique highlight group name based on the given base.
 ---Increments an internal counter and appends it to the base string.
 ---@param base string The base name for the highlight group.
@@ -200,23 +198,6 @@ function M.get_search_region()
 	}
 end
 
---- Retrieves a cached vim.regex object for the given pattern.
---- The pattern is converted to lowercase before compiling. If the cache exceeds 50 entries,
---- the cache is cleared and rebuilt with the current pattern.
----@param pattern string The pattern to compile into a case-insensitive vim.regex object.
----@return vim.regex The compiled vim.regex object for the given pattern.
-function M.get_regex_for_pattern(pattern)
-	if not regex_cache[pattern] then
-		regex_cache[pattern] = vim.regex(pattern:lower())
-
-		if vim.tbl_count(regex_cache) > 50 then
-			regex_cache = {}
-			regex_cache[pattern] = vim.regex(pattern:lower())
-		end
-	end
-	return regex_cache[pattern]
-end
-
 ---Determines the "search star" region based on the current search pattern and cursor position.
 ---@return UndoGlow.RowCol|nil region A table containing s_row, s_col, e_row, and e_col for the search star region, or nil if not found.
 function M.get_search_star_region()
@@ -238,7 +219,7 @@ function M.get_search_star_region()
 	local line_lower = line:lower()
 	local pattern_lower = search_pattern:lower()
 
-	local reg = M.get_regex_for_pattern(pattern_lower)
+	local reg = vim.regex(pattern_lower)
 	local substring = line_lower:sub(col + 1)
 	local offset = reg:match_str(substring)
 	if offset == nil then
