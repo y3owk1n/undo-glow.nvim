@@ -97,6 +97,7 @@ function M.paste_above(opts)
 end
 
 ---Highlight current line after a search is performed.
+---For autocmd usage only.
 ---@param opts? UndoGlow.CommandOpts Optional command option
 ---@return nil
 function M.search_cmd(opts)
