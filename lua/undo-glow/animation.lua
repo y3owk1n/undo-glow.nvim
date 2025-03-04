@@ -550,10 +550,10 @@ function M.animate.slide(opts)
 	)
 
 	local original_row = opts.coordinates.s_row
-	local original_col = opts.coordinates.s_col
-	local preserved_opts = extmark_opts
 
-	if preserved_opts.end_row - original_row > 1 then
+	local original_col = opts.coordinates.s_col
+
+	if extmark_opts.end_row - original_row > 1 then
 		vim.notify(
 			"UndoGlow: slide_right does not support multiple lines",
 			vim.log.levels.WARN
@@ -562,11 +562,16 @@ function M.animate.slide(opts)
 	end
 
 	M.animate_start(opts, function(progress)
-		local new_opts = vim.tbl_deep_extend(
-			"force",
-			preserved_opts,
-			{ id = opts.extmark_id }
-		)
+		local eased = opts.state.animation.easing({
+			time = progress,
+			begin = 0,
+			change = 1,
+			duration = 1,
+		})
+
+		local new_opts =
+			vim.tbl_deep_extend("force", extmark_opts, { id = opts.extmark_id })
+
 		local line = vim.api.nvim_buf_get_lines(
 			buf,
 			original_row,
@@ -574,162 +579,75 @@ function M.animate.slide(opts)
 			false
 		)[1] or ""
 
-		-- For the extmark's base, use the byte length of the line.
-		local line_end = #line
-		-- For virt_text anchoring, use display width.
+		local line_end = opts.coordinates.e_col
+
+		if opts.coordinates.e_col == 0 then
+			line_end = #line
+		end
+
 		local line_display = vim.fn.strdisplaywidth(line)
 		local win_width = vim.api.nvim_win_get_width(0)
 
-		local new_base, new_vt_anchor
+		local is_force_edge = type(opts.state.force_edge) == "boolean"
+			and opts.state.force_edge == true
 
+		local base_move = math.max(0, line_end - original_col)
+		local pad = math.max(0, win_width - line_display)
+		local total_move = base_move + (is_force_edge and pad or 0)
+		local total_progress = math.floor(total_move * progress)
+
+		--- HACK: see if it's full width, force the coordinates
 		if
-			preserved_opts.virt_text
-			and type(preserved_opts.virt_text) == "table"
+			opts.coordinates.s_col == 0
+			and opts.coordinates.e_col == 0
+			and opts.coordinates.e_row - opts.coordinates.s_row ~= 0
 		then
-			-- Calculate how far the base can move.
-			local base_move = math.max(0, line_end - original_col)
-			-- Calculate the extra space for virt_text.
-			local pad = math.max(0, win_width - line_display)
-			local total_move = base_move + pad
-			local threshold = total_move > 0 and (base_move / total_move) or 1
+			new_opts.end_row = opts.coordinates.e_row - 1
+		end
 
-			if progress <= threshold then
-				-- Phase 1: slide base from original_col to line_end.
-				local frac = progress / threshold
-				new_base = original_col + math.floor(base_move * frac)
-				new_vt_anchor = line_display -- keep anchor fixed
+		if total_progress <= line_end then
+			if is_force_edge then
+				new_opts.end_col =
+					math.min(line_end, original_col + total_progress)
 			else
-				-- Phase 2: keep base fixed at line_end and slide virt_text anchor.
-				new_base = line_end
-				local frac = (progress - threshold) / (1 - threshold)
-				new_vt_anchor = line_display + math.floor(pad * frac)
+				new_opts.end_col = original_col + total_progress
 			end
-			new_opts.virt_text_win_col = new_vt_anchor
+			new_opts.virt_text = nil
+			new_opts.virt_text_win_col = nil
 		else
-			-- Without virt_text, simply slide the base.
-			local base_move = math.max(0, line_end - original_col)
-			new_base = original_col + math.floor(base_move * progress)
+			new_opts.end_col = line_end
+			if is_force_edge then
+				new_opts.virt_text_win_col = extmark_opts.virt_text_win_col
+				new_opts.virt_text = {
+					{
+						string.rep(" ", total_progress - base_move),
+						opts.hlgroup,
+					},
+				}
+			end
 		end
 
-		-- Clamp new_base to be within [0, line_end].
-		if new_base < 0 then
-			new_base = 0
-		end
-		if new_base > line_end then
-			new_base = line_end
-		end
-
-		vim.api.nvim_buf_set_extmark(buf, ns, original_row, new_base, new_opts)
-
-		return {
-			bg = require("undo-glow.color").rgb_to_hex(opts.start_bg),
-			fg = opts.start_fg and require("undo-glow.color").rgb_to_hex(
-				opts.start_fg
-			) or nil,
-		}
-	end)
-end
-
----Simulates a reverse slide (left) effect by moving the extmark horizontally in reverse.
----This animation only support single line, multiple lines highlight will default to fade
----@param opts UndoGlow.Animation The animation options.
----@return boolean|nil status Return `false` to fallback to fade
-function M.animate.slide_reverse(opts)
-	local ns = require("undo-glow.utils").ns
-	local buf = opts.bufnr
-
-	local extmark_opts = require("undo-glow.utils").create_extmark_opts({
-		bufnr = buf,
-		hlgroup = opts.hlgroup,
-		s_row = opts.coordinates.s_row,
-		s_col = opts.coordinates.s_col,
-		e_row = opts.coordinates.e_row,
-		e_col = opts.coordinates.e_col,
-		priority = opts.config.priority,
-		force_edge = opts.state.force_edge,
-	})
-
-	opts.extmark_id = vim.api.nvim_buf_set_extmark(
-		buf,
-		ns,
-		opts.coordinates.s_row,
-		opts.coordinates.s_col,
-		extmark_opts
-	)
-
-	local original_row = opts.coordinates.s_row
-	local original_col = opts.coordinates.s_col
-	local preserved_opts = extmark_opts
-
-	if preserved_opts.end_row - original_row > 1 then
-		vim.notify(
-			"UndoGlow: slide_left does not support multiple lines",
-			vim.log.levels.WARN
-		)
-		return false
-	end
-
-	M.animate_start(opts, function(progress)
-		local new_opts = vim.tbl_deep_extend(
-			"force",
-			preserved_opts,
-			{ id = opts.extmark_id }
-		)
-		local line = vim.api.nvim_buf_get_lines(
+		vim.api.nvim_buf_set_extmark(
 			buf,
+			ns,
 			original_row,
-			original_row + 1,
-			false
-		)[1] or ""
-		local line_end = #line -- maximum valid base (byte length)
-		local line_display = vim.fn.strdisplaywidth(line) -- visible width of the text
-		local win_width = vim.api.nvim_win_get_width(0)
-
-		local new_base, new_vt_anchor
-
-		if
-			preserved_opts.virt_text
-			and type(preserved_opts.virt_text) == "table"
-		then
-			local base_move = math.max(0, line_end - original_col)
-			local vt_move = math.max(0, win_width - line_display)
-			-- Total movement distance is sum of vt_move and base_move.
-			local T = (vt_move > 0 and (vt_move / (vt_move + base_move))) or 0
-
-			if progress <= T then
-				-- Phase 1: Animate virt_text anchor.
-				-- Base remains fixed at the line_end.
-				new_base = line_end
-				local frac = progress / T
-				new_vt_anchor = win_width - math.floor(vt_move * frac)
-			else
-				-- Phase 2: Virt_text anchor is fixed at line_display.
-				new_vt_anchor = line_display
-				local frac = (progress - T) / (1 - T)
-				new_base = line_end - math.floor(base_move * frac)
-			end
-			new_opts.virt_text_win_col = new_vt_anchor
-		else
-			-- No virt_text: simply animate the base from line_end to original_col.
-			local base_move = math.max(0, line_end - original_col)
-			new_base = line_end - math.floor(base_move * progress)
-		end
-
-		-- Clamp new_base within valid range.
-		if new_base < 0 then
-			new_base = 0
-		end
-		if new_base > line_end then
-			new_base = line_end
-		end
-
-		vim.api.nvim_buf_set_extmark(buf, ns, original_row, new_base, new_opts)
+			original_col,
+			new_opts
+		)
 
 		return {
-			bg = require("undo-glow.color").rgb_to_hex(opts.start_bg),
-			fg = opts.start_fg and require("undo-glow.color").rgb_to_hex(
-				opts.start_fg
-			) or nil,
+			bg = require("undo-glow.color").blend_color(
+				opts.start_bg,
+				opts.end_bg,
+				eased
+			),
+			fg = (opts.start_fg and opts.end_fg)
+					and require("undo-glow.color").blend_color(
+						opts.start_fg,
+						opts.end_fg,
+						eased
+					)
+				or nil,
 		}
 	end)
 end
