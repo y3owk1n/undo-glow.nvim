@@ -10,91 +10,44 @@ M.default_search = { bg = "#BD93F9" } -- Purple
 M.default_comment = { bg = "#FFB86C" } -- Orange
 M.default_cursor = { bg = "#FF79C6" } -- Magenta
 
-local hex_to_rgb_cache = {}
-local rgb_to_hex_cache = {}
-local rgb_to_hsl_cache = {}
-local hsl_to_rgb_cache = {}
-local blend_color_cache = {}
-local normal_bg_cache = nil
-local normal_fg_cache = nil
-
-local MAX_CACHE_SIZE = 100
-
-function M.clear_cache()
-	hex_to_rgb_cache = {}
-	rgb_to_hex_cache = {}
-	rgb_to_hsl_cache = {}
-	hsl_to_rgb_cache = {}
-	blend_color_cache = {}
-	normal_bg_cache = nil
-	normal_fg_cache = nil
-end
-
 ---Converts a hexadecimal color string to an RGB table.
 ---Examples: "#FFF" or "#FFFFFF"
 ---@param hex string The hexadecimal color string.
 ---@return UndoGlow.RGBColor rgb_color The RGB representation of the hex color.
 function M.hex_to_rgb(hex)
-	if hex_to_rgb_cache[hex] then
-		return hex_to_rgb_cache[hex]
-	end
-
 	local clean_hex = hex:gsub("#", "")
-	local result
+	local rgb_color
 
 	if #clean_hex == 3 then
-		result = {
+		rgb_color = {
 			r = tonumber(clean_hex:sub(1, 1) .. clean_hex:sub(1, 1), 16),
 			g = tonumber(clean_hex:sub(2, 2) .. clean_hex:sub(2, 2), 16),
 			b = tonumber(clean_hex:sub(3, 3) .. clean_hex:sub(3, 3), 16),
 		}
 	else
-		result = {
+		rgb_color = {
 			r = tonumber(clean_hex:sub(1, 2), 16),
 			g = tonumber(clean_hex:sub(3, 4), 16),
 			b = tonumber(clean_hex:sub(5, 6), 16),
 		}
 	end
 
-	hex_to_rgb_cache[hex] = result
-	if vim.tbl_count(hex_to_rgb_cache) > MAX_CACHE_SIZE then
-		hex_to_rgb_cache = {}
-		hex_to_rgb_cache[hex] = result
-	end
-
-	return hex_to_rgb_cache[hex]
+	return rgb_color
 end
 
 ---Converts an RGB table to a hexadecimal color string.
 ---@param rgb UndoGlow.RGBColor The RGB color table.
 ---@return string hex_code The hexadecimal representation of the color.
 function M.rgb_to_hex(rgb)
-	local key = string.format("%d,%d,%d", rgb.r, rgb.g, rgb.b)
-
-	if rgb_to_hex_cache[key] then
-		return rgb_to_hex_cache[key]
-	end
-
 	local hex_code = string.format("#%02X%02X%02X", rgb.r, rgb.g, rgb.b)
 
-	rgb_to_hex_cache[key] = hex_code
-	if vim.tbl_count(rgb_to_hex_cache) > MAX_CACHE_SIZE then
-		rgb_to_hex_cache = {}
-		rgb_to_hex_cache[key] = hex_code
-	end
-
-	return rgb_to_hex_cache[key]
+	return hex_code
 end
 
 ---Converts an RGB table to an HSL table.
 ---@param rgb UndoGlow.RGBColor The RGB color table.
 ---@return UndoGlow.HSLColor hsl_color The HSL representation (h in degrees, s and l as fractions).
 function M.rgb_to_hsl(rgb)
-	local key = string.format("%d,%d,%d", rgb.r, rgb.g, rgb.b)
-	if rgb_to_hsl_cache[key] then
-		return rgb_to_hsl_cache[key]
-	end
-
 	local r = rgb.r / 255
 	local g = rgb.g / 255
 	local b = rgb.b / 255
@@ -125,15 +78,9 @@ function M.rgb_to_hsl(rgb)
 		h = h * 60
 	end
 
-	local result = { h = h, s = s, l = l }
+	local hsl_color = { h = h, s = s, l = l }
 
-	rgb_to_hsl_cache[key] = result
-	if vim.tbl_count(rgb_to_hsl_cache) > MAX_CACHE_SIZE then
-		rgb_to_hsl_cache = {}
-		rgb_to_hsl_cache[key] = result
-	end
-
-	return rgb_to_hsl_cache[key]
+	return hsl_color
 end
 
 ---Converts an HSL table to an RGB table.
@@ -141,11 +88,6 @@ end
 ---@return UndoGlow.RGBColor rgb The RGB representation of the color.
 function M.hsl_to_rgb(hsl)
 	local h, s, l = hsl.h, hsl.s, hsl.l
-
-	local key = string.format("%.3f,%.3f,%.3f", h, s, l)
-	if hsl_to_rgb_cache[key] then
-		return hsl_to_rgb_cache[key]
-	end
 
 	local r, g, b
 
@@ -183,18 +125,13 @@ function M.hsl_to_rgb(hsl)
 		b = hue2rgb(p, q, h_norm - 1 / 3)
 	end
 
-	local result = {
+	local rgb = {
 		r = math.floor(r * 255 + 0.5),
 		g = math.floor(g * 255 + 0.5),
 		b = math.floor(b * 255 + 0.5),
 	}
-	hsl_to_rgb_cache[key] = result
-	if vim.tbl_count(hsl_to_rgb_cache) > MAX_CACHE_SIZE then
-		hsl_to_rgb_cache = {}
-		hsl_to_rgb_cache[key] = result
-	end
 
-	return hsl_to_rgb_cache[key]
+	return rgb
 end
 
 ---Blends two RGB colors together based on an interpolation factor.
@@ -203,70 +140,37 @@ end
 ---@param t number (0-1) Interpolation factor.
 ---@return string hex_code The blended color as a hexadecimal string.
 function M.blend_color(c1, c2, t)
-	local key = string.format(
-		"%d,%d,%d|%d,%d,%d|%.3f",
-		c1.r,
-		c1.g,
-		c1.b,
-		c2.r,
-		c2.g,
-		c2.b,
-		t
-	)
-
-	if blend_color_cache[key] then
-		return blend_color_cache[key]
-	end
-
 	local r = math.floor(c1.r + (c2.r - c1.r) * t + 0.5)
 	local g = math.floor(c1.g + (c2.g - c1.g) * t + 0.5)
 	local b = math.floor(c1.b + (c2.b - c1.b) * t + 0.5)
 
 	local hex_code = M.rgb_to_hex({ r = r, g = g, b = b })
 
-	blend_color_cache[key] = hex_code
-	if vim.tbl_count(blend_color_cache) > MAX_CACHE_SIZE then
-		blend_color_cache = {}
-		blend_color_cache[key] = hex_code
-	end
-
-	return blend_color_cache[key]
+	return hex_code
 end
 
 ---Retrieves the Normal highlight group's background color.
 ---@return string hex_code The Normal highlight group's background color as a hexadecimal string.
 function M.get_normal_bg()
-	if normal_bg_cache then
-		return normal_bg_cache
-	end
-
 	local success, normal = pcall(vim.api.nvim_get_hl, 0, { name = "Normal" })
 
 	if not success or not normal.bg then
-		normal_bg_cache = M.default_bg
-		return normal_bg_cache
+		return M.default_bg
 	end
 
-	normal_bg_cache = string.format("#%06X", normal.bg)
-	return normal_bg_cache
+	return string.format("#%06X", normal.bg)
 end
 
 ---Retrieves the Normal highlight group's foreground color.
 ---@return string hex_code The Normal highlight group's foreground color as a hexadecimal string.
 function M.get_normal_fg()
-	if normal_fg_cache then
-		return normal_fg_cache
-	end
-
 	local success, normal = pcall(vim.api.nvim_get_hl, 0, { name = "Normal" })
 
 	if not success or not normal.fg then
-		normal_fg_cache = M.default_fg
-		return normal_fg_cache
+		return M.default_fg
 	end
 
-	normal_fg_cache = string.format("#%06X", normal.fg)
-	return normal_fg_cache
+	return string.format("#%06X", normal.fg)
 end
 
 ---Initializes colors based on the current highlight group details.
