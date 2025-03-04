@@ -869,9 +869,9 @@ Or if you're using `snacks.nvim`, you can do as below:
 
 ```lua
 -- Link to other hlgroups
-Snacks.util.set_hl({ UgYank = "Cursor" }, { default = true })
+Snacks.util.set_hl({ UgYank = "Cursor" })
 -- Set specific colors directly
-Snacks.util.set_hl({ UgYank = { bg = "#CBA6F7", fg = "#11111B" } }, { default = true })
+Snacks.util.set_hl({ UgYank = { bg = "#CBA6F7", fg = "#11111B" } })
 ```
 
 > [!note]
