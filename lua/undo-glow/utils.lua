@@ -48,58 +48,6 @@ function M.sanitize_coords(bufnr, s_row, s_col, e_row, e_col)
 	return s_row, s_col, e_row, e_col
 end
 
----Highlights a range in the buffer using an extmark.
----Optionally forces edge highlighting by padding the virtual text.
----@param opts UndoGlow.HandleHighlight Opts from handle highlight.
----@param hlgroup string Highlight group name.
----@return integer extmark_id Extmark ID for the created highlight.
-function M.highlight_range(opts, hlgroup)
-	local s_row, s_col, e_row, e_col = M.sanitize_coords(
-		opts.bufnr,
-		opts.s_row,
-		opts.s_col,
-		opts.e_row,
-		opts.e_col
-	)
-
-	---@type vim.api.keyset.set_extmark
-	local extmark_opts = {
-		end_row = e_row,
-		end_col = e_col,
-		hl_group = hlgroup,
-		hl_mode = "combine",
-		priority = opts.config.priority,
-	}
-
-	if
-		type(opts.state.force_edge) == "boolean"
-		and opts.state.force_edge == true
-	then
-		local line = vim.api.nvim_buf_get_lines(
-			opts.bufnr,
-			s_row,
-			s_row + 1,
-			false
-		)[1] or ""
-		local text_width = vim.fn.strdisplaywidth(line)
-		local win_width = vim.api.nvim_win_get_width(0)
-		local pad = win_width - text_width
-		if pad > 0 then
-			extmark_opts.virt_text = { { string.rep(" ", pad), hlgroup } }
-			extmark_opts.virt_text_win_col = text_width
-		end
-	end
-
-	local extmark_id = vim.api.nvim_buf_set_extmark(
-		opts.bufnr,
-		M.ns,
-		s_row,
-		s_col,
-		extmark_opts
-	)
-	return extmark_id
-end
-
 ---Handles highlighting for a buffer by validating state, applying animations (if enabled),
 ---and ultimately setting up the extmark.
 ---@param opts UndoGlow.HandleHighlight The handle highlight options.
@@ -128,7 +76,37 @@ function M.handle_highlight(opts)
 	local init_color =
 		require("undo-glow.color").init_colors(current_hlgroup_detail)
 
-	local extmark_id = M.highlight_range(opts, unique_hlgroup)
+	opts.s_row, opts.s_col, opts.e_row, opts.e_col = M.sanitize_coords(
+		opts.bufnr,
+		opts.s_row,
+		opts.s_col,
+		opts.e_row,
+		opts.e_col
+	)
+
+	local extmark_id = nil
+
+	--- If disabled animation, set extmark and clear it afterwards
+	if opts.state.animation.enabled ~= true then
+		local extmark_opts = M.create_extmark_opts({
+			bufnr = opts.bufnr,
+			hlgroup = unique_hlgroup,
+			s_row = opts.s_row,
+			s_col = opts.s_col,
+			e_row = opts.e_row,
+			e_col = opts.e_col,
+			priority = opts.config.priority,
+			force_edge = opts.state.force_edge,
+		})
+
+		extmark_id = vim.api.nvim_buf_set_extmark(
+			opts.bufnr,
+			M.ns,
+			opts.s_row,
+			opts.s_col,
+			extmark_opts
+		)
+	end
 
 	M.animate_or_clear_highlights(
 		opts,
@@ -243,7 +221,7 @@ end
 ---If animations are enabled, it invokes the animation callback; otherwise, it defers the removal of the extmark.
 ---@param opts UndoGlow.HandleHighlight Opts from handle highlight.
 ---@param hlgroup string Unique highlight group name.
----@param extmark_id integer The extmark ID of the highlight.
+---@param extmark_id? integer The extmark ID of the highlight. Exists = no animation
 ---@param start_bg string The starting background color (hex).
 ---@param start_fg? string The starting foreground color (hex).
 ---@return nil
@@ -262,7 +240,6 @@ function M.animate_or_clear_highlights(
 		local animation_opts = {
 			bufnr = opts.bufnr,
 			hlgroup = hlgroup,
-			extmark_id = extmark_id,
 			start_bg = require("undo-glow.color").hex_to_rgb(start_bg),
 			end_bg = require("undo-glow.color").hex_to_rgb(end_bg),
 			start_fg = start_fg and require("undo-glow.color").hex_to_rgb(
@@ -273,6 +250,12 @@ function M.animate_or_clear_highlights(
 			duration = opts.state.animation.duration,
 			config = opts.config,
 			state = opts.state,
+			coordinates = {
+				e_col = opts.e_col,
+				e_row = opts.e_row,
+				s_col = opts.s_col,
+				s_row = opts.s_row,
+			},
 		}
 
 		local status = opts.state.animation.animation_type(animation_opts)
@@ -280,15 +263,22 @@ function M.animate_or_clear_highlights(
 			require("undo-glow.animation").animate.fade(animation_opts)
 		end
 	else
-		vim.defer_fn(function()
-			if vim.api.nvim_buf_is_valid(opts.bufnr) then
-				vim.api.nvim_buf_del_extmark(
-					opts.bufnr,
-					require("undo-glow.utils").ns,
-					extmark_id
-				)
-			end
-		end, opts.state.animation.duration)
+		if extmark_id then
+			vim.defer_fn(function()
+				if vim.api.nvim_buf_is_valid(opts.bufnr) then
+					vim.api.nvim_buf_del_extmark(
+						opts.bufnr,
+						require("undo-glow.utils").ns,
+						extmark_id
+					)
+				end
+			end, opts.state.animation.duration)
+		else
+			vim.notify(
+				"[UndoGlow]: Unable to clear highlights without extmark_id",
+				vim.log.levels.ERROR
+			)
+		end
 	end
 
 	opts.state.should_detach = true
@@ -409,6 +399,37 @@ function M.get_animation_type(animation_type)
 	end
 
 	return nil
+end
+
+---Create an option for extmark to be used in animation.
+---@param opts UndoGlow.ExtmarkOpts
+---@return vim.api.keyset.set_extmark extmark_opts
+function M.create_extmark_opts(opts)
+	local extmark_opts = {
+		end_row = opts.e_row,
+		end_col = opts.e_col,
+		hl_group = opts.hlgroup,
+		hl_mode = "combine",
+		priority = opts.priority,
+	}
+
+	if type(opts.force_edge) == "boolean" and opts.force_edge == true then
+		local line = vim.api.nvim_buf_get_lines(
+			opts.bufnr,
+			opts.s_row,
+			opts.s_row + 1,
+			false
+		)[1] or ""
+		local text_width = vim.fn.strdisplaywidth(line)
+		local win_width = vim.api.nvim_win_get_width(0)
+		local pad = win_width - text_width
+		if pad > 0 then
+			extmark_opts.virt_text = { { string.rep(" ", pad), opts.hlgroup } }
+			extmark_opts.virt_text_win_col = text_width
+		end
+	end
+
+	return extmark_opts
 end
 
 return M

@@ -96,88 +96,88 @@ describe("undo-glow.utils", function()
 		end)
 	end)
 
-	describe("highlight_range", function()
-		local bufnr
-
-		before_each(function()
-			bufnr = vim.api.nvim_create_buf(false, true) -- Create a new buffer for testing
-			vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, {
-				"This is a test line",
-				"Another test line",
-				"Yet another line",
-			})
-		end)
-
-		after_each(function()
-			vim.api.nvim_buf_delete(bufnr, { force = true }) -- Clean up buffer
-		end)
-
-		it("adds a highlight correctly", function()
-			local hlgroup = "Visual"
-			---@type UndoGlow.HandleHighlight
-			local opts = {
-				bufnr = bufnr,
-				config = {
-					priority = 4096,
-				},
-				state = {
-					force_edge = false,
-					should_detach = false,
-					current_hlgroup = hlgroup,
-				},
-				s_row = 0,
-				s_col = 5,
-				e_row = 0,
-				e_col = 10,
-			}
-
-			local extmark_id = utils.highlight_range(opts, hlgroup)
-
-			local extmark = vim.api.nvim_buf_get_extmark_by_id(
-				bufnr,
-				utils.ns,
-				extmark_id,
-				{ details = true }
-			)
-			assert.equals(extmark[3].hl_group, hlgroup)
-			assert.equals(extmark[3].end_row, opts.e_row)
-			assert.equals(extmark[3].end_col, opts.e_col)
-		end)
-
-		it("handles force_edge correctly", function()
-			local hlgroup = "Visual"
-			---@type UndoGlow.HandleHighlight
-			local opts = {
-				bufnr = bufnr,
-				config = {
-					priority = 4096,
-				},
-				state = {
-					force_edge = true,
-					should_detach = false,
-					current_hlgroup = hlgroup,
-				},
-				s_row = 0,
-				s_col = 5,
-				e_row = 0,
-				e_col = 10,
-			}
-
-			local extmark_id = utils.highlight_range(opts, hlgroup)
-
-			local extmark = vim.api.nvim_buf_get_extmark_by_id(
-				bufnr,
-				utils.ns,
-				extmark_id,
-				{ details = true }
-			)
-
-			assert.equals(extmark[3].hl_group, hlgroup)
-			assert.equals(extmark[3].end_row, opts.e_row)
-			assert.equals(extmark[3].end_col, opts.e_col)
-			assert.not_nil(extmark[3].virt_text)
-		end)
-	end)
+	-- describe("highlight_range", function()
+	-- 	local bufnr
+	--
+	-- 	before_each(function()
+	-- 		bufnr = vim.api.nvim_create_buf(false, true) -- Create a new buffer for testing
+	-- 		vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, {
+	-- 			"This is a test line",
+	-- 			"Another test line",
+	-- 			"Yet another line",
+	-- 		})
+	-- 	end)
+	--
+	-- 	after_each(function()
+	-- 		vim.api.nvim_buf_delete(bufnr, { force = true }) -- Clean up buffer
+	-- 	end)
+	--
+	-- 	it("adds a highlight correctly", function()
+	-- 		local hlgroup = "Visual"
+	-- 		---@type UndoGlow.HandleHighlight
+	-- 		local opts = {
+	-- 			bufnr = bufnr,
+	-- 			config = {
+	-- 				priority = 4096,
+	-- 			},
+	-- 			state = {
+	-- 				force_edge = false,
+	-- 				should_detach = false,
+	-- 				current_hlgroup = hlgroup,
+	-- 			},
+	-- 			s_row = 0,
+	-- 			s_col = 5,
+	-- 			e_row = 0,
+	-- 			e_col = 10,
+	-- 		}
+	--
+	-- 		local extmark_id = utils.highlight_range(opts, hlgroup)
+	--
+	-- 		local extmark = vim.api.nvim_buf_get_extmark_by_id(
+	-- 			bufnr,
+	-- 			utils.ns,
+	-- 			extmark_id,
+	-- 			{ details = true }
+	-- 		)
+	-- 		assert.equals(extmark[3].hl_group, hlgroup)
+	-- 		assert.equals(extmark[3].end_row, opts.e_row)
+	-- 		assert.equals(extmark[3].end_col, opts.e_col)
+	-- 	end)
+	--
+	-- 	it("handles force_edge correctly", function()
+	-- 		local hlgroup = "Visual"
+	-- 		---@type UndoGlow.HandleHighlight
+	-- 		local opts = {
+	-- 			bufnr = bufnr,
+	-- 			config = {
+	-- 				priority = 4096,
+	-- 			},
+	-- 			state = {
+	-- 				force_edge = true,
+	-- 				should_detach = false,
+	-- 				current_hlgroup = hlgroup,
+	-- 			},
+	-- 			s_row = 0,
+	-- 			s_col = 5,
+	-- 			e_row = 0,
+	-- 			e_col = 10,
+	-- 		}
+	--
+	-- 		local extmark_id = utils.highlight_range(opts, hlgroup)
+	--
+	-- 		local extmark = vim.api.nvim_buf_get_extmark_by_id(
+	-- 			bufnr,
+	-- 			utils.ns,
+	-- 			extmark_id,
+	-- 			{ details = true }
+	-- 		)
+	--
+	-- 		assert.equals(extmark[3].hl_group, hlgroup)
+	-- 		assert.equals(extmark[3].end_row, opts.e_row)
+	-- 		assert.equals(extmark[3].end_col, opts.e_col)
+	-- 		assert.not_nil(extmark[3].virt_text)
+	-- 	end)
+	-- end)
 
 	describe("handle_highlight", function()
 		local opts
@@ -223,7 +223,6 @@ describe("undo-glow.utils", function()
 			"should handle highlight by calling animate_or_clear_highlights",
 			function()
 				utils.handle_highlight(opts)
-				assert.spy(utils.highlight_range).was_called()
 				assert.spy(utils.animate_or_clear_highlights).was_called()
 				assert.is_true(opts.state.should_detach)
 			end
@@ -232,7 +231,6 @@ describe("undo-glow.utils", function()
 		it("should do nothing if the buffer is not valid", function()
 			opts.bufnr = 999 -- set to a weird number
 			utils.handle_highlight(opts)
-			assert.spy(utils.highlight_range).was_not_called()
 			assert.spy(utils.animate_or_clear_highlights).was_not_called()
 		end)
 	end)
@@ -408,6 +406,7 @@ describe("undo-glow.utils", function()
 		it("should call animation function if enabled", function()
 			opts.state.animation.enabled = true
 			opts.state.animation.animation_type = spy.new(function() end)
+
 			utils.animate_or_clear_highlights(
 				opts,
 				hlgroup,
