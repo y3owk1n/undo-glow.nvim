@@ -504,6 +504,12 @@ vim.keymap.set("n", "P", require("undo-glow").paste_above, { noremap = true, des
 #### Search Highlights
 
 ```lua
+---Highlight current line after a search is performed.
+---For autocmd usage only.
+---@param opts? UndoGlow.CommandOpts Optional command option
+---@return nil
+require("undo-glow").search_cmd(opts)
+
 ---Search next command with highlights.
 ---@param opts? UndoGlow.CommandOpts Optional command option
 ---@return nil
@@ -528,6 +534,18 @@ require("undo-glow").search_star(opts)
 vim.keymap.set("n", "n", require("undo-glow").search_next, { noremap = true, desc = "Search next with highlight" })
 vim.keymap.set("n", "N", require("undo-glow").search_prev, { noremap = true, desc = "Search previous with highlight" })
 vim.keymap.set("n", "*", require("undo-glow").search_star, { noremap = true, desc = "Search * with highlight" })
+
+vim.api.nvim_create_autocmd("CmdLineLeave", {
+ pattern = { "/", "?" },
+ desc = "Highlight when search cmdline leave",
+ callback = function()
+  require("undo-glow").search_cmd({
+   animation = {
+    animation_type = "fade",
+   },
+  })
+ end,
+})
 ```
 
 <!-- config:end -->
