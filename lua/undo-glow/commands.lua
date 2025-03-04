@@ -4,6 +4,7 @@ local M = {}
 ---@param opts? UndoGlow.CommandOpts Optional command option
 ---@return nil
 function M.undo(opts)
+	vim.g.ug_ignore_cursor_moved = true
 	opts = require("undo-glow.utils").merge_command_opts("UgUndo", opts)
 	require("undo-glow").highlight_changes(opts)
 	pcall(vim.cmd, "undo")
@@ -13,6 +14,7 @@ end
 ---@param opts? UndoGlow.CommandOpts Optional command option
 ---@return nil
 function M.redo(opts)
+	vim.g.ug_ignore_cursor_moved = true
 	opts = require("undo-glow.utils").merge_command_opts("UgRedo", opts)
 	require("undo-glow").highlight_changes(opts)
 	pcall(vim.cmd, "redo")
