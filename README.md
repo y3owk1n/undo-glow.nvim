@@ -309,6 +309,7 @@ See the example below for how to configure **undo-glow.nvim**.
   {
    "gc",
    function()
+    -- This is an implementation to preserve the cursor position
     local pos = vim.fn.getpos(".")
     vim.schedule(function()
      vim.fn.setpos(".", pos)
@@ -354,6 +355,18 @@ See the example below for how to configure **undo-glow.nvim**.
     require("undo-glow").cursor_moved({
      animation = {
       animation_type = "slide",
+     },
+    })
+   end,
+  })
+
+  vim.api.nvim_create_autocmd("CmdLineLeave", {
+   pattern = { "/", "?" },
+   desc = "Highlight when search cmdline leave",
+   callback = function()
+    require("undo-glow").search_cmd({
+     animation = {
+      animation_type = "fade",
      },
     })
    end,
