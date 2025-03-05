@@ -31,11 +31,14 @@ describe("undo-glow.animation", function()
 		end)
 
 		it("should delete extmark if valid", function()
+			local extmark_ids = {}
 			local extmark_id = vim.api.nvim_buf_set_extmark(bufnr, ns, 0, 0, {})
+			table.insert(extmark_ids, extmark_id)
 			local opts =
-				{ bufnr = bufnr, extmark_id = extmark_id, hlgroup = hlgroup }
+				{ bufnr = bufnr, extmark_ids = extmark_ids, hlgroup = hlgroup }
 			local timer = uv.new_timer()
 			animation.animate_clear(opts, timer)
+
 			local marks = vim.api.nvim_buf_get_extmarks(bufnr, ns, 0, -1, {})
 			assert.equal(0, #marks, "Extmark should be deleted")
 		end)
@@ -59,7 +62,12 @@ describe("undo-glow.animation", function()
 				state = { animation = { fps = 60 } },
 				start_bg = { r = 255, g = 0, b = 0 },
 				end_bg = { r = 0, g = 0, b = 0 },
+				extmark_ids = {},
 			}
+
+			local extmark_id = vim.api.nvim_buf_set_extmark(bufnr, ns, 0, 0, {})
+			table.insert(opts.extmark_ids, extmark_id)
+
 			local animate_fn = function(progress)
 				return {
 					bg = color.blend_color(

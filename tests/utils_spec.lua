@@ -351,7 +351,7 @@ describe("undo-glow.utils", function()
 	end)
 
 	describe("animate_or_clear_highlights", function()
-		local opts, hlgroup, extmark_id, start_bg, start_fg
+		local opts, hlgroup, extmark_ids, start_bg, start_fg
 
 		before_each(function()
 			---@type UndoGlow.HandleHighlight
@@ -377,7 +377,7 @@ describe("undo-glow.utils", function()
 			}
 
 			hlgroup = "TestHighlight"
-			extmark_id = 1
+			extmark_ids = { 1 }
 			start_bg = "#ff0000"
 			start_fg = "#ffffff"
 		end)
@@ -395,7 +395,7 @@ describe("undo-glow.utils", function()
 				utils.animate_or_clear_highlights(
 					opts,
 					hlgroup,
-					extmark_id,
+					extmark_ids,
 					start_bg,
 					start_fg
 				)
@@ -407,10 +407,12 @@ describe("undo-glow.utils", function()
 			opts.state.animation.enabled = true
 			opts.state.animation.animation_type = spy.new(function() end)
 
+			extmark_ids = {}
+
 			utils.animate_or_clear_highlights(
 				opts,
 				hlgroup,
-				extmark_id,
+				extmark_ids,
 				start_bg,
 				start_fg
 			)
