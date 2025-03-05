@@ -597,4 +597,59 @@ describe("undo-glow.utils", function()
 			assert.is_nil(animation_type_wrong_string)
 		end)
 	end)
+
+	describe("create_namespace", function()
+		local bufnr, current_win, other_win
+
+		before_each(function()
+			-- Create a new buffer and windows for testing.
+			bufnr = vim.api.nvim_create_buf(false, true)
+			-- Open the buffer in a new split to simulate a window.
+			vim.cmd("split")
+			current_win = vim.api.nvim_get_current_win()
+
+			-- Create a second window and load the same buffer.
+			vim.cmd("vsplit")
+			other_win = vim.api.nvim_get_current_win()
+			vim.api.nvim_win_set_buf(other_win, bufnr)
+		end)
+
+		after_each(function()
+			vim.api.nvim_buf_delete(bufnr, { force = true })
+			vim.cmd("silent only")
+			current_win = nil
+			other_win = nil
+		end)
+
+		it("returns default namespace when window_scoped is false", function()
+			local ns = utils.create_namespace(bufnr, false)
+			assert.are.equal(utils.ns, ns)
+		end)
+
+		it(
+			"creates and returns a window-scoped namespace when the current window shows the buffer",
+			function()
+				vim.api.nvim_set_current_win(current_win)
+				vim.api.nvim_win_set_buf(current_win, bufnr)
+				local ns = utils.create_namespace(bufnr, true)
+
+				assert.is_number(ns)
+				-- Validate that the namespace is stored in our module table.
+				assert.is_truthy(utils.win_namespaces[current_win])
+				assert.are.equal(utils.win_namespaces[current_win], ns)
+			end
+		)
+
+		it(
+			"returns nil when window_scoped is true and the current window does not show the buffer",
+			function()
+				local new_buf = vim.api.nvim_create_buf(false, true)
+
+				vim.api.nvim_win_set_buf(current_win, bufnr)
+				local ns = utils.create_namespace(new_buf, true)
+				assert.is_nil(ns)
+				vim.api.nvim_buf_delete(new_buf, { force = true })
+			end
+		)
+	end)
 end)

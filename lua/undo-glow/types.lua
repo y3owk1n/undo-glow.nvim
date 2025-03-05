@@ -29,6 +29,7 @@
 ---@field animation_type? UndoGlow.AnimationTypeString|UndoGlow.AnimationTypeFn Animation type (a string key or a custom function).
 ---@field easing? UndoGlow.EasingString|UndoGlow.EasingFn Easing function (a string key or a custom function).
 ---@field fps? number Frames per second for the animation.
+---@field window_scoped? boolean If enabled, the highlight effect is constrained to the current active window, even if the buffer is shared across splits.
 
 ---Highlight color information.
 ---@class UndoGlow.HlColor
@@ -69,6 +70,7 @@
 ---Parameters for an animation.
 ---@class UndoGlow.Animation
 ---@field bufnr integer Buffer number.
+---@field ns integer Namespace id.
 ---@field hlgroup string Highlight group name.
 ---@field extmark_ids? integer[] Extmark identifiers.
 ---@field start_bg UndoGlow.RGBColor Starting background color.
@@ -83,6 +85,7 @@
 ---Handle for highlighting operations, including region coordinates.
 ---@class UndoGlow.HandleHighlight : UndoGlow.RowCol
 ---@field bufnr integer Buffer number.
+---@field ns integer Namespace id.
 ---@field config UndoGlow.Config Configuration for undo-glow.
 ---@field state UndoGlow.State Current state of the highlight.
 
@@ -99,3 +102,4 @@
 ---@field hlgroup string Highlight group name.
 ---@field priority integer Extmark priority to render the highlight (Default 4096).
 ---@field force_edge? boolean Whether to force edge highlighting.
+---@field window_scoped? boolean If enabled, the highlight effect is constrained to the current active window, even if the buffer is shared across splits.
