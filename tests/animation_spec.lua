@@ -30,7 +30,7 @@ describe("undo-glow.animation", function()
 			assert.is_false(timer:is_active(), "Timer should be stopped")
 		end)
 
-		it("should delete extmark if valid", function()
+		it("should delete extmark if valid table", function()
 			local extmark_ids = {}
 			local extmark_id = vim.api.nvim_buf_set_extmark(bufnr, ns, 0, 0, {})
 			table.insert(extmark_ids, extmark_id)
@@ -42,6 +42,61 @@ describe("undo-glow.animation", function()
 			local marks = vim.api.nvim_buf_get_extmarks(bufnr, ns, 0, -1, {})
 			assert.equal(0, #marks, "Extmark should be deleted")
 		end)
+
+		it("should delete extmark if valid table of key value pair", function()
+			local extmark_id = vim.api.nvim_buf_set_extmark(bufnr, ns, 0, 0, {})
+			local extmark_id2 =
+				vim.api.nvim_buf_set_extmark(bufnr, ns, 0, 0, {})
+			local extmark_id3 =
+				vim.api.nvim_buf_set_extmark(bufnr, ns, 0, 0, {})
+
+			local extmark_ids = {
+				[1] = extmark_id,
+				[2] = extmark_id2,
+				[3] = extmark_id3,
+			}
+
+			local opts =
+				{ bufnr = bufnr, extmark_ids = extmark_ids, hlgroup = hlgroup }
+			local timer = uv.new_timer()
+			animation.animate_clear(opts, timer)
+
+			local marks = vim.api.nvim_buf_get_extmarks(bufnr, ns, 0, -1, {})
+			assert.equal(0, #marks, "Extmark should be deleted")
+		end)
+
+		it(
+			"should delete extmark if valid and key value pair with integer table",
+			function()
+				local extmark_id =
+					vim.api.nvim_buf_set_extmark(bufnr, ns, 0, 0, {})
+				local extmark_id2 =
+					vim.api.nvim_buf_set_extmark(bufnr, ns, 0, 0, {})
+				local extmark_id3 =
+					vim.api.nvim_buf_set_extmark(bufnr, ns, 0, 0, {})
+				local extmark_id4 =
+					vim.api.nvim_buf_set_extmark(bufnr, ns, 0, 0, {})
+
+				local extmark_ids = {
+					[2] = extmark_id,
+					[3] = extmark_id2,
+					[4] = extmark_id3,
+					extmark_id4,
+				}
+
+				local opts = {
+					bufnr = bufnr,
+					extmark_ids = extmark_ids,
+					hlgroup = hlgroup,
+				}
+				local timer = uv.new_timer()
+				animation.animate_clear(opts, timer)
+
+				local marks =
+					vim.api.nvim_buf_get_extmarks(bufnr, ns, 0, -1, {})
+				assert.equal(0, #marks, "Extmark should be deleted")
+			end
+		)
 
 		it("should clear the highlight group", function()
 			vim.api.nvim_set_hl(0, hlgroup, { bg = "#FF0000" })
