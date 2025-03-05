@@ -1023,7 +1023,7 @@ Moves the highlight horizontally to the right across the text before fading out.
 ---@class UndoGlow.Animation
 ---@field bufnr integer Buffer number.
 ---@field hlgroup string Highlight group name.
----@field extmark_id? integer Extmark identifier.
+---@field extmark_ids? integer[] Extmark identifiers.
 ---@field start_bg UndoGlow.RGBColor Starting background color.
 ---@field end_bg UndoGlow.RGBColor Ending background color.
 ---@field start_fg? UndoGlow.RGBColor Optional starting foreground color.
@@ -1049,8 +1049,12 @@ Moves the highlight horizontally to the right across the text before fading out.
   animation_type = function(opts)
    --- Sometimes thing just don't work and if your custom animation don't support certain thing
 
-   --- First create an extmark to be used later by appending the opts for `extmark_id`
-   opts.extmark_id = vim.api.nvim_buf_set_extmark() -- refer next section for detail on how
+   --- First create an extmark to be used later by appending the opts for `extmark_ids`
+   local extmark_id = vim.api.nvim_buf_set_extmark() -- refer next section for detail on how
+
+   --- Merge extmark_id to opts.extmark_ids table
+   --- We can then use the extmark during the animation and all extmarks here will be cleared after the animation ends.
+   table.insert(opts.extmark_ids, extmark_id)
 
    --- You can return false, and it will fallback to `fade` animation.
    --- E.g. since `e_col` will always be 0 if you highlight with visual block, it will be troublesome to do calculation.
@@ -1064,7 +1068,7 @@ Moves the highlight horizontally to the right across the text before fading out.
    require("undo-glow").animate_start(opts, function(progress)
     -- do something for your animation
     -- normally you will do some calculation with the progress value (0 = start, 1 = end)
-    -- you also have access to the current extmark via `opts.extmark_id`
+    -- you also have access to the current extmark via `opts.extmark_ids`
     -- lastly, return the bg and fg (optional) if you want the color to be set automatically or...
     -- not return anything, but you need to set the color yourself in this function
     return hl_opts
@@ -1083,24 +1087,27 @@ Moves the highlight horizontally to the right across the text before fading out.
  animation = {
   --- rest of configurations
   animation_type = function(opts)
-   local extmark_opts = require("undo-glow.utils").create_extmark_opts({
-    bufnr = opts.bufnr,
-    hlgroup = opts.hlgroup,
-    s_row = opts.coordinates.s_row,
-    s_col = opts.coordinates.s_col,
-    e_row = opts.coordinates.e_row,
-    e_col = opts.coordinates.e_col,
-    priority = opts.config.priority,
-    force_edge = opts.state.force_edge,
-   })
+   local extmark_opts =
+    require("undo-glow.utils").create_extmark_opts({
+     bufnr = opts.bufnr,
+     hlgroup = opts.hlgroup,
+     s_row = opts.coordinates.s_row,
+     s_col = opts.coordinates.s_col,
+     e_row = opts.coordinates.e_row,
+     e_col = opts.coordinates.e_col,
+     priority = opts.config.priority,
+     force_edge = opts.state.force_edge,
+    })
 
-   opts.extmark_id = vim.api.nvim_buf_set_extmark(
+   local extmark_id = vim.api.nvim_buf_set_extmark(
     opts.bufnr,
     require("undo-glow.utils").ns,
     opts.coordinates.s_row,
     opts.coordinates.s_col,
     extmark_opts
    )
+
+   table.insert(opts.extmark_ids, extmark_id)
 
    require("undo-glow").animate_start(opts, function(progress)
     local blink_period = 200
@@ -1109,7 +1116,9 @@ Moves the highlight horizontally to the right across the text before fading out.
 
     if phase then
      return {
-      bg = require("undo-glow.color").rgb_to_hex(opts.start_bg),
+      bg = require("undo-glow.color").rgb_to_hex(
+       opts.start_bg
+      ),
       fg = opts.start_fg
         and require("undo-glow.color").rgb_to_hex(
          opts.start_fg
@@ -1119,15 +1128,17 @@ Moves the highlight horizontally to the right across the text before fading out.
     else
      return {
       bg = require("undo-glow.color").rgb_to_hex(opts.end_bg),
-      fg = opts.end_fg and require("undo-glow.color").rgb_to_hex(
-       opts.end_fg
-      ) or nil,
+      fg = opts.end_fg
+        and require("undo-glow.color").rgb_to_hex(
+         opts.end_fg
+        )
+       or nil,
      }
     end
    end)
   end,
   --- rest of configurations
- }
+ },
 }
 ```
 

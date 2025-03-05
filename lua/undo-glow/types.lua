@@ -70,7 +70,7 @@
 ---@class UndoGlow.Animation
 ---@field bufnr integer Buffer number.
 ---@field hlgroup string Highlight group name.
----@field extmark_id? integer Extmark identifier.
+---@field extmark_ids? integer[] Extmark identifiers.
 ---@field start_bg UndoGlow.RGBColor Starting background color.
 ---@field end_bg UndoGlow.RGBColor Ending background color.
 ---@field start_fg? UndoGlow.RGBColor Optional starting foreground color.

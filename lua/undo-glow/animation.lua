@@ -11,12 +11,14 @@ function M.animate_clear(opts, timer)
 	if not vim.uv.is_closing(timer) then
 		timer:close()
 	end
-	if vim.api.nvim_buf_is_valid(opts.bufnr) and opts.extmark_id then
-		vim.api.nvim_buf_del_extmark(
-			opts.bufnr,
-			require("undo-glow.utils").ns,
-			opts.extmark_id
-		)
+	if vim.api.nvim_buf_is_valid(opts.bufnr) and opts.extmark_ids then
+		for _, id in ipairs(opts.extmark_ids) do
+			vim.api.nvim_buf_del_extmark(
+				opts.bufnr,
+				require("undo-glow.utils").ns,
+				id
+			)
+		end
 	end
 	vim.cmd("hi clear " .. opts.hlgroup)
 end
@@ -86,13 +88,15 @@ function M.animate.fade(opts)
 		force_edge = opts.state.force_edge,
 	})
 
-	opts.extmark_id = vim.api.nvim_buf_set_extmark(
+	local extmark_id = vim.api.nvim_buf_set_extmark(
 		opts.bufnr,
 		require("undo-glow.utils").ns,
 		opts.coordinates.s_row,
 		opts.coordinates.s_col,
 		extmark_opts
 	)
+
+	table.insert(opts.extmark_ids, extmark_id)
 
 	M.animate_start(opts, function(progress)
 		local eased = opts.state.animation.easing({
@@ -134,13 +138,15 @@ function M.animate.fade_reverse(opts)
 		force_edge = opts.state.force_edge,
 	})
 
-	opts.extmark_id = vim.api.nvim_buf_set_extmark(
+	local extmark_id = vim.api.nvim_buf_set_extmark(
 		opts.bufnr,
 		require("undo-glow.utils").ns,
 		opts.coordinates.s_row,
 		opts.coordinates.s_col,
 		extmark_opts
 	)
+
+	table.insert(opts.extmark_ids, extmark_id)
 
 	M.animate_start(opts, function(progress)
 		local eased = opts.state.animation.easing({
@@ -181,13 +187,15 @@ function M.animate.blink(opts)
 		force_edge = opts.state.force_edge,
 	})
 
-	opts.extmark_id = vim.api.nvim_buf_set_extmark(
+	local extmark_id = vim.api.nvim_buf_set_extmark(
 		opts.bufnr,
 		require("undo-glow.utils").ns,
 		opts.coordinates.s_row,
 		opts.coordinates.s_col,
 		extmark_opts
 	)
+
+	table.insert(opts.extmark_ids, extmark_id)
 
 	M.animate_start(opts, function(progress)
 		local blink_period = 200
@@ -227,13 +235,15 @@ function M.animate.jitter(opts)
 		force_edge = opts.state.force_edge,
 	})
 
-	opts.extmark_id = vim.api.nvim_buf_set_extmark(
+	local extmark_id = vim.api.nvim_buf_set_extmark(
 		opts.bufnr,
 		require("undo-glow.utils").ns,
 		opts.coordinates.s_row,
 		opts.coordinates.s_col,
 		extmark_opts
 	)
+
+	table.insert(opts.extmark_ids, extmark_id)
 
 	M.animate_start(opts, function(_)
 		---@param rgb UndoGlow.RGBColor
@@ -274,13 +284,15 @@ function M.animate.pulse(opts)
 		force_edge = opts.state.force_edge,
 	})
 
-	opts.extmark_id = vim.api.nvim_buf_set_extmark(
+	local extmark_id = vim.api.nvim_buf_set_extmark(
 		opts.bufnr,
 		require("undo-glow.utils").ns,
 		opts.coordinates.s_row,
 		opts.coordinates.s_col,
 		extmark_opts
 	)
+
+	table.insert(opts.extmark_ids, extmark_id)
 
 	M.animate_start(opts, function(progress)
 		local systolic_duration = 0.5
@@ -328,13 +340,15 @@ function M.animate.spring(opts)
 		force_edge = opts.state.force_edge,
 	})
 
-	opts.extmark_id = vim.api.nvim_buf_set_extmark(
+	local extmark_id = vim.api.nvim_buf_set_extmark(
 		opts.bufnr,
 		require("undo-glow.utils").ns,
 		opts.coordinates.s_row,
 		opts.coordinates.s_col,
 		extmark_opts
 	)
+
+	table.insert(opts.extmark_ids, extmark_id)
 
 	M.animate_start(opts, function(progress)
 		local t = math.sin(
@@ -374,13 +388,15 @@ function M.animate.desaturate(opts)
 		force_edge = opts.state.force_edge,
 	})
 
-	opts.extmark_id = vim.api.nvim_buf_set_extmark(
+	local extmark_id = vim.api.nvim_buf_set_extmark(
 		opts.bufnr,
 		require("undo-glow.utils").ns,
 		opts.coordinates.s_row,
 		opts.coordinates.s_col,
 		extmark_opts
 	)
+
+	table.insert(opts.extmark_ids, extmark_id)
 
 	M.animate_start(opts, function(progress)
 		---@param rgb UndoGlow.RGBColor
@@ -415,13 +431,15 @@ function M.animate.strobe(opts)
 		force_edge = opts.state.force_edge,
 	})
 
-	opts.extmark_id = vim.api.nvim_buf_set_extmark(
+	local extmark_id = vim.api.nvim_buf_set_extmark(
 		opts.bufnr,
 		require("undo-glow.utils").ns,
 		opts.coordinates.s_row,
 		opts.coordinates.s_col,
 		extmark_opts
 	)
+
+	table.insert(opts.extmark_ids, extmark_id)
 
 	M.animate_start(opts, function(progress)
 		local use_start = math.floor(progress * 10) % 2 == 0
@@ -458,13 +476,15 @@ function M.animate.zoom(opts)
 		force_edge = opts.state.force_edge,
 	})
 
-	opts.extmark_id = vim.api.nvim_buf_set_extmark(
+	local extmark_id = vim.api.nvim_buf_set_extmark(
 		opts.bufnr,
 		require("undo-glow.utils").ns,
 		opts.coordinates.s_row,
 		opts.coordinates.s_col,
 		extmark_opts
 	)
+
+	table.insert(opts.extmark_ids, extmark_id)
 
 	M.animate_start(opts, function(progress)
 		local t = math.sin(progress * math.pi)
@@ -503,13 +523,15 @@ function M.animate.rainbow(opts)
 		force_edge = opts.state.force_edge,
 	})
 
-	opts.extmark_id = vim.api.nvim_buf_set_extmark(
+	local extmark_id = vim.api.nvim_buf_set_extmark(
 		opts.bufnr,
 		require("undo-glow.utils").ns,
 		opts.coordinates.s_row,
 		opts.coordinates.s_col,
 		extmark_opts
 	)
+
+	table.insert(opts.extmark_ids, extmark_id)
 
 	M.animate_start(opts, function(progress)
 		local hue = progress * 360 -- cycle through hues
@@ -541,7 +563,7 @@ function M.animate.slide(opts)
 		force_edge = opts.state.force_edge,
 	})
 
-	opts.extmark_id = vim.api.nvim_buf_set_extmark(
+	local extmark_id = vim.api.nvim_buf_set_extmark(
 		buf,
 		ns,
 		opts.coordinates.s_row,
@@ -549,6 +571,7 @@ function M.animate.slide(opts)
 		extmark_opts
 	)
 
+	table.insert(opts.extmark_ids, extmark_id)
 	local original_row = opts.coordinates.s_row
 
 	local original_col = opts.coordinates.s_col
@@ -569,8 +592,11 @@ function M.animate.slide(opts)
 			duration = 1,
 		})
 
-		local new_opts =
-			vim.tbl_deep_extend("force", extmark_opts, { id = opts.extmark_id })
+		local new_opts = vim.tbl_deep_extend(
+			"force",
+			extmark_opts,
+			{ id = opts.extmark_ids[1] }
+		)
 
 		local line = vim.api.nvim_buf_get_lines(
 			buf,

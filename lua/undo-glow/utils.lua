@@ -84,7 +84,7 @@ function M.handle_highlight(opts)
 		opts.e_col
 	)
 
-	local extmark_id = nil
+	local extmark_ids = {}
 
 	--- If disabled animation, set extmark and clear it afterwards
 	if opts.state.animation.enabled ~= true then
@@ -99,19 +99,21 @@ function M.handle_highlight(opts)
 			force_edge = opts.state.force_edge,
 		})
 
-		extmark_id = vim.api.nvim_buf_set_extmark(
+		local extmark_id = vim.api.nvim_buf_set_extmark(
 			opts.bufnr,
 			M.ns,
 			opts.s_row,
 			opts.s_col,
 			extmark_opts
 		)
+
+		table.insert(extmark_ids, extmark_id)
 	end
 
 	M.animate_or_clear_highlights(
 		opts,
 		unique_hlgroup,
-		extmark_id,
+		extmark_ids,
 		init_color.bg,
 		init_color.fg
 	)
@@ -221,14 +223,14 @@ end
 ---If animations are enabled, it invokes the animation callback; otherwise, it defers the removal of the extmark.
 ---@param opts UndoGlow.HandleHighlight Opts from handle highlight.
 ---@param hlgroup string Unique highlight group name.
----@param extmark_id? integer The extmark ID of the highlight. Exists = no animation
+---@param extmark_ids? integer[] The extmark IDs of the highlight. Exists = no animation
 ---@param start_bg string The starting background color (hex).
 ---@param start_fg? string The starting foreground color (hex).
 ---@return nil
 function M.animate_or_clear_highlights(
 	opts,
 	hlgroup,
-	extmark_id,
+	extmark_ids,
 	start_bg,
 	start_fg
 )
@@ -256,6 +258,7 @@ function M.animate_or_clear_highlights(
 				s_col = opts.s_col,
 				s_row = opts.s_row,
 			},
+			extmark_ids = {},
 		}
 
 		local success, status =
@@ -273,19 +276,21 @@ function M.animate_or_clear_highlights(
 			require("undo-glow.animation").animate.fade(animation_opts)
 		end
 	else
-		if extmark_id then
+		if extmark_ids and vim.tbl_count(extmark_ids) > 0 then
 			vim.defer_fn(function()
 				if vim.api.nvim_buf_is_valid(opts.bufnr) then
-					vim.api.nvim_buf_del_extmark(
-						opts.bufnr,
-						require("undo-glow.utils").ns,
-						extmark_id
-					)
+					for _, id in ipairs(extmark_ids) do
+						vim.api.nvim_buf_del_extmark(
+							opts.bufnr,
+							require("undo-glow.utils").ns,
+							id
+						)
+					end
 				end
 			end, opts.state.animation.duration)
 		else
 			vim.notify(
-				"[UndoGlow]: Unable to clear highlights without extmark_id",
+				"[UndoGlow]: Unable to clear highlights without extmark_ids",
 				vim.log.levels.ERROR
 			)
 		end
