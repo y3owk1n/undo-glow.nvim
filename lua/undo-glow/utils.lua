@@ -478,18 +478,24 @@ function M.create_namespace(bufnr, window_scoped)
 			return
 		end
 
-		-- Create window-scoped namespace
 		if not M.win_namespaces then
 			M.win_namespaces = {}
 		end
 
 		if not M.win_namespaces[current_win_id] then
-			M.win_namespaces[current_win_id] =
-				vim.api.nvim_create_namespace("UndoGlowWin" .. current_win_id)
+			M.win_namespaces[current_win_id] = vim.api.nvim_create_namespace(
+				"undo-glow-win-" .. current_win_id
+			)
 			vim.api.nvim__win_add_ns(
 				current_win_id,
 				M.win_namespaces[current_win_id]
 			)
+		end
+
+		for win_id, _ in pairs(M.win_namespaces) do
+			if not vim.api.nvim_win_is_valid(win_id) then
+				M.win_namespaces[win_id] = nil
+			end
 		end
 
 		return M.win_namespaces[current_win_id]
