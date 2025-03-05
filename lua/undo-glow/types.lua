@@ -85,7 +85,7 @@
 ---Handle for highlighting operations, including region coordinates.
 ---@class UndoGlow.HandleHighlight : UndoGlow.RowCol
 ---@field bufnr integer Buffer number.
----@field ns integer Namespace id.
+---@field ns? integer Namespace id.
 ---@field config UndoGlow.Config Configuration for undo-glow.
 ---@field state UndoGlow.State Current state of the highlight.
 
