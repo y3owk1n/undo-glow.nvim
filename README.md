@@ -69,7 +69,7 @@ There are alot of similars plugins that you can simply find from github. The mai
 
 ### Significant Cursor Movement (Like beacon.nvim)
 
-<https://github.com/user-attachments/assets/282e83e6-0223-4336-a3be-6bf15f34ee4d>
+<https://github.com/user-attachments/assets/51bf67af-305a-4f80-92ef-b5f4209a6603>
 
 <!-- panvimdoc-ignore-end -->
 
@@ -106,6 +106,12 @@ require("undo-glow").setup({
 **undo-glow.nvim** is highly configurable. And the default configurations are as below.
 
 ### Default Options
+
+> [!note]
+> Animation is disabled by default, you can turn it on with `animation.enabled = true`.
+
+> [!warning]
+> Note that `animation.window_scope` is using neovim experimental options in extmark, which is `scope`. I am not sure which version did the `scope` option added, but I am using v0.10.4 and it is working fine for me. You can run `:checkhealth undo-glow` and it will tell you if `scope` is available or not.
 
 ```lua
 ---Animation type aliases.
@@ -606,8 +612,13 @@ For now the following are ignored:
 - Buffers that are not text buffers
 - Filetypes that are passed in to be ignored
 
+> [!NOTE]
+> Window scoped highlight is disabled by default. To avoid splitted view with same buffer sharing the same highlight, you need to either set `animation.window_scoped = true` in your config, or pass `{ animation = { window_scoped = tue } }` to the cursor_moved opts.
+
 > [!WARNING]
 > This is not a command and it is designed to be used in autocmd callback.
+
+If you would like to avoid cursor_changed to highlight in other places of your code, you can add `vim.g.ug_ignore_cursor_moved = true` to any of your running function, and it will temporarily set to ignore the cursor_moved highlights.
 
 ```lua
 ---Cursor move command that highlights.
