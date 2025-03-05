@@ -86,6 +86,11 @@ function M.handle_highlight(opts)
 
 	local extmark_ids = {}
 
+	opts.ns = require("undo-glow.utils").create_namespace(
+		opts.bufnr,
+		opts.state.animation.window_scoped
+	)
+
 	--- If disabled animation, set extmark and clear it afterwards
 	if opts.state.animation.enabled ~= true then
 		local extmark_opts = M.create_extmark_opts({
@@ -97,11 +102,12 @@ function M.handle_highlight(opts)
 			e_col = opts.e_col,
 			priority = opts.config.priority,
 			force_edge = opts.state.force_edge,
+			window_scoped = opts.state.animation.window_scoped,
 		})
 
 		local extmark_id = vim.api.nvim_buf_set_extmark(
 			opts.bufnr,
-			M.ns,
+			opts.ns,
 			opts.s_row,
 			opts.s_col,
 			extmark_opts
@@ -241,6 +247,7 @@ function M.animate_or_clear_highlights(
 		---@type UndoGlow.Animation
 		local animation_opts = {
 			bufnr = opts.bufnr,
+			ns = opts.ns,
 			hlgroup = hlgroup,
 			start_bg = require("undo-glow.color").hex_to_rgb(start_bg),
 			end_bg = require("undo-glow.color").hex_to_rgb(end_bg),
@@ -280,11 +287,7 @@ function M.animate_or_clear_highlights(
 			vim.defer_fn(function()
 				if vim.api.nvim_buf_is_valid(opts.bufnr) then
 					for _, id in ipairs(extmark_ids) do
-						vim.api.nvim_buf_del_extmark(
-							opts.bufnr,
-							require("undo-glow.utils").ns,
-							id
-						)
+						vim.api.nvim_buf_del_extmark(opts.bufnr, opts.ns, id)
 					end
 				end
 			end, opts.state.animation.duration)
@@ -349,6 +352,7 @@ function M.create_state(opts)
 			duration = opts.animation.duration or nil,
 			easing = M.get_easing(opts.animation.easing) or nil,
 			fps = opts.animation.fps or nil,
+			window_scoped = opts.animation.window_scoped or nil,
 		},
 	}
 end
@@ -381,6 +385,11 @@ function M.validate_state_for_highlight(opts)
 	-- Check fps and fallback to global
 	if not opts.state.animation.fps then
 		opts.state.animation.fps = opts.config.animation.fps
+	end
+
+	-- Check window_scoped and fallback to global
+	if type(opts.state.animation.window_scoped) ~= "boolean" then
+		opts.state.animation.window_scoped = opts.config.animation.window_scoped
 	end
 
 	return opts
@@ -426,6 +435,8 @@ function M.create_extmark_opts(opts)
 		hl_group = opts.hlgroup,
 		hl_mode = "combine",
 		priority = opts.priority,
+		--- NOTE: This uses experimental API as scoped is still experimental in v0.10.4
+		scoped = opts.window_scoped or nil,
 	}
 
 	if type(opts.force_edge) == "boolean" and opts.force_edge == true then
@@ -445,6 +456,49 @@ function M.create_extmark_opts(opts)
 	end
 
 	return extmark_opts
+end
+
+---Create a namespace for extmarks.
+---If `window_scoped` is true, a window-specific namespace is created and attached to the current window,
+---provided that the current window is displaying the given buffer. Otherwise, the default global namespace is returned.
+---@param bufnr number The buffer number for which the namespace is being created.
+---@param window_scoped boolean Whether to create a window-scoped namespace. When true, the extmarks will only affect the active window showing the buffer.
+---@return number|nil ns_id The namespace identifier. Returns nil if window_scoped is true and the current window does not display the buffer.
+function M.create_namespace(bufnr, window_scoped)
+	local current_win_id = vim.api.nvim_get_current_win()
+
+	if window_scoped then
+		-- Check if current window actually shows the buffer
+		local is_valid_window = false
+		for _, win_id in ipairs(vim.fn.win_findbuf(bufnr)) do
+			if win_id == current_win_id then
+				is_valid_window = true
+				break
+			end
+		end
+
+		if not is_valid_window then
+			return
+		end
+
+		-- Create window-scoped namespace
+		if not M.win_namespaces then
+			M.win_namespaces = {}
+		end
+
+		if not M.win_namespaces[current_win_id] then
+			M.win_namespaces[current_win_id] =
+				vim.api.nvim_create_namespace("UndoGlowWin" .. current_win_id)
+			vim.api.nvim__win_add_ns(
+				current_win_id,
+				M.win_namespaces[current_win_id]
+			)
+		end
+
+		return M.win_namespaces[current_win_id]
+	end
+
+	return M.ns
 end
 
 return M

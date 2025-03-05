@@ -67,6 +67,29 @@ function M.check()
 		report_status("ok", "nvim_set_hl API is available.")
 	end
 
+	-- Check if `scoped` is available for extmark
+	local dummy_buf = vim.api.nvim_create_buf(false, true)
+	local test_ns = vim.api.nvim_create_namespace("HealthExtmarkTest")
+	local ok, err = pcall(function()
+		vim.api.nvim_buf_set_extmark(dummy_buf, test_ns, 0, 0, {
+			virt_text = { { "test", "None" } },
+			scoped = true,
+		})
+	end)
+	if ok then
+		report_status(
+			"ok",
+			"vim.api.nvim_buf_set_extmark supports the 'scoped' option (experimental)."
+		)
+	else
+		report_status(
+			"warn",
+			"vim.api.nvim_buf_set_extmark does not support the 'scoped' option: "
+				.. err
+		)
+	end
+	vim.api.nvim_buf_delete(dummy_buf, { force = true })
+
 	separator("Module Load Checks")
 	-- Check that required plugin modules load successfully.
 	local required_modules = {

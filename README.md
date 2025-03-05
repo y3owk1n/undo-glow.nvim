@@ -129,6 +129,7 @@ require("undo-glow").setup({
 ---@field animation_type? UndoGlow.AnimationTypeString|UndoGlow.AnimationTypeFn Animation type (a string key or a custom function).
 ---@field easing? UndoGlow.EasingString|UndoGlow.EasingFn Easing function (a string key or a custom function).
 ---@field fps? number Frames per second for the animation.
+---@field window_scoped? boolean If enabled, the highlight effect is constrained to the current active window, even if the buffer is shared across splits.
 
 ---Options passed to easing functions.
 ---@class UndoGlow.EasingOpts
@@ -152,6 +153,7 @@ require("undo-glow").setup({
   animation_type = "fade", -- default to "fade", see more at animation section on how to change or create your own
   fps = 120, -- change the fps, normally either 60 / 120, but it can be whatever number
   easing = "in_out_cubic", -- see more at easing section on how to change and create your own
+  window_scoped = false, -- this uses an experimental extmark options (it might not work depends on your version of neovim)
  },
  highlights = { -- Any keys other than these defaults will be ignored and omitted
   undo = {
@@ -204,6 +206,7 @@ See the example below for how to configure **undo-glow.nvim**.
    enabled = true,
    duration = 300,
    animtion_type = "zoom",
+   window_scoped = true,
   },
   highlights = {
    undo = {
@@ -400,6 +403,7 @@ Each builtin commands takes in optional `opts` take allows to configure **color*
 ---@field animation_type? UndoGlow.AnimationTypeString|UndoGlow.AnimationTypeFn Animation type (a string key or a custom function).
 ---@field easing? UndoGlow.EasingString|UndoGlow.EasingFn Easing function (a string key or a custom function).
 ---@field fps? number Frames per second for the animation.
+---@field window_scoped? boolean If enabled, the highlight effect is constrained to the current active window, even if the buffer is shared across splits.
 ```
 
 #### Undo Highlights
@@ -659,6 +663,7 @@ vim.api.nvim_create_autocmd("CursorMoved", {
 ---@field animation_type? UndoGlow.AnimationTypeString|UndoGlow.AnimationTypeFn Animation type (a string key or a custom function).
 ---@field easing? UndoGlow.EasingString|UndoGlow.EasingFn Easing function (a string key or a custom function).
 ---@field fps? number Frames per second for the animation.
+---@field window_scoped? boolean If enabled, the highlight effect is constrained to the current active window, even if the buffer is shared across splits.
 
 ---Core API to highlight changes in the current buffer.
 ---@param opts? UndoGlow.HighlightChanges|UndoGlow.CommandOpts
@@ -719,6 +724,7 @@ end
 ---@field animation_type? UndoGlow.AnimationTypeString|UndoGlow.AnimationTypeFn Animation type (a string key or a custom function).
 ---@field easing? UndoGlow.EasingString|UndoGlow.EasingFn Easing function (a string key or a custom function).
 ---@field fps? number Frames per second for the animation.
+---@field window_scoped? boolean If enabled, the highlight effect is constrained to the current active window, even if the buffer is shared across splits.
 
 ---Core API to highlight a specified region in the current buffer.
 ---@param opts UndoGlow.HighlightRegion
@@ -1019,6 +1025,7 @@ Moves the highlight horizontally to the right across the text before fading out.
 ---Parameters for an animation.
 ---@class UndoGlow.Animation
 ---@field bufnr integer Buffer number.
+---@field ns integer Namespace id.
 ---@field hlgroup string Highlight group name.
 ---@field extmark_ids? integer[] Extmark identifiers.
 ---@field start_bg UndoGlow.RGBColor Starting background color.
@@ -1094,11 +1101,12 @@ Moves the highlight horizontally to the right across the text before fading out.
      e_col = opts.coordinates.e_col,
      priority = opts.config.priority,
      force_edge = opts.state.force_edge,
+     window_scoped = opts.state.animation.window_scoped,
     })
 
    local extmark_id = vim.api.nvim_buf_set_extmark(
     opts.bufnr,
-    require("undo-glow.utils").ns,
+    opts.ns,
     opts.coordinates.s_row,
     opts.coordinates.s_col,
     extmark_opts

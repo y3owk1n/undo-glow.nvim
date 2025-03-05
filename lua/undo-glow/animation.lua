@@ -22,11 +22,7 @@ function M.animate_clear(opts, timer)
 		end
 
 		for _, id in ipairs(ids) do
-			vim.api.nvim_buf_del_extmark(
-				opts.bufnr,
-				require("undo-glow.utils").ns,
-				id
-			)
+			vim.api.nvim_buf_del_extmark(opts.bufnr, opts.ns, id)
 		end
 	end
 	vim.cmd("hi clear " .. opts.hlgroup)
@@ -95,11 +91,12 @@ function M.animate.fade(opts)
 		e_col = opts.coordinates.e_col,
 		priority = opts.config.priority,
 		force_edge = opts.state.force_edge,
+		window_scoped = opts.state.animation.window_scoped,
 	})
 
 	local extmark_id = vim.api.nvim_buf_set_extmark(
 		opts.bufnr,
-		require("undo-glow.utils").ns,
+		opts.ns,
 		opts.coordinates.s_row,
 		opts.coordinates.s_col,
 		extmark_opts
@@ -145,11 +142,12 @@ function M.animate.fade_reverse(opts)
 		e_col = opts.coordinates.e_col,
 		priority = opts.config.priority,
 		force_edge = opts.state.force_edge,
+		window_scoped = opts.state.animation.window_scoped,
 	})
 
 	local extmark_id = vim.api.nvim_buf_set_extmark(
 		opts.bufnr,
-		require("undo-glow.utils").ns,
+		opts.ns,
 		opts.coordinates.s_row,
 		opts.coordinates.s_col,
 		extmark_opts
@@ -194,11 +192,12 @@ function M.animate.blink(opts)
 		e_col = opts.coordinates.e_col,
 		priority = opts.config.priority,
 		force_edge = opts.state.force_edge,
+		window_scoped = opts.state.animation.window_scoped,
 	})
 
 	local extmark_id = vim.api.nvim_buf_set_extmark(
 		opts.bufnr,
-		require("undo-glow.utils").ns,
+		opts.ns,
 		opts.coordinates.s_row,
 		opts.coordinates.s_col,
 		extmark_opts
@@ -242,11 +241,12 @@ function M.animate.jitter(opts)
 		e_col = opts.coordinates.e_col,
 		priority = opts.config.priority,
 		force_edge = opts.state.force_edge,
+		window_scoped = opts.state.animation.window_scoped,
 	})
 
 	local extmark_id = vim.api.nvim_buf_set_extmark(
 		opts.bufnr,
-		require("undo-glow.utils").ns,
+		opts.ns,
 		opts.coordinates.s_row,
 		opts.coordinates.s_col,
 		extmark_opts
@@ -291,11 +291,12 @@ function M.animate.pulse(opts)
 		e_col = opts.coordinates.e_col,
 		priority = opts.config.priority,
 		force_edge = opts.state.force_edge,
+		window_scoped = opts.state.animation.window_scoped,
 	})
 
 	local extmark_id = vim.api.nvim_buf_set_extmark(
 		opts.bufnr,
-		require("undo-glow.utils").ns,
+		opts.ns,
 		opts.coordinates.s_row,
 		opts.coordinates.s_col,
 		extmark_opts
@@ -347,11 +348,12 @@ function M.animate.spring(opts)
 		e_col = opts.coordinates.e_col,
 		priority = opts.config.priority,
 		force_edge = opts.state.force_edge,
+		window_scoped = opts.state.animation.window_scoped,
 	})
 
 	local extmark_id = vim.api.nvim_buf_set_extmark(
 		opts.bufnr,
-		require("undo-glow.utils").ns,
+		opts.ns,
 		opts.coordinates.s_row,
 		opts.coordinates.s_col,
 		extmark_opts
@@ -395,11 +397,12 @@ function M.animate.desaturate(opts)
 		e_col = opts.coordinates.e_col,
 		priority = opts.config.priority,
 		force_edge = opts.state.force_edge,
+		window_scoped = opts.state.animation.window_scoped,
 	})
 
 	local extmark_id = vim.api.nvim_buf_set_extmark(
 		opts.bufnr,
-		require("undo-glow.utils").ns,
+		opts.ns,
 		opts.coordinates.s_row,
 		opts.coordinates.s_col,
 		extmark_opts
@@ -438,11 +441,12 @@ function M.animate.strobe(opts)
 		e_col = opts.coordinates.e_col,
 		priority = opts.config.priority,
 		force_edge = opts.state.force_edge,
+		window_scoped = opts.state.animation.window_scoped,
 	})
 
 	local extmark_id = vim.api.nvim_buf_set_extmark(
 		opts.bufnr,
-		require("undo-glow.utils").ns,
+		opts.ns,
 		opts.coordinates.s_row,
 		opts.coordinates.s_col,
 		extmark_opts
@@ -483,11 +487,12 @@ function M.animate.zoom(opts)
 		e_col = opts.coordinates.e_col,
 		priority = opts.config.priority,
 		force_edge = opts.state.force_edge,
+		window_scoped = opts.state.animation.window_scoped,
 	})
 
 	local extmark_id = vim.api.nvim_buf_set_extmark(
 		opts.bufnr,
-		require("undo-glow.utils").ns,
+		opts.ns,
 		opts.coordinates.s_row,
 		opts.coordinates.s_col,
 		extmark_opts
@@ -530,11 +535,12 @@ function M.animate.rainbow(opts)
 		e_col = opts.coordinates.e_col,
 		priority = opts.config.priority,
 		force_edge = opts.state.force_edge,
+		window_scoped = opts.state.animation.window_scoped,
 	})
 
 	local extmark_id = vim.api.nvim_buf_set_extmark(
 		opts.bufnr,
-		require("undo-glow.utils").ns,
+		opts.ns,
 		opts.coordinates.s_row,
 		opts.coordinates.s_col,
 		extmark_opts
@@ -559,7 +565,7 @@ end
 ---@return boolean|nil status Return `false` to fallback to fade
 function M.animate.slide(opts)
 	local buf = opts.bufnr
-	local ns = require("undo-glow.utils").ns
+	local ns = opts.ns
 
 	local is_multiline_with_zero_start_end = opts.coordinates.e_row
 			> opts.coordinates.s_row
@@ -593,6 +599,7 @@ function M.animate.slide(opts)
 			e_col = opts.coordinates.e_col,
 			priority = opts.config.priority,
 			force_edge = opts.state.force_edge,
+			window_scoped = opts.state.animation.window_scoped,
 		})
 
 		local extmark_id = vim.api.nvim_buf_set_extmark(
@@ -724,6 +731,7 @@ function M.animate.slide(opts)
 					e_col = e_col,
 					priority = opts.config.priority,
 					force_edge = opts.state.force_edge,
+					window_scoped = opts.state.animation.window_scoped,
 				})
 			local id =
 				vim.api.nvim_buf_set_extmark(buf, ns, row, s_col, extmark_opts)

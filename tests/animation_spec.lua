@@ -25,7 +25,8 @@ describe("undo-glow.animation", function()
 		it("should stop and close the timer", function()
 			local timer = uv.new_timer()
 			timer:start(1000, 1000, function() end)
-			local opts = { bufnr = bufnr, extmark_id = 1, hlgroup = hlgroup }
+			local opts =
+				{ bufnr = bufnr, ns = ns, extmark_id = 1, hlgroup = hlgroup }
 			animation.animate_clear(opts, timer)
 			assert.is_false(timer:is_active(), "Timer should be stopped")
 		end)
@@ -34,8 +35,12 @@ describe("undo-glow.animation", function()
 			local extmark_ids = {}
 			local extmark_id = vim.api.nvim_buf_set_extmark(bufnr, ns, 0, 0, {})
 			table.insert(extmark_ids, extmark_id)
-			local opts =
-				{ bufnr = bufnr, extmark_ids = extmark_ids, hlgroup = hlgroup }
+			local opts = {
+				bufnr = bufnr,
+				ns = ns,
+				extmark_ids = extmark_ids,
+				hlgroup = hlgroup,
+			}
 			local timer = uv.new_timer()
 			animation.animate_clear(opts, timer)
 
@@ -56,8 +61,12 @@ describe("undo-glow.animation", function()
 				[3] = extmark_id3,
 			}
 
-			local opts =
-				{ bufnr = bufnr, extmark_ids = extmark_ids, hlgroup = hlgroup }
+			local opts = {
+				bufnr = bufnr,
+				ns = ns,
+				extmark_ids = extmark_ids,
+				hlgroup = hlgroup,
+			}
 			local timer = uv.new_timer()
 			animation.animate_clear(opts, timer)
 
@@ -86,6 +95,7 @@ describe("undo-glow.animation", function()
 
 				local opts = {
 					bufnr = bufnr,
+					ns = ns,
 					extmark_ids = extmark_ids,
 					hlgroup = hlgroup,
 				}
@@ -100,7 +110,7 @@ describe("undo-glow.animation", function()
 
 		it("should clear the highlight group", function()
 			vim.api.nvim_set_hl(0, hlgroup, { bg = "#FF0000" })
-			local opts = { hlgroup = hlgroup, bufnr = bufnr }
+			local opts = { hlgroup = hlgroup, ns = ns, bufnr = bufnr }
 			local timer = uv.new_timer()
 			animation.animate_clear(opts, timer)
 			local hl = vim.api.nvim_get_hl(0, { name = hlgroup })

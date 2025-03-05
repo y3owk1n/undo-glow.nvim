@@ -6,6 +6,7 @@ local config = {
 		animation_type = "fade",
 		fps = 120,
 		easing = "in_out_cubic",
+		window_scoped = false,
 	},
 	highlights = {
 		undo = {
