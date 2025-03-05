@@ -989,9 +989,6 @@ Cycles through hues smoothly, creating a rainbow-like transition effect.
 
 Moves the highlight horizontally to the right across the text before fading out.
 
-> [!note]
-> Only supports single-line highlights for now. Havent be able find a way to make it work with multiline.
-
 <https://github.com/user-attachments/assets/086056c2-4923-4ef5-85a7-378894248fc7>
 
 <!-- panvimdoc-ignore-end -->

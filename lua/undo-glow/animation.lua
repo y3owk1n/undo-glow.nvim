@@ -12,7 +12,16 @@ function M.animate_clear(opts, timer)
 		timer:close()
 	end
 	if vim.api.nvim_buf_is_valid(opts.bufnr) and opts.extmark_ids then
-		for _, id in ipairs(opts.extmark_ids) do
+		local ids = opts.extmark_ids
+		if not vim.islist(ids) then
+			local list = {}
+			for _, id in pairs(ids) do
+				table.insert(list, id)
+			end
+			ids = list
+		end
+
+		for _, id in ipairs(ids) do
 			vim.api.nvim_buf_del_extmark(
 				opts.bufnr,
 				require("undo-glow.utils").ns,
@@ -552,130 +561,275 @@ function M.animate.slide(opts)
 	local buf = opts.bufnr
 	local ns = require("undo-glow.utils").ns
 
-	local extmark_opts = require("undo-glow.utils").create_extmark_opts({
-		bufnr = buf,
-		hlgroup = opts.hlgroup,
-		s_row = opts.coordinates.s_row,
-		s_col = opts.coordinates.s_col,
-		e_row = opts.coordinates.e_row,
-		e_col = opts.coordinates.e_col,
-		priority = opts.config.priority,
-		force_edge = opts.state.force_edge,
-	})
+	local is_multiline_with_zero_start_end = opts.coordinates.e_row
+			> opts.coordinates.s_row
+		and opts.coordinates.e_row - opts.coordinates.s_row > 1
+		and opts.coordinates.s_col == 0
+		and opts.coordinates.e_col == 0
 
-	local extmark_id = vim.api.nvim_buf_set_extmark(
-		buf,
-		ns,
-		opts.coordinates.s_row,
-		opts.coordinates.s_col,
-		extmark_opts
-	)
+	local is_multiline_with_exact_coords = opts.coordinates.e_row
+			> opts.coordinates.s_row
+		and opts.coordinates.e_col > 0
 
-	table.insert(opts.extmark_ids, extmark_id)
-	local original_row = opts.coordinates.s_row
+	local is_multiline = is_multiline_with_zero_start_end
+		or is_multiline_with_exact_coords
 
-	local original_col = opts.coordinates.s_col
+	if not is_multiline then
+		-- try to match the cursorline style if single line
+		local success, normal =
+			pcall(vim.api.nvim_get_hl, 0, { name = "CursorLine" })
+		opts.end_bg = success
+				and require("undo-glow.color").hex_to_rgb(
+					string.format("#%06X", normal.bg)
+				)
+			or opts.end_bg
 
-	if extmark_opts.end_row - original_row > 1 then
-		vim.notify(
-			"UndoGlow: slide_right does not support multiple lines",
-			vim.log.levels.WARN
-		)
-		return false
-	end
-
-	M.animate_start(opts, function(progress)
-		local eased = opts.state.animation.easing({
-			time = progress,
-			begin = 0,
-			change = 1,
-			duration = 1,
+		local extmark_opts = require("undo-glow.utils").create_extmark_opts({
+			bufnr = buf,
+			hlgroup = opts.hlgroup,
+			s_row = opts.coordinates.s_row,
+			s_col = opts.coordinates.s_col,
+			e_row = opts.coordinates.e_row,
+			e_col = opts.coordinates.e_col,
+			priority = opts.config.priority,
+			force_edge = opts.state.force_edge,
 		})
 
-		local new_opts = vim.tbl_deep_extend(
-			"force",
-			extmark_opts,
-			{ id = opts.extmark_ids[1] }
-		)
-
-		local line = vim.api.nvim_buf_get_lines(
-			buf,
-			original_row,
-			original_row + 1,
-			false
-		)[1] or ""
-
-		local line_end = opts.coordinates.e_col
-
-		if opts.coordinates.e_col == 0 then
-			line_end = #line
-		end
-
-		local line_display = vim.fn.strdisplaywidth(line)
-		local win_width = vim.api.nvim_win_get_width(0)
-
-		local is_force_edge = type(opts.state.force_edge) == "boolean"
-			and opts.state.force_edge == true
-
-		local base_move = math.max(0, line_end - original_col)
-		local pad = math.max(0, win_width - line_display)
-		local total_move = base_move + (is_force_edge and pad or 0)
-		local total_progress = math.floor(total_move * progress)
-
-		--- HACK: see if it's full width, force the coordinates
-		if
-			opts.coordinates.s_col == 0
-			and opts.coordinates.e_col == 0
-			and opts.coordinates.e_row - opts.coordinates.s_row ~= 0
-		then
-			new_opts.end_row = opts.coordinates.e_row - 1
-		end
-
-		if total_progress <= line_end then
-			if is_force_edge then
-				new_opts.end_col =
-					math.min(line_end, original_col + total_progress)
-			else
-				new_opts.end_col = original_col + total_progress
-			end
-			new_opts.virt_text = nil
-			new_opts.virt_text_win_col = nil
-		else
-			new_opts.end_col = line_end
-			if is_force_edge then
-				new_opts.virt_text_win_col = extmark_opts.virt_text_win_col
-				new_opts.virt_text = {
-					{
-						string.rep(" ", total_progress - base_move),
-						opts.hlgroup,
-					},
-				}
-			end
-		end
-
-		vim.api.nvim_buf_set_extmark(
+		local extmark_id = vim.api.nvim_buf_set_extmark(
 			buf,
 			ns,
-			original_row,
-			original_col,
-			new_opts
+			opts.coordinates.s_row,
+			opts.coordinates.s_col,
+			extmark_opts
 		)
 
-		return {
-			bg = require("undo-glow.color").blend_color(
-				opts.start_bg,
-				opts.end_bg,
-				eased
-			),
-			fg = (opts.start_fg and opts.end_fg)
-					and require("undo-glow.color").blend_color(
-						opts.start_fg,
-						opts.end_fg,
-						eased
+		table.insert(opts.extmark_ids, extmark_id)
+
+		local original_row = opts.coordinates.s_row
+		local original_col = opts.coordinates.s_col
+
+		M.animate_start(opts, function(progress)
+			local eased = opts.state.animation.easing({
+				time = progress,
+				begin = 0,
+				change = 1,
+				duration = 1,
+			})
+
+			local new_opts = vim.tbl_deep_extend(
+				"force",
+				extmark_opts,
+				{ id = opts.extmark_ids[1] }
+			)
+			local line = vim.api.nvim_buf_get_lines(
+				buf,
+				original_row,
+				original_row + 1,
+				false
+			)[1] or ""
+			local line_end = opts.coordinates.e_col
+			if opts.coordinates.e_col == 0 then
+				line_end = #line
+			end
+			local line_display = vim.fn.strdisplaywidth(line)
+			local win_width = vim.api.nvim_win_get_width(0)
+			local is_force_edge = (
+				type(opts.state.force_edge) == "boolean"
+				and opts.state.force_edge == true
+			)
+			local base_move = math.max(0, line_end - original_col)
+			local pad = math.max(0, win_width - line_display)
+			local total_move = base_move + (is_force_edge and pad or 0)
+			local total_progress = math.floor(total_move * progress)
+
+			--- HACK: see if it's full width, force the coordinates
+			if
+				opts.coordinates.s_col == 0
+				and opts.coordinates.e_col == 0
+				and opts.coordinates.e_row - opts.coordinates.s_row ~= 0
+			then
+				new_opts.end_row = opts.coordinates.e_row - 1
+			end
+
+			if total_progress <= line_end then
+				if is_force_edge then
+					new_opts.end_col =
+						math.min(line_end, original_col + total_progress)
+				else
+					new_opts.end_col = original_col + total_progress
+				end
+				new_opts.virt_text = nil
+				new_opts.virt_text_win_col = nil
+			else
+				new_opts.end_col = line_end
+				if is_force_edge then
+					new_opts.virt_text_win_col = extmark_opts.virt_text_win_col
+					new_opts.virt_text = {
+						{
+							string.rep(" ", total_progress - base_move),
+							opts.hlgroup,
+						},
+					}
+				end
+			end
+
+			vim.api.nvim_buf_set_extmark(
+				buf,
+				ns,
+				original_row,
+				original_col,
+				new_opts
+			)
+
+			return {
+				bg = require("undo-glow.color").blend_color(
+					opts.start_bg,
+					opts.end_bg,
+					eased
+				),
+				fg = (opts.start_fg and opts.end_fg) and require(
+					"undo-glow.color"
+				).blend_color(opts.start_fg, opts.end_fg, eased) or nil,
+			}
+		end)
+	else
+		opts.extmark_ids = {}
+		local win_width = vim.api.nvim_win_get_width(0)
+
+		if opts.coordinates.e_col == 0 then
+			opts.coordinates.e_row = opts.coordinates.e_row - 1
+		end
+
+		-- Create an extmark for each row in the region.
+		for row = opts.coordinates.s_row, opts.coordinates.e_row do
+			local s_col = (row == opts.coordinates.s_row)
+					and opts.coordinates.s_col
+				or 0
+			local e_col = (row == opts.coordinates.e_row)
+					and opts.coordinates.e_col
+				or 0
+			local line = vim.api.nvim_buf_get_lines(buf, row, row + 1, false)[1]
+				or ""
+			if e_col == 0 then
+				e_col = #line
+			end
+
+			local extmark_opts =
+				require("undo-glow.utils").create_extmark_opts({
+					bufnr = buf,
+					hlgroup = opts.hlgroup,
+					s_row = row,
+					s_col = s_col,
+					e_row = row,
+					e_col = e_col,
+					priority = opts.config.priority,
+					force_edge = opts.state.force_edge,
+				})
+			local id =
+				vim.api.nvim_buf_set_extmark(buf, ns, row, s_col, extmark_opts)
+			opts.extmark_ids[row] = id
+		end
+
+		M.animate_start(opts, function(progress)
+			local eased = opts.state.animation.easing({
+				time = progress,
+				begin = 0,
+				change = 1,
+				duration = 1,
+			})
+
+			for row = opts.coordinates.s_row, opts.coordinates.e_row do
+				local s_col = (row == opts.coordinates.s_row)
+						and opts.coordinates.s_col
+					or 0
+				local target_e_col = (row == opts.coordinates.e_row)
+						and opts.coordinates.e_col
+					or 0
+				local line = vim.api.nvim_buf_get_lines(
+					buf,
+					row,
+					row + 1,
+					false
+				)[1] or ""
+				local line_display = vim.fn.strdisplaywidth(line)
+				if target_e_col == 0 then
+					target_e_col = #line
+				end
+
+				local is_force_edge = (
+					type(opts.state.force_edge) == "boolean"
+					and opts.state.force_edge == true
+				)
+				local base_move = math.max(0, target_e_col - s_col)
+				local pad = math.max(0, win_width - line_display)
+				local total_move = base_move + (is_force_edge and pad or 0)
+				local total_progress = math.floor(total_move * progress)
+
+				local new_opts = {
+					hl_group = opts.hlgroup,
+					end_row = row,
+					priority = opts.config.priority,
+				}
+
+				if total_progress <= target_e_col then
+					if is_force_edge then
+						new_opts.end_col =
+							math.min(target_e_col, s_col + total_progress)
+					else
+						new_opts.end_col = s_col + total_progress
+					end
+					new_opts.virt_text = nil
+					new_opts.virt_text_win_col = nil
+				else
+					new_opts.end_col = target_e_col
+					if is_force_edge then
+						local extmark_opts =
+							require("undo-glow.utils").create_extmark_opts({
+								bufnr = buf,
+								hlgroup = opts.hlgroup,
+								s_row = row,
+								s_col = s_col,
+								e_row = row,
+								e_col = target_e_col,
+								priority = opts.config.priority,
+								force_edge = opts.state.force_edge,
+							})
+						new_opts.virt_text_win_col =
+							extmark_opts.virt_text_win_col
+						new_opts.virt_text = {
+							{
+								string.rep(" ", total_progress - base_move),
+								opts.hlgroup,
+							},
+						}
+					end
+				end
+
+				vim.api.nvim_buf_set_extmark(
+					buf,
+					ns,
+					row,
+					s_col,
+					vim.tbl_extend(
+						"force",
+						new_opts,
+						{ id = opts.extmark_ids[row] }
 					)
-				or nil,
-		}
-	end)
+				)
+			end
+
+			return {
+				bg = require("undo-glow.color").blend_color(
+					opts.start_bg,
+					opts.end_bg,
+					eased
+				),
+				fg = (opts.start_fg and opts.end_fg) and require(
+					"undo-glow.color"
+				).blend_color(opts.start_fg, opts.end_fg, eased) or nil,
+			}
+		end)
+	end
 end
 
 return M
