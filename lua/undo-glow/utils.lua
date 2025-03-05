@@ -86,10 +86,7 @@ function M.handle_highlight(opts)
 
 	local extmark_ids = {}
 
-	opts.ns = require("undo-glow.utils").create_namespace(
-		opts.bufnr,
-		opts.state.animation.window_scoped
-	)
+	opts.ns = M.create_namespace(opts.bufnr, opts.state.animation.window_scoped)
 
 	--- If disabled animation, set extmark and clear it afterwards
 	if opts.state.animation.enabled ~= true then
