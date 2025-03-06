@@ -1,5 +1,37 @@
 # Changelog
 
+## [1.7.0](https://github.com/y3owk1n/undo-glow.nvim/compare/v1.6.0...v1.7.0) (2025-03-05)
+
+
+### Features
+
+* add ability to scope highlights to current window only ([#205](https://github.com/y3owk1n/undo-glow.nvim/issues/205)) ([14725d1](https://github.com/y3owk1n/undo-glow.nvim/commit/14725d117e83ca63f1882015633dd82ce78f1462))
+* add multiline support for `slide` animation ([#202](https://github.com/y3owk1n/undo-glow.nvim/issues/202)) ([5be5e93](https://github.com/y3owk1n/undo-glow.nvim/commit/5be5e93747be1b7e43f76e5a187ee3575b61dce2))
+* **animation.slide:** rework animation for slide & remove reverse variant ([#197](https://github.com/y3owk1n/undo-glow.nvim/issues/197)) ([1278268](https://github.com/y3owk1n/undo-glow.nvim/commit/12782683d7600c0fd5abb07d731eaeeaf64ad285))
+* **commands:** add new command to highlight current line after a search is performad from cmdline "/" or "?" ([#195](https://github.com/y3owk1n/undo-glow.nvim/issues/195)) ([6e6e924](https://github.com/y3owk1n/undo-glow.nvim/commit/6e6e924da1b6a38b082d931583499dd6d7dd6893))
+* make extmark_id into a table for better flexibility ([#201](https://github.com/y3owk1n/undo-glow.nvim/issues/201)) ([64c9e05](https://github.com/y3owk1n/undo-glow.nvim/commit/64c9e05fe0dffe12f3f1987144288c656ecb8948))
+
+
+### Bug Fixes
+
+* **animation.jitter:** bump rgb random range to 30 ([#182](https://github.com/y3owk1n/undo-glow.nvim/issues/182)) ([213dc4a](https://github.com/y3owk1n/undo-glow.nvim/commit/213dc4abe12e2335095ab493a80acf406865a196))
+* **commands:** ignore cursor moved for undo and redo command ([#193](https://github.com/y3owk1n/undo-glow.nvim/issues/193)) ([ec64f1a](https://github.com/y3owk1n/undo-glow.nvim/commit/ec64f1a712ed26d34dc8be3842b68e75e4912fe1))
+* **commands:** ignore cursor_moved for yank and comment ([#200](https://github.com/y3owk1n/undo-glow.nvim/issues/200)) ([41010d3](https://github.com/y3owk1n/undo-glow.nvim/commit/41010d31181d75123c87916a25e4796e0e7c20f8))
+* remove unneccessary caching ([#192](https://github.com/y3owk1n/undo-glow.nvim/issues/192)) ([3b151a2](https://github.com/y3owk1n/undo-glow.nvim/commit/3b151a2675b1fd93787372ec5d9cbca7d07ef6a2))
+* **types:** make ns optional for handle_highlight function ([#206](https://github.com/y3owk1n/undo-glow.nvim/issues/206)) ([6fe8778](https://github.com/y3owk1n/undo-glow.nvim/commit/6fe877837649bf435346ad03657d6a43f2e4c006))
+* **utils.animate_or_clear_highlights:** handle error if animation_type is not valid and fallback to fade ([#198](https://github.com/y3owk1n/undo-glow.nvim/issues/198)) ([3b98ffd](https://github.com/y3owk1n/undo-glow.nvim/commit/3b98ffdfd7cfc2cf3ead8852e68ca9fd6d5e93da))
+* **utils.create_namespace:** sync available win namespaces to avoid overheads ([#209](https://github.com/y3owk1n/undo-glow.nvim/issues/209)) ([70f0fb5](https://github.com/y3owk1n/undo-glow.nvim/commit/70f0fb5b9ab30378147b2d401855472922d0ca29))
+* **utils.get_search_star_region:** start search from cursor column to return next match ([#187](https://github.com/y3owk1n/undo-glow.nvim/issues/187)) ([b7d8a29](https://github.com/y3owk1n/undo-glow.nvim/commit/b7d8a29a65c44afe0c110f18756180e55f3fda1b))
+* **utils.handle_highlight:** do not import utils and use it from the module itself ([#208](https://github.com/y3owk1n/undo-glow.nvim/issues/208)) ([c5e1e87](https://github.com/y3owk1n/undo-glow.nvim/commit/c5e1e873da377bb6a7ef949839e2526d8f095a48))
+* **utils.search:** parse lines and patterns in lowercase ([#185](https://github.com/y3owk1n/undo-glow.nvim/issues/185)) ([5058690](https://github.com/y3owk1n/undo-glow.nvim/commit/50586905a6a0f0482c6d761de5cc30a7b49fc3d8))
+
+
+### Performance Improvements
+
+* **color:** slight refactor and add caching ([#190](https://github.com/y3owk1n/undo-glow.nvim/issues/190)) ([3d6a2c7](https://github.com/y3owk1n/undo-glow.nvim/commit/3d6a2c7e9089126608e04ddacc5e7cbeb74bfd27))
+* **highlight:** slight refactor and add caching ([#189](https://github.com/y3owk1n/undo-glow.nvim/issues/189)) ([a794531](https://github.com/y3owk1n/undo-glow.nvim/commit/a794531e1270125edb61462e8aec7717b74b8ff4))
+* **utils:** slight refactor and add caching ([#188](https://github.com/y3owk1n/undo-glow.nvim/issues/188)) ([86373cd](https://github.com/y3owk1n/undo-glow.nvim/commit/86373cdff658ebce64c2a136ec737418451cd4ed))
+
 ## [1.6.0](https://github.com/y3owk1n/undo-glow.nvim/compare/v1.5.0...v1.6.0) (2025-03-02)
 
 
