@@ -90,6 +90,38 @@ function M.check()
 	end
 	vim.api.nvim_buf_delete(dummy_buf, { force = true })
 
+	-- New health check for experimental namespace functions.
+	local dummy_win = vim.api.nvim_get_current_win()
+	local dummy_ns = vim.api.nvim_create_namespace("HealthNamespaceTest")
+	local function_string
+	local ok_ns, err_ns = pcall(function()
+		if vim.fn.has("nvim-0.11") == 1 then
+			-- Experimental API for nvim-0.11 and later.
+			vim.api.nvim__ns_set(dummy_ns, { wins = { dummy_win } })
+			function_string = "'vim.api.nvim__ns_set'"
+		else
+			-- Fallback for older versions.
+			vim.api.nvim__win_add_ns(dummy_win, dummy_ns)
+			function_string = "'vim.api.nvim__win_add_ns'"
+		end
+	end)
+	if ok_ns then
+		report_status(
+			"ok",
+			"Experimental namespace API "
+				.. function_string
+				.. " functions are callable."
+		)
+	else
+		report_status(
+			"error",
+			"Experimental namespace API "
+				.. function_string
+				.. " functions are not callable: "
+				.. err_ns
+		)
+	end
+
 	separator("Module Load Checks")
 	-- Check that required plugin modules load successfully.
 	local required_modules = {
