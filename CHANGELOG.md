@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.1](https://github.com/y3owk1n/undo-glow.nvim/compare/v1.7.0...v1.7.1) (2025-03-06)
+
+
+### Bug Fixes
+
+* **utils.create_extmark_opts:** different API for setting windown namespace for nightly and stable ([#210](https://github.com/y3owk1n/undo-glow.nvim/issues/210)) ([c521dd8](https://github.com/y3owk1n/undo-glow.nvim/commit/c521dd801b56cfc0a14f4fc8c636f987e7bebfb7))
+
 ## [1.7.0](https://github.com/y3owk1n/undo-glow.nvim/compare/v1.6.0...v1.7.0) (2025-03-05)
 
 
