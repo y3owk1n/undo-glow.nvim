@@ -426,6 +426,7 @@ end
 ---@param opts UndoGlow.ExtmarkOpts
 ---@return vim.api.keyset.set_extmark extmark_opts
 function M.create_extmark_opts(opts)
+	---@type vim.api.keyset.set_extmark
 	local extmark_opts = {
 		end_row = opts.e_row,
 		end_col = opts.e_col,
@@ -486,10 +487,19 @@ function M.create_namespace(bufnr, window_scoped)
 			M.win_namespaces[current_win_id] = vim.api.nvim_create_namespace(
 				"undo-glow-win-" .. current_win_id
 			)
-			vim.api.nvim__win_add_ns(
-				current_win_id,
-				M.win_namespaces[current_win_id]
-			)
+
+			if vim.fn.has("nvim-0.11") == 1 then
+				-- NOTE: This is still an experimental API for nightly and might change in the future.
+				-- Specifically on `v0.11.0-dev-1912+g0c0352783f` when i fix this issue.
+				vim.api.nvim__ns_set(M.win_namespaces[current_win_id], {
+					wins = { current_win_id },
+				})
+			else
+				vim.api.nvim__win_add_ns(
+					current_win_id,
+					M.win_namespaces[current_win_id]
+				)
+			end
 		end
 
 		for win_id, _ in pairs(M.win_namespaces) do
