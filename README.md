@@ -3,7 +3,7 @@
 **undo-glow.nvim** is a Neovim plugin that adds a visual "glow" effect to your neovim operations. It highlights the exact region that’s changed, giving you immediate visual feedback on your edits. You can even enable glow for non-changing texts!
 
 > [!note]
-> This plugin does not do anything on installation, no keymaps or autocmd are created by default. You need to do it your own.
+> This plugin does nothing upon installation—no keymaps or autocommands are set by default. You'll need to configure them yourself. See [Quick Start](#-quick-start) and get started easily in no time!
 
 ## ✨ Features
 
@@ -73,6 +73,20 @@ There are alot of similars plugins that you can simply find from github. The mai
 
 <!-- panvimdoc-ignore-end -->
 
+<!-- panvimdoc-ignore-start -->
+
+## 📕 Contents
+
+- [Installation](#-installation)
+- [Configuration](#%EF%B8%8F-configuration)
+- [Quick Start](#-quick-start)
+- [API](#-api)
+- [Hlgroup](#-hlgroups)
+- [Animations & Easings](#-animations--easings)
+- [Contributing](#-contributing)
+
+<!-- panvimdoc-ignore-end -->
+
 ## 📦 Installation
 
 Using [lazy.nvim](https://github.com/folke/lazy.nvim):
@@ -111,7 +125,7 @@ require("undo-glow").setup({
 > Animation is disabled by default, you can turn it on with `animation.enabled = true`.
 
 > [!warning]
-> Note that `animation.window_scope` is using neovim experimental options in extmark, which is `scope`. I am not sure which version did the `scope` option added, but I am using v0.10.4 and it is working fine for me. You can run `:checkhealth undo-glow` and it will tell you if `scope` is available or not.
+> Note that `animation.window_scope` is using neovim experimental API, both stable and nightly are using different API for it to work.
 
 ```lua
 ---Animation type aliases.
@@ -390,6 +404,9 @@ See the example below for how to configure **undo-glow.nvim**.
 
 ### Commands
 
+> [!note]
+> These are more like a library of functions that built by me. You can easily copy and paste and add your own logic, like integrate with your existing plugins.
+
 Each builtin commands takes in optional `opts` take allows to configure **color** and **animation** type per command. And the opts type as below:
 
 > [!note]
@@ -604,6 +621,7 @@ Best effort to imitate [beacon.nvim](https://github.com/DanilaMihailov/beacon.nv
 - Cursor moved more than 10 steps away
 - On buffer load
 - Split view supported
+- Only in normal mode (I think it make sense)
 
 For now the following are ignored:
 
@@ -618,7 +636,7 @@ For now the following are ignored:
 > [!WARNING]
 > This is not a command and it is designed to be used in autocmd callback.
 
-If you would like to avoid cursor_changed to highlight in other places of your code, you can add `vim.g.ug_ignore_cursor_moved = true` to any of your running function, and it will temporarily set to ignore the cursor_moved highlights.
+If you would like to avoid `cursor_changed` to highlight in other places of your code, you can add `vim.g.ug_ignore_cursor_moved = true` to any of your running function, and it will temporarily set to ignore the cursor_moved highlights.
 
 ```lua
 ---Cursor move command that highlights.
@@ -656,7 +674,7 @@ vim.api.nvim_create_autocmd("CursorMoved", {
 
 ### Do-it-yourself APIs
 
-**undo-glow.nvim** also provides APIs to create your own highlights that are not supported out of the box.
+**undo-glow.nvim** also provides APIs to create your own highlights that are not supported out of the box. Under the hood, all the builtin commands are created with these APIs.
 
 #### Highlight text changes
 
@@ -1080,7 +1098,7 @@ Moves the highlight horizontally to the right across the text before fading out.
    ---@param opts UndoGlow.Animation The animation options.
    ---@param animate_fn fun(progress: number, end_animation: function): UndoGlow.HlColor|nil A function that receives the current progress (0 = start, 1 = end) and return the hl colors or nothing.
    ---@return nil
-   require("undo-glow").animate_start(opts, function(progress)
+   require("undo-glow").animate_start(opts, function(progress, end_animation)
     -- do something for your animation
     -- normally you will do some calculation with the progress value (0 = start, 1 = end)
     -- you also have access to the current extmark via `opts.extmark_ids`
