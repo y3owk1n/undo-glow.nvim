@@ -31,7 +31,7 @@ end
 ---Starts an animation.
 ---Repeatedly calls the provided animation function with a progress value between 0 and 1 until the animation completes.
 ---@param opts UndoGlow.Animation The animation options.
----@param animate_fn fun(progress: number): UndoGlow.HlColor|nil A function that receives the current progress (0 = start, 1 = end) and return the hl colors or nothing.
+---@param animate_fn fun(progress: number, end_animation: function): UndoGlow.HlColor|nil A function that receives the current progress (0 = start, 1 = end) and return the hl colors or nothing.
 ---@return nil
 function M.animate_start(opts, animate_fn)
 	local start_time = vim.uv.hrtime()
@@ -50,12 +50,18 @@ function M.animate_start(opts, animate_fn)
 					local progress =
 						math.max(0, math.min(1, elapsed / opts.duration))
 
-					if progress >= 1 then
+					local animation_ended = false
+
+					if progress >= 1 and not animation_ended then
 						M.animate_clear(opts, timer)
+						animation_ended = true
 						return
 					end
 
-					local hl_opts = animate_fn(progress)
+					local hl_opts = animate_fn(progress, function()
+						M.animate_clear(opts, timer)
+						animation_ended = true
+					end)
 
 					if hl_opts then
 						vim.api.nvim_set_hl(0, opts.hlgroup, hl_opts)
@@ -619,7 +625,7 @@ function M.animate.slide(opts)
 		local original_row = opts.coordinates.s_row
 		local original_col = opts.coordinates.s_col
 
-		M.animate_start(opts, function(progress)
+		M.animate_start(opts, function(progress, end_animation)
 			local eased = opts.state.animation.easing({
 				time = progress,
 				begin = 0,
@@ -642,14 +648,6 @@ function M.animate.slide(opts)
 
 			local line = (success_lines and lines[1] or "") or ""
 			local line_end = opts.coordinates.e_col
-
-			local line_count = vim.api.nvim_buf_line_count(opts.bufnr)
-
-			--- Force animation to end if the row no longer exists
-			if line_count < opts.coordinates.e_row + 1 then
-				progress = 1
-				return
-			end
 
 			if opts.coordinates.e_col == 0 then
 				line_end = #line
@@ -696,7 +694,7 @@ function M.animate.slide(opts)
 				end
 			end
 
-			local update_extmark_status, update_extmark_result = pcall(
+			local update_extmark_status = pcall(
 				vim.api.nvim_buf_set_extmark,
 				buf,
 				ns,
@@ -706,11 +704,7 @@ function M.animate.slide(opts)
 			)
 
 			if not update_extmark_status then
-				vim.notify(
-					"[UndoGlow] Error updating extmark for Not Multiline: "
-						.. update_extmark_result,
-					vim.log.levels.ERROR
-				)
+				end_animation()
 			end
 
 			return {

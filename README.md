@@ -1078,12 +1078,19 @@ Moves the highlight horizontally to the right across the text before fading out.
    end
 
    ---@param opts UndoGlow.Animation The animation options.
-   ---@param animate_fn fun(progress: number): UndoGlow.HlColor|nil A function that receives the current progress (0 = start, 1 = end) and return the hl colors or nothing.
+   ---@param animate_fn fun(progress: number, end_animation: function): UndoGlow.HlColor|nil A function that receives the current progress (0 = start, 1 = end) and return the hl colors or nothing.
    ---@return nil
    require("undo-glow").animate_start(opts, function(progress)
     -- do something for your animation
     -- normally you will do some calculation with the progress value (0 = start, 1 = end)
     -- you also have access to the current extmark via `opts.extmark_ids`
+
+    -- Just in case you have some edge cases that you would like to end the animation
+    -- You can use this function
+    if should_end_animation then
+     end_animation()
+    end
+
     -- lastly, return the bg and fg (optional) if you want the color to be set automatically or...
     -- not return anything, but you need to set the color yourself in this function
     return hl_opts
