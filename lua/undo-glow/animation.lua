@@ -64,7 +64,7 @@ function M.animate_start(opts, animate_fn)
 
 				if not success then
 					vim.notify(
-						"UndoGlow: " .. tostring(err),
+						"[UndoGlow]: " .. tostring(err),
 						vim.log.levels.ERROR
 					)
 					timer:stop()
