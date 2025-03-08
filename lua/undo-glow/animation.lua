@@ -602,12 +602,6 @@ function M.animate.slide(opts)
 			window_scoped = opts.state.animation.window_scoped,
 		})
 
-		local line_count = vim.api.nvim_buf_line_count(opts.bufnr)
-
-		if line_count - 1 >= opts.coordinates.e_row then
-			return false
-		end
-
 		local created_extmark_status, created_extmark_result = pcall(
 			vim.api.nvim_buf_set_extmark,
 			buf,
@@ -645,8 +639,18 @@ function M.animate.slide(opts)
 				original_row + 1,
 				false
 			)
+
 			local line = (success_lines and lines[1] or "") or ""
 			local line_end = opts.coordinates.e_col
+
+			local line_count = vim.api.nvim_buf_line_count(opts.bufnr)
+
+			--- Force animation to end if the row no longer exists
+			if line_count < opts.coordinates.e_row + 1 then
+				Snacks.debug(line_count, opts.coordinates.e_row + 1)
+				progress = 1
+				return
+			end
 
 			if opts.coordinates.e_col == 0 then
 				line_end = #line
