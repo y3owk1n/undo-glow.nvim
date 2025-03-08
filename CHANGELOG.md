@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.8.0](https://github.com/y3owk1n/undo-glow.nvim/compare/v1.7.1...v1.8.0) (2025-03-08)
+
+
+### Features
+
+* **animation:** add end_animation function to animate_fn to end the animation easier ([#219](https://github.com/y3owk1n/undo-glow.nvim/issues/219)) ([aead0ac](https://github.com/y3owk1n/undo-glow.nvim/commit/aead0ac612d750df1fe568a4dea9390b3c6059f5))
+
+
+### Bug Fixes
+
+* **animation.slide:** add pcall for setting extmark ([#215](https://github.com/y3owk1n/undo-glow.nvim/issues/215)) ([48e71fd](https://github.com/y3owk1n/undo-glow.nvim/commit/48e71fdac04645771d0e89ca681ae45c04fd4511))
+* **animation.slide:** fixes end_col out of range error in certain cases ([#217](https://github.com/y3owk1n/undo-glow.nvim/issues/217)) ([a74cd7a](https://github.com/y3owk1n/undo-glow.nvim/commit/a74cd7ab1a47d2365b8edfdb74ed35f6ff125338))
+* **commands:** ignore cursor_moved for paste commands ([#213](https://github.com/y3owk1n/undo-glow.nvim/issues/213)) ([1a5dc1a](https://github.com/y3owk1n/undo-glow.nvim/commit/1a5dc1ae1ad98d6a3d6395cb405b03794797c47c))
+* **cursor_moved:** only run in normal mode ([#220](https://github.com/y3owk1n/undo-glow.nvim/issues/220)) ([2b3e2ac](https://github.com/y3owk1n/undo-glow.nvim/commit/2b3e2ac322621578dce8eb868bb288872915d26b))
+* ensure standardization of error namespace ([#216](https://github.com/y3owk1n/undo-glow.nvim/issues/216)) ([2189c15](https://github.com/y3owk1n/undo-glow.nvim/commit/2189c158cea6ce547b02f455b2ba30ce3f70a5ea))
+* remove Snacks.debug... sorry! ([#218](https://github.com/y3owk1n/undo-glow.nvim/issues/218)) ([18fd386](https://github.com/y3owk1n/undo-glow.nvim/commit/18fd386b79bf5960aed34b83b3c9887baa4a4e8e))
+
 ## [1.7.1](https://github.com/y3owk1n/undo-glow.nvim/compare/v1.7.0...v1.7.1) (2025-03-06)
 
 
