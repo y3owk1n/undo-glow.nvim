@@ -43,6 +43,7 @@ end
 ---@param opts? UndoGlow.CommandOpts Optional command option
 ---@return nil
 function M.paste_below(opts)
+	vim.g.ug_ignore_cursor_moved = true
 	opts = require("undo-glow.utils").merge_command_opts("UgPaste", opts)
 	require("undo-glow").highlight_changes(opts)
 	local register = vim.v.register
@@ -53,6 +54,7 @@ end
 ---@param opts? UndoGlow.CommandOpts Optional command option
 ---@return nil
 function M.paste_above(opts)
+	vim.g.ug_ignore_cursor_moved = true
 	opts = require("undo-glow.utils").merge_command_opts("UgPaste", opts)
 	require("undo-glow").highlight_changes(opts)
 	local register = vim.v.register
