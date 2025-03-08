@@ -13,6 +13,8 @@
 - **Customizable Appearance:** Easily change the glow duration, highlight colors and animations.
 - **Zero Dependencies:** Uses Neovim's native APIs for efficient real-time highlighting with zero dependencies.
 
+<!-- panvimdoc-ignore-start -->
+
 ## 🔥 Status
 
 This project is feature complete at this point. The rest of the commits will be focusing on bug fixes, optimizations and additional commands that fits in the scope of this project.
@@ -51,8 +53,6 @@ If you prefer a plug-and-play experience where everything just works out of the 
 - [emission.nvim](https://github.com/aileot/emission.nvim)
 - [beacon.nvim](https://github.com/DanilaMihailov/beacon.nvim)
 
-<!-- panvimdoc-ignore-start -->
-
 ## 👀 Previews
 
 ### Undo
@@ -82,10 +82,6 @@ If you prefer a plug-and-play experience where everything just works out of the 
 ### Significant Cursor Movement (Like beacon.nvim)
 
 <https://github.com/user-attachments/assets/51bf67af-305a-4f80-92ef-b5f4209a6603>
-
-<!-- panvimdoc-ignore-end -->
-
-<!-- panvimdoc-ignore-start -->
 
 ## 📕 Contents
 
