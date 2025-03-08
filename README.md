@@ -3,7 +3,7 @@
 **undo-glow.nvim** is a Neovim plugin that adds a visual "glow" effect to your neovim operations. It highlights the exact region that’s changed, giving you immediate visual feedback on your edits. You can even enable glow for non-changing texts!
 
 > [!note]
-> This plugin does nothing upon installation—no keymaps or autocommands are set by default. You'll need to configure them yourself. See [Quick Start](#🚀-quick-start) and get started easily in no time!
+> This plugin does nothing upon installation—no keymaps or autocommands are set by default. You'll need to configure them yourself. See [Quick Start](#-quick-start) and get started easily in no time!
 
 ## ✨ Features
 
@@ -77,13 +77,13 @@ There are alot of similars plugins that you can simply find from github. The mai
 
 ## 📕 Contents
 
-- [Installation](#📦-installation)
-- [Configuration](#️-configuration)
-- [Quick Start](#🚀-quick-start)
-- [API](#🌎-api)
-- [Hlgroup](#🎨-hlgroups)
-- [Animations & Easings](#💎-animations-easings)
-- [Contributing](#🤝-contributing)
+- [Installation](#-installation)
+- [Configuration](#%EF%B8%8F-configuration)
+- [Quick Start](#-quick-start)
+- [API](#-api)
+- [Hlgroup](#-hlgroups)
+- [Animations & Easings](#-animations--easings)
+- [Contributing](#-contributing)
 
 <!-- panvimdoc-ignore-end -->
 
