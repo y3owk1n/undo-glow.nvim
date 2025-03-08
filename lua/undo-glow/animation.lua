@@ -602,15 +602,25 @@ function M.animate.slide(opts)
 			window_scoped = opts.state.animation.window_scoped,
 		})
 
-		local extmark_id = vim.api.nvim_buf_set_extmark(
+		local line_count = vim.api.nvim_buf_line_count(opts.bufnr)
+
+		if line_count - 1 >= opts.coordinates.e_row then
+			return false
+		end
+
+		local created_extmark_status, created_extmark_result = pcall(
+			vim.api.nvim_buf_set_extmark,
 			buf,
 			ns,
 			opts.coordinates.s_row,
 			opts.coordinates.s_col,
 			extmark_opts
 		)
+		if not created_extmark_status then
+			return false -- fallback to fade if extmark creation fails
+		end
 
-		table.insert(opts.extmark_ids, extmark_id)
+		table.insert(opts.extmark_ids, created_extmark_result)
 
 		local original_row = opts.coordinates.s_row
 		local original_col = opts.coordinates.s_col
@@ -628,13 +638,16 @@ function M.animate.slide(opts)
 				extmark_opts,
 				{ id = opts.extmark_ids[1] }
 			)
-			local line = vim.api.nvim_buf_get_lines(
+			local success_lines, lines = pcall(
+				vim.api.nvim_buf_get_lines,
 				buf,
 				original_row,
 				original_row + 1,
 				false
-			)[1] or ""
+			)
+			local line = (success_lines and lines[1] or "") or ""
 			local line_end = opts.coordinates.e_col
+
 			if opts.coordinates.e_col == 0 then
 				line_end = #line
 			end
@@ -680,7 +693,7 @@ function M.animate.slide(opts)
 				end
 			end
 
-			pcall(
+			local update_extmark_status, update_extmark_result = pcall(
 				vim.api.nvim_buf_set_extmark,
 				buf,
 				ns,
@@ -688,6 +701,14 @@ function M.animate.slide(opts)
 				original_col,
 				new_opts
 			)
+
+			if not update_extmark_status then
+				vim.notify(
+					"[UndoGlow] Error updating extmark for Not Multiline: "
+						.. update_extmark_result,
+					vim.log.levels.ERROR
+				)
+			end
 
 			return {
 				bg = require("undo-glow.color").blend_color(
@@ -716,8 +737,11 @@ function M.animate.slide(opts)
 			local e_col = (row == opts.coordinates.e_row)
 					and opts.coordinates.e_col
 				or 0
-			local line = vim.api.nvim_buf_get_lines(buf, row, row + 1, false)[1]
-				or ""
+
+			local success_lines, lines =
+				pcall(vim.api.nvim_buf_get_lines, buf, row, row + 1, false)
+			local line = (success_lines and lines[1] or "") or ""
+
 			if e_col == 0 then
 				e_col = #line
 			end
@@ -734,9 +758,21 @@ function M.animate.slide(opts)
 					force_edge = opts.state.force_edge,
 					window_scoped = opts.state.animation.window_scoped,
 				})
-			local id =
-				vim.api.nvim_buf_set_extmark(buf, ns, row, s_col, extmark_opts)
-			opts.extmark_ids[row] = id
+
+			local created_extmark_status, created_extmark_result = pcall(
+				vim.api.nvim_buf_set_extmark,
+				buf,
+				ns,
+				row,
+				s_col,
+				extmark_opts
+			)
+
+			if not created_extmark_status then
+				return false -- fallback to fade if extmark creation fails
+			end
+
+			opts.extmark_ids[row] = created_extmark_result
 		end
 
 		M.animate_start(opts, function(progress)
@@ -754,12 +790,11 @@ function M.animate.slide(opts)
 				local target_e_col = (row == opts.coordinates.e_row)
 						and opts.coordinates.e_col
 					or 0
-				local line = vim.api.nvim_buf_get_lines(
-					buf,
-					row,
-					row + 1,
-					false
-				)[1] or ""
+
+				local success_lines, lines =
+					pcall(vim.api.nvim_buf_get_lines, buf, row, row + 1, false)
+				local line = (success_lines and lines[1] or "") or ""
+
 				local line_display = vim.fn.strdisplaywidth(line)
 				if target_e_col == 0 then
 					target_e_col = #line
@@ -814,7 +849,7 @@ function M.animate.slide(opts)
 					end
 				end
 
-				pcall(
+				local update_extmark_status, update_extmark_result = pcall(
 					vim.api.nvim_buf_set_extmark,
 					buf,
 					ns,
@@ -826,6 +861,14 @@ function M.animate.slide(opts)
 						{ id = opts.extmark_ids[row] }
 					)
 				)
+
+				if not update_extmark_status then
+					vim.notify(
+						"[UndoGlow] Error updating extmark: "
+							.. update_extmark_result,
+						vim.log.levels.ERROR
+					)
+				end
 			end
 
 			return {
