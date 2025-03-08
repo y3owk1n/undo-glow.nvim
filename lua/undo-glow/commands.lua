@@ -211,6 +211,10 @@ end
 ---@param ignored_ft? table<string> Optional filetypes to ignore
 ---@return nil
 function M.cursor_moved(opts, ignored_ft)
+	if vim.api.nvim_get_mode().mode ~= "n" then
+		return
+	end
+
 	opts = require("undo-glow.utils").merge_command_opts("UgCursor", opts)
 
 	local current_buf = vim.api.nvim_get_current_buf()
