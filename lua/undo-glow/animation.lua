@@ -647,7 +647,6 @@ function M.animate.slide(opts)
 
 			--- Force animation to end if the row no longer exists
 			if line_count < opts.coordinates.e_row + 1 then
-				Snacks.debug(line_count, opts.coordinates.e_row + 1)
 				progress = 1
 				return
 			end
