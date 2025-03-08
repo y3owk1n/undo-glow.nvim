@@ -680,7 +680,8 @@ function M.animate.slide(opts)
 				end
 			end
 
-			vim.api.nvim_buf_set_extmark(
+			pcall(
+				vim.api.nvim_buf_set_extmark,
 				buf,
 				ns,
 				original_row,
@@ -813,7 +814,8 @@ function M.animate.slide(opts)
 					end
 				end
 
-				vim.api.nvim_buf_set_extmark(
+				pcall(
+					vim.api.nvim_buf_set_extmark,
 					buf,
 					ns,
 					row,
