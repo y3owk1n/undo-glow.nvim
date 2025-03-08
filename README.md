@@ -13,6 +13,8 @@
 - **Customizable Appearance:** Easily change the glow duration, highlight colors and animations.
 - **Zero Dependencies:** Uses Neovim's native APIs for efficient real-time highlighting with zero dependencies.
 
+<!-- panvimdoc-ignore-start -->
+
 ## 🔥 Status
 
 This project is feature complete at this point. The rest of the commits will be focusing on bug fixes, optimizations and additional commands that fits in the scope of this project.
@@ -32,14 +34,24 @@ There are alot of similars plugins that you can simply find from github. The mai
 - **Tested code** - important parts of the codebase are thoroughly tested
 - **Easy plugin integration** - seamlessly integrate with other plugins via the exposed highlight API
 
+### Is this plugin for you?
+
+If any of the following resonates with you, **undo-glow.nvim** is the perfect fit for your workflow:
+
+- **You love customization** – You want full control over how things look and behave in your editor.
+- **You enjoy fine-tuning your config** – You prefer setting things up explicitly rather than relying on a plugin’s defaults.
+- **You want animations and highlights** – You appreciate visual feedback that enhances your editing experience.
+- **You value flexibility** – You want a plugin that integrates seamlessly with your setup without imposing unwanted keymaps or behaviors.
+- **You like building on top of plugins** – You’re looking for a plugin that provides APIs for custom highlights and interactions.
+
+If you prefer a plug-and-play experience where everything just works out of the box, this may not be the best fit. However, if you enjoy fine-grained control and want to elevate your Neovim experience with visually pleasing effects, undo-glow.nvim is for you! 🚀
+
 ### Alternative to
 
 - [highlight-undo.nvim](https://github.com/tzachar/highlight-undo.nvim)
 - [tiny-glimmer.nvim](https://github.com/rachartier/tiny-glimmer.nvim)
 - [emission.nvim](https://github.com/aileot/emission.nvim)
 - [beacon.nvim](https://github.com/DanilaMihailov/beacon.nvim)
-
-<!-- panvimdoc-ignore-start -->
 
 ## 👀 Previews
 
@@ -70,10 +82,6 @@ There are alot of similars plugins that you can simply find from github. The mai
 ### Significant Cursor Movement (Like beacon.nvim)
 
 <https://github.com/user-attachments/assets/51bf67af-305a-4f80-92ef-b5f4209a6603>
-
-<!-- panvimdoc-ignore-end -->
-
-<!-- panvimdoc-ignore-start -->
 
 ## 📕 Contents
 
