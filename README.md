@@ -997,7 +997,7 @@ Static highlight and will be cleared after a duration immediately.
 
 Gradually decreases the opacity of the highlight, creating a smooth fade-out effect.
 
-<https://github.com/user-attachments/assets/f030ca76-c60e-4ce9-a67c-e6b4e5c054ac>f
+<https://github.com/user-attachments/assets/f030ca76-c60e-4ce9-a67c-e6b4e5c054ac>
 
 ##### Fade Reverse
 
