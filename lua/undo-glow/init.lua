@@ -129,6 +129,14 @@ function M.search_star(opts)
 	return commands.search_star(opts)
 end
 
+---Search star (#) command with highlights.
+---@param opts? UndoGlow.CommandOpts Optional command option
+---@return nil
+function M.search_hash(opts)
+	local commands = require("undo-glow.commands")
+	return commands.search_hash(opts)
+end
+
 ---Comment with `gc` in `n` and `x` mode with highlights.
 ---Requires `expr` = true in ``vim.keymap.set`
 ---@param opts? UndoGlow.CommandOpts Optional command option

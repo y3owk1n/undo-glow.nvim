@@ -174,6 +174,33 @@ function M.search_star(opts)
 	}))
 end
 
+---Search star (#) command with highlights.
+---@param opts? UndoGlow.CommandOpts Optional command option
+---@return nil
+function M.search_hash(opts)
+	vim.g.ug_ignore_cursor_moved = true
+
+	local ok = pcall(vim.cmd, "normal! #")
+
+	if not ok then
+		return
+	end
+	local region = require("undo-glow.utils").get_current_search_match_region()
+
+	if not region then
+		return
+	end
+
+	opts = require("undo-glow.utils").merge_command_opts("UgSearch", opts)
+
+	require("undo-glow").highlight_region(vim.tbl_extend("force", opts, {
+		s_row = region.s_row,
+		s_col = region.s_col,
+		e_row = region.e_row,
+		e_col = region.e_col,
+	}))
+end
+
 ---Comment with `gc` in `n` and `x` mode with highlights.
 ---Requires `expr` = true in ``vim.keymap.set`
 ---@param opts? UndoGlow.CommandOpts Optional command option
