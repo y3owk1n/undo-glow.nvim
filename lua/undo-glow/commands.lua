@@ -158,7 +158,7 @@ function M.search_star(opts)
 	if not ok then
 		return
 	end
-	local region = require("undo-glow.utils").get_search_star_region()
+	local region = require("undo-glow.utils").get_current_search_match_region()
 
 	if not region then
 		return
