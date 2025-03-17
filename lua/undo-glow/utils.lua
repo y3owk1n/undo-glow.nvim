@@ -181,9 +181,9 @@ function M.get_search_region()
 	}
 end
 
----Determines the "search star" region based on the current search pattern and cursor position.
+---Determines the region based on the current search pattern and cursor position.
 ---@return UndoGlow.RowCol|nil region A table containing s_row, s_col, e_row, and e_col for the search star region, or nil if not found.
-function M.get_search_star_region()
+function M.get_current_search_match_region()
 	local bufnr = vim.api.nvim_get_current_buf()
 	local cursor = vim.api.nvim_win_get_cursor(0)
 	local row = cursor[1] - 1
