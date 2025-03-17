@@ -338,6 +338,19 @@ See the example below for how to configure **undo-glow.nvim**.
    noremap = true,
   },
   {
+   "#",
+   function()
+    require("undo-glow").search_hash({
+     animation = {
+      animation_type = "strobe",
+     },
+    })
+   end,
+   mode = "n",
+   desc = "Search hash with highlight",
+   noremap = true,
+  },
+  {
    "gc",
    function()
     -- This is an implementation to preserve the cursor position
@@ -584,6 +597,11 @@ require("undo-glow").search_prev(opts)
 ---@param opts? UndoGlow.CommandOpts Optional command option
 ---@return nil
 require("undo-glow").search_star(opts)
+
+---Search star (#) command with highlights.
+---@param opts? UndoGlow.CommandOpts Optional command option
+---@return nil
+require("undo-glow").search_hash(opts)
 ```
 
 <details><summary>Usage Example</summary>
@@ -594,6 +612,7 @@ require("undo-glow").search_star(opts)
 vim.keymap.set("n", "n", require("undo-glow").search_next, { noremap = true, desc = "Search next with highlight" })
 vim.keymap.set("n", "N", require("undo-glow").search_prev, { noremap = true, desc = "Search previous with highlight" })
 vim.keymap.set("n", "*", require("undo-glow").search_star, { noremap = true, desc = "Search * with highlight" })
+vim.keymap.set("n", "#", require("undo-glow").search_hash, { noremap = true, desc = "Search # with highlight" })
 
 vim.api.nvim_create_autocmd("CmdLineLeave", {
  pattern = { "/", "?" },
