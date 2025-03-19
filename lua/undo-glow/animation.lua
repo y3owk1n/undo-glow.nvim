@@ -22,7 +22,7 @@ function M.animate_clear(opts, timer)
 		end
 
 		for _, id in ipairs(ids) do
-			vim.api.nvim_buf_del_extmark(opts.bufnr, opts.ns, id)
+			pcall(vim.api.nvim_buf_del_extmark, opts.bufnr, opts.ns, id)
 		end
 	end
 	vim.cmd("hi clear " .. opts.hlgroup)
@@ -617,7 +617,7 @@ function M.animate.slide(opts)
 			extmark_opts
 		)
 		if not created_extmark_status then
-			return false -- fallback to fade if extmark creation fails
+			return -- abort if extmark creation fails
 		end
 
 		table.insert(opts.extmark_ids, created_extmark_result)
