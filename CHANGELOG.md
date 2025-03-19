@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.9.0](https://github.com/y3owk1n/undo-glow.nvim/compare/v1.8.0...v1.9.0) (2025-03-19)
+
+
+### Features
+
+* **commands:** add search hash command ([#227](https://github.com/y3owk1n/undo-glow.nvim/issues/227)) ([0414890](https://github.com/y3owk1n/undo-glow.nvim/commit/041489034b082b133192726c39b7e879e0031d7d))
+
+
+### Bug Fixes
+
+* **animation.slide:** `ns_id` is invalid when switching buffer very quickly ([#229](https://github.com/y3owk1n/undo-glow.nvim/issues/229)) ([03d400d](https://github.com/y3owk1n/undo-glow.nvim/commit/03d400d6282c1baff639eeff22c8beca5a4291c2))
+
 ## [1.8.0](https://github.com/y3owk1n/undo-glow.nvim/compare/v1.7.1...v1.8.0) (2025-03-08)
 
 
