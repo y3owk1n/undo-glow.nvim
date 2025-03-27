@@ -12,6 +12,8 @@
 - **Simple API For Custom Highlights:** Simple API to create and attach your own commands that glows.
 - **Customizable Appearance:** Easily change the glow duration, highlight colors and animations.
 - **Zero Dependencies:** Uses Neovim's native APIs for efficient real-time highlighting with zero dependencies.
+- **Window-Specific Highlighting:** Restrict highlights & animations to the active window when the same buffers are splitted, ensuring that only the current view displays the visual feedback.
+- **Seamless Integration**: Harmoniously works with plugins like `mini.cursorword`, `Snacks.words` and `render-markdown.nvim` to provide a consistent and enhanced highlighting experience.
 
 <!-- panvimdoc-ignore-start -->
 
@@ -20,7 +22,7 @@
 This project is feature complete at this point. The rest of the commits will be focusing on bug fixes, optimizations and additional commands that fits in the scope of this project.
 
 > [!note]
-> I am mainly daily driving this plugin, and all commits are tested in CI (But not 100% coverage). If there's anything that are not working based on your workflow, and it should fall under the scope of this plugin, please raise an issue or even better, send in a PR for fix.
+> I am mainly daily driving this plugin, and the core functionality are properly tested. If there's anything that are not working based on your workflow, and it should fall under the scope of this plugin, please raise an issue or even better, send in a PR for fix.
 
 ## 📝 Differences from other similar plugins
 
@@ -33,6 +35,7 @@ There are alot of similars plugins that you can simply find from github. The mai
 - **Library potential** - use it as a foundation for other plugins
 - **Tested code** - important parts of the codebase are thoroughly tested
 - **Easy plugin integration** - seamlessly integrate with other plugins via the exposed highlight API
+- **Window-Specific Highlighting:** Restrict highlights & animations to the active window when the same buffers are splitted, ensuring that only the current view displays the visual feedback.
 
 ### Is this plugin for you?
 
