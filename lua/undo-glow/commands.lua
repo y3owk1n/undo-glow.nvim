@@ -284,7 +284,7 @@ function M.cursor_moved(opts, ignored_ft)
 	local new_window = (prev_win ~= current_win)
 
 	if not vim.g.ug_ignore_cursor_moved then
-		if diff > 10 or new_buffer or new_window then
+		if diff > 5 or new_buffer or new_window then
 			local cur_line = vim.api.nvim_get_current_line()
 			local cur_line_length = #cur_line
 			require("undo-glow").highlight_region(
