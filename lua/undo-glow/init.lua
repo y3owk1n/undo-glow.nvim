@@ -167,10 +167,11 @@ end
 ---For autocmd usage only.
 ---@param opts? UndoGlow.CommandOpts Optional command option
 ---@param ignored_ft? table<string> Optional filetypes to ignore
+---@param steps_to_trigger? number Optional number of steps to trigger
 ---@return nil
-function M.cursor_moved(opts, ignored_ft)
+function M.cursor_moved(opts, ignored_ft, steps_to_trigger)
 	local commands = require("undo-glow.commands")
-	return commands.cursor_moved(opts, ignored_ft)
+	return commands.cursor_moved(opts, ignored_ft, steps_to_trigger)
 end
 
 ---Core API to highlight changes in the current buffer.

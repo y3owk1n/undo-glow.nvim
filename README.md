@@ -698,8 +698,9 @@ If you would like to avoid `cursor_changed` to highlight in other places of your
 ---For autocmd usage only.
 ---@param opts? UndoGlow.CommandOpts Optional command option
 ---@param ignored_ft? table<string> Optional filetypes to ignore
+---@param steps_to_trigger? number Optional number of steps to trigger
 ---@return nil
-require("undo-glow").cursor_moved(opts, ignored_ft)
+require("undo-glow").cursor_moved(opts, ignored_ft, steps_to_trigger)
 ```
 
 <details><summary>Usage Example</summary>
@@ -718,7 +719,15 @@ vim.api.nvim_create_autocmd("CursorMoved", {
 vim.api.nvim_create_autocmd("CursorMoved", {
  desc = "Highlight when cursor moved significantly",
  callback = function()
-  require("undo-glow").cursor_moved(_, { "mason", "lazy", ... })
+  require("undo-glow").cursor_moved(nil, { "mason", "lazy", ... })
+ end,
+})
+
+-- Change steps to trigger the `beacon` highlights
+vim.api.nvim_create_autocmd("CursorMoved", {
+ desc = "Highlight when cursor moved significantly",
+ callback = function()
+  require("undo-glow").cursor_moved(nil, nil, 5)
  end,
 })
 ```
