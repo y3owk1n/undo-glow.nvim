@@ -236,8 +236,9 @@ end
 ---For autocmd usage only.
 ---@param opts? UndoGlow.CommandOpts Optional command option
 ---@param ignored_ft? table<string> Optional filetypes to ignore
+---@param steps_to_trigger? number Optional number of steps to trigger
 ---@return nil
-function M.cursor_moved(opts, ignored_ft)
+function M.cursor_moved(opts, ignored_ft, steps_to_trigger)
 	if vim.api.nvim_get_mode().mode ~= "n" then
 		return
 	end
@@ -284,7 +285,9 @@ function M.cursor_moved(opts, ignored_ft)
 	local new_window = (prev_win ~= current_win)
 
 	if not vim.g.ug_ignore_cursor_moved then
-		if diff > 10 or new_buffer or new_window then
+		steps_to_trigger = steps_to_trigger or 10
+
+		if diff > steps_to_trigger or new_buffer or new_window then
 			local cur_line = vim.api.nvim_get_current_line()
 			local cur_line_length = #cur_line
 			require("undo-glow").highlight_region(

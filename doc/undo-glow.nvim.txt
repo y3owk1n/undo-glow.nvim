@@ -1,4 +1,4 @@
-*undo-glow.nvim.txt*      For Neovim >= 0.10.0      Last change: 2025 March 27
+*undo-glow.nvim.txt*      For Neovim >= 0.10.0      Last change: 2025 April 08
 
 ==============================================================================
 Table of Contents                           *undo-glow.nvim-table-of-contents*
@@ -622,8 +622,9 @@ highlights.
     ---For autocmd usage only.
     ---@param opts? UndoGlow.CommandOpts Optional command option
     ---@param ignored_ft? table<string> Optional filetypes to ignore
+    ---@param steps_to_trigger? number Optional number of steps to trigger
     ---@return nil
-    require("undo-glow").cursor_moved(opts, ignored_ft)
+    require("undo-glow").cursor_moved(opts, ignored_ft, steps_to_trigger)
 <
 
 Usage Example ~
@@ -640,7 +641,15 @@ Usage Example ~
     vim.api.nvim_create_autocmd("CursorMoved", {
      desc = "Highlight when cursor moved significantly",
      callback = function()
-      require("undo-glow").cursor_moved(_, { "mason", "lazy", ... })
+      require("undo-glow").cursor_moved(nil, { "mason", "lazy", ... })
+     end,
+    })
+    
+    -- Change steps to trigger the `beacon` highlights
+    vim.api.nvim_create_autocmd("CursorMoved", {
+     desc = "Highlight when cursor moved significantly",
+     callback = function()
+      require("undo-glow").cursor_moved(nil, nil, 5)
      end,
     })
 <
