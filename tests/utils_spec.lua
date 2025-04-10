@@ -2,6 +2,7 @@
 
 local utils = require("undo-glow.utils")
 local spy = require("luassert.spy")
+local config = require("undo-glow.config")
 
 describe("undo-glow.utils", function()
 	describe("get_unique_hlgroup", function()
@@ -518,6 +519,22 @@ describe("undo-glow.utils", function()
 	end)
 
 	describe("validate_state_for_highlight", function()
+		before_each(function()
+			-- Inject a test configuration
+			config.config = {
+				animation = {
+					enabled = true,
+					duration = 150,
+					easing = function(x)
+						return x
+					end,
+					animation_type = "jitter",
+					fps = 30,
+					window_scoped = false,
+				},
+			}
+		end)
+
 		it("should fill missing state animation values from config", function()
 			local opts = {
 				bufnr = 1,
@@ -528,17 +545,6 @@ describe("undo-glow.utils", function()
 						duration = nil,
 						easing = nil,
 						fps = nil,
-					},
-				},
-				config = {
-					animation = {
-						enabled = true,
-						duration = 150,
-						easing = function(x)
-							return x
-						end,
-						animation_type = "jitter",
-						fps = 30,
 					},
 				},
 			}

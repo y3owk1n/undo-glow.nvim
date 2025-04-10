@@ -97,7 +97,7 @@ function M.handle_highlight(opts)
 			s_col = opts.s_col,
 			e_row = opts.e_row,
 			e_col = opts.e_col,
-			priority = opts.config.priority,
+			priority = require("undo-glow.config").config.priority,
 			force_edge = opts.state.force_edge,
 			window_scoped = opts.state.animation.window_scoped,
 		})
@@ -254,7 +254,7 @@ function M.animate_or_clear_highlights(
 			end_fg = start_fg and require("undo-glow.color").hex_to_rgb(end_fg)
 				or nil,
 			duration = opts.state.animation.duration,
-			config = opts.config,
+			config = require("undo-glow.config").config,
 			state = opts.state,
 			coordinates = {
 				e_col = opts.e_col,
@@ -358,35 +358,37 @@ end
 ---@param opts UndoGlow.HandleHighlight The handle highlight options.
 ---@return UndoGlow.HandleHighlight The validated and updated handle highlight options.
 function M.validate_state_for_highlight(opts)
+	local config = require("undo-glow.config").config
+
 	-- Check animation status and fallback to global
 	if type(opts.state.animation.enabled) ~= "boolean" then
-		opts.state.animation.enabled = opts.config.animation.enabled
+		opts.state.animation.enabled = config.animation.enabled
 	end
 
 	-- Check animation_type and fallback to global
 	if not opts.state.animation.animation_type then
 		opts.state.animation.animation_type =
-			M.get_animation_type(opts.config.animation.animation_type)
+			M.get_animation_type(config.animation.animation_type)
 	end
 
 	-- Check duration and fallback to global
 	if not opts.state.animation.duration then
-		opts.state.animation.duration = opts.config.animation.duration
+		opts.state.animation.duration = config.animation.duration
 	end
 
 	-- Check easing and fallback to global
 	if not opts.state.animation.easing then
-		opts.state.animation.easing = M.get_easing(opts.config.animation.easing)
+		opts.state.animation.easing = M.get_easing(config.animation.easing)
 	end
 
 	-- Check fps and fallback to global
 	if not opts.state.animation.fps then
-		opts.state.animation.fps = opts.config.animation.fps
+		opts.state.animation.fps = config.animation.fps
 	end
 
 	-- Check window_scoped and fallback to global
 	if type(opts.state.animation.window_scoped) ~= "boolean" then
-		opts.state.animation.window_scoped = opts.config.animation.window_scoped
+		opts.state.animation.window_scoped = config.animation.window_scoped
 	end
 
 	return opts

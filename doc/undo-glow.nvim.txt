@@ -1,4 +1,4 @@
-*undo-glow.nvim.txt*      For Neovim >= 0.10.0      Last change: 2025 April 08
+*undo-glow.nvim.txt*      For Neovim >= 0.10.0      Last change: 2025 April 10
 
 ==============================================================================
 Table of Contents                           *undo-glow.nvim-table-of-contents*
@@ -1046,7 +1046,7 @@ EXAMPLE USING BLINK ANIMATION FROM SOURCE CODE
          s_col = opts.coordinates.s_col,
          e_row = opts.coordinates.e_row,
          e_col = opts.coordinates.e_col,
-         priority = opts.config.priority,
+         priority = require("undo-glow.config").config.priority,
          force_edge = opts.state.force_edge,
          window_scoped = opts.state.animation.window_scoped,
         })

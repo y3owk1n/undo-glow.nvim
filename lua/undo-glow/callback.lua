@@ -2,7 +2,6 @@ local M = {}
 
 ---Callback to track changes
 ---@param state UndoGlow.State State
----@param config UndoGlow.Config
 ---@param _err any Error
 ---@param bufnr integer Buffer number
 ---@param _changedtick any Changed tick
@@ -18,7 +17,6 @@ local M = {}
 ---@return boolean
 function M.on_bytes_wrapper(
 	state,
-	config,
 	_err,
 	bufnr,
 	_changedtick,
@@ -53,7 +51,6 @@ function M.on_bytes_wrapper(
 		---@type UndoGlow.HandleHighlight
 		local opts = {
 			bufnr = bufnr,
-			config = config,
 			state = state,
 			s_row = s_row,
 			s_col = s_col,

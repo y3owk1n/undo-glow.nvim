@@ -95,7 +95,7 @@ function M.animate.fade(opts)
 		s_col = opts.coordinates.s_col,
 		e_row = opts.coordinates.e_row,
 		e_col = opts.coordinates.e_col,
-		priority = opts.config.priority,
+		priority = require("undo-glow.config").config.priority,
 		force_edge = opts.state.force_edge,
 		window_scoped = opts.state.animation.window_scoped,
 	})
@@ -146,7 +146,7 @@ function M.animate.fade_reverse(opts)
 		s_col = opts.coordinates.s_col,
 		e_row = opts.coordinates.e_row,
 		e_col = opts.coordinates.e_col,
-		priority = opts.config.priority,
+		priority = require("undo-glow.config").config.priority,
 		force_edge = opts.state.force_edge,
 		window_scoped = opts.state.animation.window_scoped,
 	})
@@ -196,7 +196,7 @@ function M.animate.blink(opts)
 		s_col = opts.coordinates.s_col,
 		e_row = opts.coordinates.e_row,
 		e_col = opts.coordinates.e_col,
-		priority = opts.config.priority,
+		priority = require("undo-glow.config").config.priority,
 		force_edge = opts.state.force_edge,
 		window_scoped = opts.state.animation.window_scoped,
 	})
@@ -245,7 +245,7 @@ function M.animate.jitter(opts)
 		s_col = opts.coordinates.s_col,
 		e_row = opts.coordinates.e_row,
 		e_col = opts.coordinates.e_col,
-		priority = opts.config.priority,
+		priority = require("undo-glow.config").config.priority,
 		force_edge = opts.state.force_edge,
 		window_scoped = opts.state.animation.window_scoped,
 	})
@@ -295,7 +295,7 @@ function M.animate.pulse(opts)
 		s_col = opts.coordinates.s_col,
 		e_row = opts.coordinates.e_row,
 		e_col = opts.coordinates.e_col,
-		priority = opts.config.priority,
+		priority = require("undo-glow.config").config.priority,
 		force_edge = opts.state.force_edge,
 		window_scoped = opts.state.animation.window_scoped,
 	})
@@ -352,7 +352,7 @@ function M.animate.spring(opts)
 		s_col = opts.coordinates.s_col,
 		e_row = opts.coordinates.e_row,
 		e_col = opts.coordinates.e_col,
-		priority = opts.config.priority,
+		priority = require("undo-glow.config").config.priority,
 		force_edge = opts.state.force_edge,
 		window_scoped = opts.state.animation.window_scoped,
 	})
@@ -401,7 +401,7 @@ function M.animate.desaturate(opts)
 		s_col = opts.coordinates.s_col,
 		e_row = opts.coordinates.e_row,
 		e_col = opts.coordinates.e_col,
-		priority = opts.config.priority,
+		priority = require("undo-glow.config").config.priority,
 		force_edge = opts.state.force_edge,
 		window_scoped = opts.state.animation.window_scoped,
 	})
@@ -445,7 +445,7 @@ function M.animate.strobe(opts)
 		s_col = opts.coordinates.s_col,
 		e_row = opts.coordinates.e_row,
 		e_col = opts.coordinates.e_col,
-		priority = opts.config.priority,
+		priority = require("undo-glow.config").config.priority,
 		force_edge = opts.state.force_edge,
 		window_scoped = opts.state.animation.window_scoped,
 	})
@@ -491,7 +491,7 @@ function M.animate.zoom(opts)
 		s_col = opts.coordinates.s_col,
 		e_row = opts.coordinates.e_row,
 		e_col = opts.coordinates.e_col,
-		priority = opts.config.priority,
+		priority = require("undo-glow.config").config.priority,
 		force_edge = opts.state.force_edge,
 		window_scoped = opts.state.animation.window_scoped,
 	})
@@ -539,7 +539,7 @@ function M.animate.rainbow(opts)
 		s_col = opts.coordinates.s_col,
 		e_row = opts.coordinates.e_row,
 		e_col = opts.coordinates.e_col,
-		priority = opts.config.priority,
+		priority = require("undo-glow.config").config.priority,
 		force_edge = opts.state.force_edge,
 		window_scoped = opts.state.animation.window_scoped,
 	})
@@ -603,7 +603,7 @@ function M.animate.slide(opts)
 			s_col = opts.coordinates.s_col,
 			e_row = opts.coordinates.e_row,
 			e_col = opts.coordinates.e_col,
-			priority = opts.config.priority,
+			priority = require("undo-glow.config").config.priority,
 			force_edge = opts.state.force_edge,
 			window_scoped = opts.state.animation.window_scoped,
 		})
@@ -751,7 +751,7 @@ function M.animate.slide(opts)
 					s_col = s_col,
 					e_row = row,
 					e_col = e_col,
-					priority = opts.config.priority,
+					priority = require("undo-glow.config").config.priority,
 					force_edge = opts.state.force_edge,
 					window_scoped = opts.state.animation.window_scoped,
 				})
@@ -809,7 +809,7 @@ function M.animate.slide(opts)
 				local new_opts = {
 					hl_group = opts.hlgroup,
 					end_row = row,
-					priority = opts.config.priority,
+					priority = require("undo-glow.config").config.priority,
 				}
 
 				if total_progress <= target_e_col then
@@ -832,7 +832,7 @@ function M.animate.slide(opts)
 								s_col = s_col,
 								e_row = row,
 								e_col = target_e_col,
-								priority = opts.config.priority,
+								priority = require("undo-glow.config").config.priority,
 								force_edge = opts.state.force_edge,
 							})
 						new_opts.virt_text_win_col =
