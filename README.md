@@ -1199,7 +1199,7 @@ Moves the highlight horizontally to the right across the text before fading out.
      s_col = opts.coordinates.s_col,
      e_row = opts.coordinates.e_row,
      e_col = opts.coordinates.e_col,
-     priority = opts.config.priority,
+     priority = require("undo-glow.config").config.priority,
      force_edge = opts.state.force_edge,
      window_scoped = opts.state.animation.window_scoped,
     })

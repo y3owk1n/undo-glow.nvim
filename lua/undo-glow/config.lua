@@ -1,5 +1,9 @@
+local M = {}
+
+M.config = {}
+
 ---@type UndoGlow.Config
-local config = {
+local defaults = {
 	animation = {
 		enabled = false,
 		duration = 100,
@@ -41,4 +45,47 @@ local config = {
 	priority = 4096, -- so that it will work with render-markdown.nvim
 }
 
-return config
+---Setup function for undo-glow.
+---Merges the user configuration with the default configuration and sets up the highlights.
+---@param user_config? UndoGlow.Config Optional user configuration.
+---@return nil
+function M.setup(user_config)
+	M.config = vim.tbl_deep_extend("force", defaults, user_config or {})
+
+	local valid_keys = {
+		undo = true,
+		redo = true,
+		yank = true,
+		paste = true,
+		search = true,
+		comment = true,
+		cursor = true,
+	}
+
+	for key in pairs(M.config.highlights) do
+		if not valid_keys[key] then
+			M.config.highlights[key] = nil
+		end
+	end
+
+	local target_map = {
+		undo = "UgUndo",
+		redo = "UgRedo",
+		yank = "UgYank",
+		paste = "UgPaste",
+		search = "UgSearch",
+		comment = "UgComment",
+		cursor = "UgCursor",
+	}
+
+	for key, highlight in pairs(M.config.highlights) do
+		local target = target_map[key]
+		require("undo-glow.highlight").setup_highlight(
+			target,
+			highlight.hl,
+			highlight.hl_color
+		)
+	end
+end
+
+return M

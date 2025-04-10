@@ -2,50 +2,7 @@
 
 local M = {}
 
-M.config = require("undo-glow.config")
-
----Setup function for undo-glow.
----Merges the user configuration with the default configuration and sets up the highlights.
----@param user_config? UndoGlow.Config Optional user configuration.
----@return nil
-function M.setup(user_config)
-	M.config = vim.tbl_deep_extend("force", M.config, user_config or {})
-
-	local valid_keys = {
-		undo = true,
-		redo = true,
-		yank = true,
-		paste = true,
-		search = true,
-		comment = true,
-		cursor = true,
-	}
-
-	for key in pairs(M.config.highlights) do
-		if not valid_keys[key] then
-			M.config.highlights[key] = nil
-		end
-	end
-
-	local target_map = {
-		undo = "UgUndo",
-		redo = "UgRedo",
-		yank = "UgYank",
-		paste = "UgPaste",
-		search = "UgSearch",
-		comment = "UgComment",
-		cursor = "UgCursor",
-	}
-
-	for key, highlight in pairs(M.config.highlights) do
-		local target = target_map[key]
-		require("undo-glow.highlight").setup_highlight(
-			target,
-			highlight.hl,
-			highlight.hl_color
-		)
-	end
-end
+M.setup = require("undo-glow.config").setup
 
 ------- Public API -------
 
@@ -184,11 +141,7 @@ function M.highlight_changes(opts)
 
 	vim.api.nvim_buf_attach(bufnr, false, {
 		on_bytes = function(...)
-			return require("undo-glow.callback").on_bytes_wrapper(
-				state,
-				M.config,
-				...
-			)
+			return require("undo-glow.callback").on_bytes_wrapper(state, ...)
 		end,
 	})
 end
@@ -205,7 +158,6 @@ function M.highlight_region(opts)
 		---@type UndoGlow.HandleHighlight
 		local handle_highlight_opts = {
 			bufnr = bufnr,
-			config = M.config,
 			state = state,
 			s_row = opts.s_row,
 			s_col = opts.s_col,
