@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.0](https://github.com/y3owk1n/undo-glow.nvim/compare/v1.9.0...v1.10.0) (2025-04-10)
+
+
+### Features
+
+* **commands.cursor_moved:** allow configuring `steps_to_trigger` for `cursor_moved` command ([#232](https://github.com/y3owk1n/undo-glow.nvim/issues/232)) ([ca3345c](https://github.com/y3owk1n/undo-glow.nvim/commit/ca3345cf44eb902bb27fa2081cb8f3d85fa5c671))
+
 ## [1.9.0](https://github.com/y3owk1n/undo-glow.nvim/compare/v1.8.0...v1.9.0) (2025-03-19)
 
 
