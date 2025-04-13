@@ -122,28 +122,6 @@ function M.check()
 		)
 	end
 
-	separator("Module Load Checks")
-	-- Check that required plugin modules load successfully.
-	local required_modules = {
-		"undo-glow.animation",
-		"undo-glow.callback",
-		"undo-glow.color",
-		"undo-glow.commands",
-		"undo-glow.config",
-		"undo-glow.easing",
-		"undo-glow.highlight",
-		"undo-glow.utils",
-		"vim._comment",
-	}
-	for _, mod in ipairs(required_modules) do
-		local ok, _ = pcall(require, mod)
-		if ok then
-			report_status("ok", "Module " .. mod .. " loaded.")
-		else
-			report_status("error", "Module " .. mod .. " failed to load.")
-		end
-	end
-
 	separator("Timer Creation Test")
 	-- Test timer creation.
 	local timer = vim.uv.new_timer()
@@ -160,15 +138,18 @@ function M.check()
 	separator("Highlight Group Test")
 	-- Test setting a highlight group.
 	local test_hl = "UgHealthTest"
-	local ok, err = pcall(function()
+	local highlight_ok, highlight_err = pcall(function()
 		vim.api.nvim_set_hl(0, test_hl, { bg = "#000000", fg = "#ffffff" })
 	end)
-	if ok then
+	if highlight_ok then
 		report_status("ok", "Able to set highlight group '" .. test_hl .. "'.")
 	else
 		report_status(
 			"error",
-			"Failed to set highlight group '" .. test_hl .. "': " .. err
+			"Failed to set highlight group '"
+				.. test_hl
+				.. "': "
+				.. highlight_err
 		)
 	end
 
@@ -214,7 +195,7 @@ function M.check()
 	end
 
 	separator("Config Checks")
-	local config = require("undo-glow").config
+	local config = require("undo-glow.config").config
 
 	if config.animation.enabled then
 		report_status("ok", "Animation is enabled in the configuration.")
