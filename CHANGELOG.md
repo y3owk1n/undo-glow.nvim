@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.1](https://github.com/y3owk1n/undo-glow.nvim/compare/v1.10.0...v1.10.1) (2025-04-13)
+
+
+### Bug Fixes
+
+* **health:** config no longer exported from init.lua ([#235](https://github.com/y3owk1n/undo-glow.nvim/issues/235)) ([3c8029c](https://github.com/y3owk1n/undo-glow.nvim/commit/3c8029c2148f9f64da4660ec687502ac80ea3534))
+
 ## [1.10.0](https://github.com/y3owk1n/undo-glow.nvim/compare/v1.9.0...v1.10.0) (2025-04-10)
 
 
