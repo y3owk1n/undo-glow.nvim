@@ -59,13 +59,13 @@ vim.api.nvim_create_autocmd("FocusGained", {
   }
 
   opts = require("undo-glow.utils").merge_command_opts("UgCursor", opts)
-  local current_row = vim.api.nvim_win_get_cursor(0)[1]
-  local cur_line = vim.api.nvim_get_current_line()
+  local pos = require("undo-glow.utils").get_current_cursor_row()
+
   require("undo-glow").highlight_region(vim.tbl_extend("force", opts, {
-   s_row = current_row - 1,
-   s_col = 0,
-   e_row = current_row - 1,
-   e_col = #cur_line,
+   s_row = pos.s_row,
+   s_col = pos.s_col,
+   e_row = pos.e_row,
+   e_col = pos.e_col,
    force_edge = opts.force_edge == nil and true or opts.force_edge,
   }))
  end,
