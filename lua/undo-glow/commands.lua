@@ -78,16 +78,13 @@ function M.search_cmd(opts)
 	vim.g.ug_ignore_cursor_moved = true
 	opts = require("undo-glow.utils").merge_command_opts("UgSearch", opts)
 
-	local current_win = vim.api.nvim_get_current_win()
-	local cursor = vim.api.nvim_win_get_cursor(current_win)
-	local current_row = cursor[1] - 1
-	local line = vim.api.nvim_get_current_line()
+	local region = require("undo-glow.utils").get_current_cursor_row()
 
 	require("undo-glow").highlight_region(vim.tbl_extend("force", opts, {
-		s_row = current_row,
-		s_col = 0,
-		e_row = current_row,
-		e_col = #line,
+		s_row = region.s_row,
+		s_col = region.s_col,
+		e_row = region.e_row,
+		e_col = region.e_col,
 		force_edge = type(opts.force_edge) == "nil" and true or opts.force_edge,
 	}))
 end
@@ -274,13 +271,13 @@ function M.cursor_moved(opts, ignored_ft, steps_to_trigger)
 		return
 	end
 
-	local current_row, current_col = unpack(vim.api.nvim_win_get_cursor(0))
+	local pos = require("undo-glow.utils").get_current_cursor_row()
 
 	local prev_buf = vim.g.ug_prev_buf
-	local prev_row = vim.g.ug_prev_cursor or current_row
+	local prev_row = vim.g.ug_prev_cursor or pos.s_row
 	local prev_win = vim.g.ug_prev_win
 
-	local diff = math.abs(current_row - prev_row)
+	local diff = math.abs(pos.s_row - prev_row)
 	local new_buffer = (prev_buf ~= current_buf)
 	local new_window = (prev_win ~= current_win)
 
@@ -288,14 +285,12 @@ function M.cursor_moved(opts, ignored_ft, steps_to_trigger)
 		steps_to_trigger = steps_to_trigger or 10
 
 		if diff > steps_to_trigger or new_buffer or new_window then
-			local cur_line = vim.api.nvim_get_current_line()
-			local cur_line_length = #cur_line
 			require("undo-glow").highlight_region(
 				vim.tbl_extend("force", opts, {
-					s_row = current_row - 1,
-					s_col = 0, -- use current_col if want to start from the cursor, i think full width is nicer
-					e_row = current_row - 1,
-					e_col = cur_line_length,
+					s_row = pos.s_row,
+					s_col = pos.s_col,
+					e_row = pos.e_row,
+					e_col = pos.e_col,
 					force_edge = type(opts.force_edge) == "nil" and true
 						or opts.force_edge,
 				})
@@ -303,7 +298,7 @@ function M.cursor_moved(opts, ignored_ft, steps_to_trigger)
 		end
 	end
 
-	vim.g.ug_prev_cursor = current_row
+	vim.g.ug_prev_cursor = pos.s_row
 	vim.g.ug_prev_buf = current_buf
 	vim.g.ug_prev_win = current_win
 
