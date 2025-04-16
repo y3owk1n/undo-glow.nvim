@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.10.2](https://github.com/y3owk1n/undo-glow.nvim/compare/v1.10.1...v1.10.2) (2025-04-16)
+
+
+### Bug Fixes
+
+* **utils:** add `get_current_cursor_row` utils for integrations ([#239](https://github.com/y3owk1n/undo-glow.nvim/issues/239)) ([8458574](https://github.com/y3owk1n/undo-glow.nvim/commit/8458574b2029418dedf2214481598761d68c6341))
+* **utils:** add `get_current_cursor_word` utils for integration purpose ([#237](https://github.com/y3owk1n/undo-glow.nvim/issues/237)) ([55205e3](https://github.com/y3owk1n/undo-glow.nvim/commit/55205e319813bb11df19462474e299c08c9ed7c6))
+
 ## [1.10.1](https://github.com/y3owk1n/undo-glow.nvim/compare/v1.10.0...v1.10.1) (2025-04-13)
 
 
