@@ -252,6 +252,22 @@ function M.get_current_cursor_word()
 	}
 end
 
+--- Determines the region based on the current row.
+---@return UndoGlow.RowCol
+function M.get_current_cursor_row()
+	local current_win = vim.api.nvim_get_current_win()
+	local cursor = vim.api.nvim_win_get_cursor(current_win)
+	local current_row = cursor[1] - 1
+	local line = vim.api.nvim_get_current_line()
+
+	return {
+		s_row = current_row,
+		s_col = 0,
+		e_row = current_row,
+		e_col = #line,
+	}
+end
+
 ---Animates or clears highlights after a duration based on the state configuration.
 ---If animations are enabled, it invokes the animation callback; otherwise, it defers the removal of the extmark.
 ---@param opts UndoGlow.HandleHighlight Opts from handle highlight.
