@@ -222,6 +222,36 @@ function M.get_current_search_match_region()
 	}
 end
 
+---Determines the region based on the current cursor word.
+---@return UndoGlow.RowCol|nil region A table containing s_row, s_col, e_row, and e_col for the cursor word region, or nil if not found.
+function M.get_current_cursor_word()
+	local word = vim.fn.expand("<cword>")
+	if word == "" then
+		return nil
+	end
+
+	local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+	local line = vim.api.nvim_get_current_line()
+
+	local word_start = line:find(word, 1, true)
+	while
+		word_start and (col < word_start - 1 or col >= word_start + #word - 1)
+	do
+		word_start = line:find(word, word_start + 1, true)
+	end
+
+	if not word_start then
+		return nil
+	end
+
+	return {
+		s_row = row - 1,
+		s_col = word_start - 1,
+		e_row = row - 1,
+		e_col = word_start + #word - 1,
+	}
+end
+
 ---Animates or clears highlights after a duration based on the state configuration.
 ---If animations are enabled, it invokes the animation callback; otherwise, it defers the removal of the extmark.
 ---@param opts UndoGlow.HandleHighlight Opts from handle highlight.
