@@ -46,8 +46,11 @@ function M.paste_below(opts)
 	vim.g.ug_ignore_cursor_moved = true
 	opts = require("undo-glow.utils").merge_command_opts("UgPaste", opts)
 	require("undo-glow").highlight_changes(opts)
+
 	local register = vim.v.register
-	pcall(vim.cmd, string.format('normal! "%sp"', register))
+	local count = vim.v.count > 0 and vim.v.count or 1
+
+	pcall(vim.cmd, string.format('normal! %d"%sp', count, register))
 end
 
 ---Paste above command with highlights.
@@ -57,8 +60,11 @@ function M.paste_above(opts)
 	vim.g.ug_ignore_cursor_moved = true
 	opts = require("undo-glow.utils").merge_command_opts("UgPaste", opts)
 	require("undo-glow").highlight_changes(opts)
+
 	local register = vim.v.register
-	pcall(vim.cmd, string.format('normal! "%sP"', register))
+	local count = vim.v.count > 0 and vim.v.count or 1
+
+	pcall(vim.cmd, string.format('normal! %d"%sP', count, register))
 end
 
 ---Highlight current line after a search is performed.
