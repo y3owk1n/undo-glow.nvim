@@ -1,4 +1,4 @@
-*undo-glow.nvim.txt*      For Neovim >= 0.10.0      Last change: 2025 April 16
+*undo-glow.nvim.txt*       For Neovim >= 0.10.0      Last change: 2025 June 03
 
 ==============================================================================
 Table of Contents                           *undo-glow.nvim-table-of-contents*
