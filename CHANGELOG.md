@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.3](https://github.com/y3owk1n/undo-glow.nvim/compare/v1.10.2...v1.10.3) (2025-06-03)
+
+
+### Bug Fixes
+
+* **commands.paste:** add support for count (fixes [#243](https://github.com/y3owk1n/undo-glow.nvim/issues/243)) ([#244](https://github.com/y3owk1n/undo-glow.nvim/issues/244)) ([3051c0b](https://github.com/y3owk1n/undo-glow.nvim/commit/3051c0bde5efbc598ac8125c1d5d38b0990a231d))
+
 ## [1.10.2](https://github.com/y3owk1n/undo-glow.nvim/compare/v1.10.1...v1.10.2) (2025-04-16)
 
 
