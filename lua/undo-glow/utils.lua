@@ -147,7 +147,7 @@ function M.get_search_region()
 	local offset = 1
 
 	while true do
-		local s, e = line_lower:find(pattern_lower, offset)
+		local s, e = line_lower:find(pattern_lower, offset, true)
 		if not s then
 			break
 		end
@@ -167,7 +167,7 @@ function M.get_search_region()
 	end
 
 	if not match_start or not match_end then
-		match_start, match_end = line_lower:find(pattern_lower)
+		match_start, match_end = line_lower:find(pattern_lower, 1, true)
 		if not match_start or not match_end then
 			return
 		end
