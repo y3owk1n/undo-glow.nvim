@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.4](https://github.com/y3owk1n/undo-glow.nvim/compare/v1.10.3...v1.10.4) (2025-07-15)
+
+
+### Bug Fixes
+
+* **utils:** escape search pattern to prevent "unfinished capture" error ([#247](https://github.com/y3owk1n/undo-glow.nvim/issues/247)) ([2c2ee58](https://github.com/y3owk1n/undo-glow.nvim/commit/2c2ee5819107eac8662ed693008fe47f91c3f8b1))
+
 ## [1.10.3](https://github.com/y3owk1n/undo-glow.nvim/compare/v1.10.2...v1.10.3) (2025-06-03)
 
 
