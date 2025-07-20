@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.10.4](https://github.com/y3owk1n/undo-glow.nvim/compare/v1.10.3...v1.10.4) (2025-07-20)
+
+
+### Bug Fixes
+
+* **docs:** switch doc gen from `pandocvim` to `vimcats` ([#249](https://github.com/y3owk1n/undo-glow.nvim/issues/249)) ([2bc5a41](https://github.com/y3owk1n/undo-glow.nvim/commit/2bc5a41dd5243006d755df2265275742d0763470))
+* remove whitespace ([#250](https://github.com/y3owk1n/undo-glow.nvim/issues/250)) ([62ae373](https://github.com/y3owk1n/undo-glow.nvim/commit/62ae37311fd71a2d5da32b1b30ca9882d7c7b86a))
+* **utils:** escape search pattern to prevent "unfinished capture" error ([#247](https://github.com/y3owk1n/undo-glow.nvim/issues/247)) ([2c2ee58](https://github.com/y3owk1n/undo-glow.nvim/commit/2c2ee5819107eac8662ed693008fe47f91c3f8b1))
+
 ## [1.10.3](https://github.com/y3owk1n/undo-glow.nvim/compare/v1.10.2...v1.10.3) (2025-06-03)
 
 
