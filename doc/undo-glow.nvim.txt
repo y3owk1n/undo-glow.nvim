@@ -1,1255 +1,476 @@
-*undo-glow.nvim.txt*       For Neovim >= 0.10.0      Last change: 2025 July 15
+*undo-glow.nvim.txt*
+
+Add animated glow/highlight effects to your neovim operation (undo, redo, yank, paste and more) with simple APIs.
+Alternatives to highlight-undo.nvim and tiny-glimmer.nvim.
 
 ==============================================================================
-Table of Contents                           *undo-glow.nvim-table-of-contents*
+Table of Contents                                           *undo-glow.nvim.toc*
 
-1. undo-glow.nvim                              |undo-glow.nvim-undo-glow.nvim|
-  - Features                          |undo-glow.nvim-undo-glow.nvim-features|
-  - Installation                  |undo-glow.nvim-undo-glow.nvim-installation|
-  - Configuration                |undo-glow.nvim-undo-glow.nvim-configuration|
-  - Quick Start                    |undo-glow.nvim-undo-glow.nvim-quick-start|
-  - API                                    |undo-glow.nvim-undo-glow.nvim-api|
-  - Hlgroups                          |undo-glow.nvim-undo-glow.nvim-hlgroups|
-  - Animations & Easings  |undo-glow.nvim-undo-glow.nvim-animations-&-easings|
-  - Contributing                  |undo-glow.nvim-undo-glow.nvim-contributing|
+API ······················································· |undo-glow.nvim.api|
+Configurations ········································· |undo-glow.nvim.config|
+Types ··················································· |undo-glow.nvim.types|
 
 ==============================================================================
-1. undo-glow.nvim                              *undo-glow.nvim-undo-glow.nvim*
+API                                                         *undo-glow.nvim.api*
 
-**undo-glow.nvim** is a Neovim plugin that adds a visual "glow" effect to your
-neovim operations. It highlights the exact region that’s changed, giving you
-immediate visual feedback on your edits. You can even enable glow for
-non-changing texts!
+M.setup                                               *undo-glow.nvim.api.setup*
+    Entry point to setup the plugin
 
-
-  [!note] This plugin does nothing upon installation—no keymaps or autocommands
-  are set by default. You’ll need to configure them yourself. See
-  |undo-glow.nvim-quick-start| and get started easily in no time!
-
-FEATURES                              *undo-glow.nvim-undo-glow.nvim-features*
-
-- **Visual Feedback For Changes:** Highlights the region affected by text changes commands (E.g. undo, redo, comment).
-- **Visual Feedback For Non-changes:** Highlights any region from an operation (E.g. search next, search prev, search star, yank).
-- **Simple API For Custom Highlights:** Simple API to create and attach your own commands that glows.
-- **Customizable Appearance:** Easily change the glow duration, highlight colors and animations.
-- **Zero Dependencies:** Uses Neovim’s native APIs for efficient real-time highlighting with zero dependencies.
-- **Window-Specific Highlighting:** Restrict highlights & animations to the active window when the same buffers are splitted, ensuring that only the current view displays the visual feedback.
-- **Seamless Integration**Harmoniously works with plugins like `mini.cursorword`, `Snacks.words` and `render-markdown.nvim` to provide a consistent and enhanced highlighting experience.
+    Type: ~
+        (fun(user_config?:UndoGlow.Config))
 
 
-INSTALLATION                      *undo-glow.nvim-undo-glow.nvim-installation*
+M.easing                                             *undo-glow.nvim.api.easing*
+    Easing functions that are builtin.
 
-Using lazy.nvim <https://github.com/folke/lazy.nvim>
-
->lua
-    -- undo-glow.lua
-    return {
-     "y3owk1n/undo-glow.nvim",
-     version = "*", -- remove this if you want to use the `main` branch
-     opts = {
-      -- your configuration comes here
-      -- or leave it empty to use the default settings
-      -- refer to the configuration section below
-     }
-    }
-<
-
-Ifyou are using other package managers you need to call `setup`
-
->lua
-    require("undo-glow").setup({
-      -- your configuration
-    })
-<
+    Type: ~
+        (table<UndoGlow.EasingString,fun(opts:UndoGlow.EasingOpts):integer>)
 
 
-CONFIGURATION                    *undo-glow.nvim-undo-glow.nvim-configuration*
+M.animate_start                               *undo-glow.nvim.api.animate_start*
+    Start animation function.
+    Repeatedly calls the provided animation function with a progress value between 0 and 1 until the animation completes.
+
+    Type: ~
+        (fun(opts:UndoGlow.Animation,animate_fn:fun(progress:number,end_animation:function):UndoGlow.HlColor|nil):nil)
 
 
-  [!important] Make sure to run `:checkhealth undo-glow` if something isn’t
-  working properly.
-**undo-glow.nvim** is highly configurable. And the default configurations are
-as below.
+M.undo({opts?})                                        *undo-glow.nvim.api.undo*
+    Undo command that highlights.
+
+    Parameters: ~
+        {opts?}  (UndoGlow.CommandOpts)  Optional command option
+
+    Returns: ~
+        (nil)
 
 
-DEFAULT OPTIONS ~
+M.redo({opts?})                                        *undo-glow.nvim.api.redo*
+    Redo command that highlights.
+
+    Parameters: ~
+        {opts?}  (UndoGlow.CommandOpts)  Optional command option
+
+    Returns: ~
+        (nil)
 
 
-  [!note] Animation is disabled by default, you can turn it on with
-  `animation.enabled = true`.
+M.yank({opts?})                                        *undo-glow.nvim.api.yank*
+    Yank command that highlights.
+    For autocmd usage only.
 
-  [!warning] Note that `animation.window_scope` is using neovim experimental API,
-  both stable and nightly are using different API for it to work.
->lua
-    ---Animation type aliases.
-    ---@alias UndoGlow.AnimationTypeString "fade" | "fade_reverse" | "blink" | "pulse" | "jitter" | "spring" | "desaturate" | "strobe" | "zoom" | "rainbow" | "slide"
-    ---@alias UndoGlow.AnimationTypeFn fun(opts: UndoGlow.Animation)
-    
-    ---Easing function aliases.
-    ---@alias UndoGlow.EasingString "linear" | "in_quad" | "out_quad" | "in_out_quad" | "out_in_quad" | "in_cubic" | "out_cubic" | "in_out_cubic" | "out_in_cubic" | "in_quart" | "out_quart" | "in_out_quart" | "out_in_quart" | "in_quint" | "out_quint" | "in_out_quint" | "out_in_quint" | "in_sine" | "out_sine" | "in_out_sine" | "out_in_sine" | "in_expo" | "out_expo" | "in_out_expo" | "out_in_expo" | "in_circ" | "out_circ" | "in_out_circ" | "out_in_circ" | "in_elastic" | "out_elastic" | "in_out_elastic" | "out_in_elastic" | "in_back" | "out_back" | "in_out_back" | "out_in_back" | "in_bounce" | "out_bounce" | "in_out_bounce" | "out_in_bounce"
-    ---@alias UndoGlow.EasingFn fun(opts: UndoGlow.EasingOpts): integer
-    
-    ---Configuration options for undo-glow.
-    ---@class UndoGlow.Config
-    ---@field animation? UndoGlow.Config.Animation Configuration for animations.
-    ---@field highlights? table<"undo" | "redo" | "yank" | "paste" | "search" | "comment" | "cursor", { hl: string, hl_color: UndoGlow.HlColor }> Highlight configurations for various actions.
-    ---@field priority? integer Extmark priority to render the highlight (Default 4096)
-    
-    ---Animation configuration.
-    ---@class UndoGlow.Config.Animation
-    ---@field enabled? boolean Whether animation is enabled.
-    ---@field duration? number Duration of the highlight animation in milliseconds.
-    ---@field animation_type? UndoGlow.AnimationTypeString|UndoGlow.AnimationTypeFn Animation type (a string key or a custom function).
-    ---@field easing? UndoGlow.EasingString|UndoGlow.EasingFn Easing function (a string key or a custom function).
-    ---@field fps? number Frames per second for the animation.
-    ---@field window_scoped? boolean If enabled, the highlight effect is constrained to the current active window, even if the buffer is shared across splits.
-    
-    ---Options passed to easing functions.
-    ---@class UndoGlow.EasingOpts
-    ---@field time number Elapsed time (e.g. a progress value between 0 and 1).
-    ---@field begin? number Optional start value.
-    ---@field change? number Optional change value (ending minus beginning).
-    ---@field duration? number Optional total duration.
-    ---@field amplitude? number Optional amplitude (for elastic easing).
-    ---@field period? number Optional period (for elastic easing).
-    ---@field overshoot? number Optional overshoot (for back easing).
-    
-    ---Highlight color information.
-    ---@class UndoGlow.HlColor
-    ---@field bg string Background color as a hex string.
-    ---@field fg? string Optional foreground color as a hex string.
-    
-    {
-     animation = {
-      enabled = false, -- whether to turn on or off for animation
-      duration = 100, -- in ms
-      animation_type = "fade", -- default to "fade", see more at animation section on how to change or create your own
-      fps = 120, -- change the fps, normally either 60 / 120, but it can be whatever number
-      easing = "in_out_cubic", -- see more at easing section on how to change and create your own
-      window_scoped = false, -- this uses an experimental extmark options (it might not work depends on your version of neovim)
-     },
-     highlights = { -- Any keys other than these defaults will be ignored and omitted
-      undo = {
-       hl = "UgUndo", -- This will not set new hlgroup, if it's not "UgUndo", we will try to grab the colors of specified hlgroup and apply to "UgUndo"
-       hl_color = { bg = "#FF5555" }, -- Ugly red color
-      },
-      redo = {
-       hl = "UgRedo", -- Same as above
-       hl_color = { bg = "#50FA7B" }, -- Ugly green color
-      },
-      yank = {
-       hl = "UgYank", -- Same as above
-       hl_color = { bg = "#F1FA8C" }, -- Ugly yellow color
-      },
-      paste = {
-       hl = "UgPaste", -- Same as above
-       hl_color = { bg = "#8BE9FD" }, -- Ugly cyan color
-      },
-      search = {
-       hl = "UgSearch", -- Same as above
-       hl_color = { bg = "#BD93F9" }, -- Ugly purple color
-      },
-      comment = {
-       hl = "UgComment", -- Same as above
-       hl_color = { bg = "#FFB86C" }, -- Ugly purple color
-      },
-      cursor = {
-       hl = "UgCursor", -- Same as above
-       hl_color = { bg = "#FF79C6" }, -- Ugly magenta color
-      },
-     },
-     priority = 4096, -- so that it will work with render-markdown.nvim
-    }
-<
+    Parameters: ~
+        {opts?}  (UndoGlow.CommandOpts)  Optional command option
+
+    Returns: ~
+        (nil)
 
 
-QUICK START                        *undo-glow.nvim-undo-glow.nvim-quick-start*
+M.paste_below({opts?})                          *undo-glow.nvim.api.paste_below*
+    Paste below command with highlights.
+
+    Parameters: ~
+        {opts?}  (UndoGlow.CommandOpts)  Optional command option
+
+    Returns: ~
+        (nil)
 
 
-  [!note] This is the exactly configuration that author is dailydriving.
-See the example below for how to configure **undo-glow.nvim**.
+M.paste_above({opts?})                          *undo-glow.nvim.api.paste_above*
+    Paste above command with highlights.
 
->lua
-    {
-     "y3owk1n/undo-glow.nvim",
-     event = { "VeryLazy" },
-     ---@type UndoGlow.Config
-     opts = {
-      animation = {
-       enabled = true,
-       duration = 300,
-       animtion_type = "zoom",
-       window_scoped = true,
-      },
-      highlights = {
-       undo = {
-        hl_color = { bg = "#693232" }, -- Dark muted red
-       },
-       redo = {
-        hl_color = { bg = "#2F4640" }, -- Dark muted green
-       },
-       yank = {
-        hl_color = { bg = "#7A683A" }, -- Dark muted yellow
-       },
-       paste = {
-        hl_color = { bg = "#325B5B" }, -- Dark muted cyan
-       },
-       search = {
-        hl_color = { bg = "#5C475C" }, -- Dark muted purple
-       },
-       comment = {
-        hl_color = { bg = "#7A5A3D" }, -- Dark muted orange
-       },
-       cursor = {
-        hl_color = { bg = "#793D54" }, -- Dark muted pink
-       },
-      },
-      priority = 2048 * 3,
-     },
-     keys = {
-      {
-       "u",
-       function()
-        require("undo-glow").undo()
-       end,
-       mode = "n",
-       desc = "Undo with highlight",
-       noremap = true,
-      },
-      {
-       "U",
-       function()
-        require("undo-glow").redo()
-       end,
-       mode = "n",
-       desc = "Redo with highlight",
-       noremap = true,
-      },
-      {
-       "p",
-       function()
-        require("undo-glow").paste_below()
-       end,
-       mode = "n",
-       desc = "Paste below with highlight",
-       noremap = true,
-      },
-      {
-       "P",
-       function()
-        require("undo-glow").paste_above()
-       end,
-       mode = "n",
-       desc = "Paste above with highlight",
-       noremap = true,
-      },
-      {
-       "n",
-       function()
-        require("undo-glow").search_next({
-         animation = {
-          animation_type = "strobe",
-         },
-        })
-       end,
-       mode = "n",
-       desc = "Search next with highlight",
-       noremap = true,
-      },
-      {
-       "N",
-       function()
-        require("undo-glow").search_prev({
-         animation = {
-          animation_type = "strobe",
-         },
-        })
-       end,
-       mode = "n",
-       desc = "Search prev with highlight",
-       noremap = true,
-      },
-      {
-       "*",
-       function()
-        require("undo-glow").search_star({
-         animation = {
-          animation_type = "strobe",
-         },
-        })
-       end,
-       mode = "n",
-       desc = "Search star with highlight",
-       noremap = true,
-      },
-      {
-       "#",
-       function()
-        require("undo-glow").search_hash({
-         animation = {
-          animation_type = "strobe",
-         },
-        })
-       end,
-       mode = "n",
-       desc = "Search hash with highlight",
-       noremap = true,
-      },
-      {
-       "gc",
-       function()
-        -- This is an implementation to preserve the cursor position
-        local pos = vim.fn.getpos(".")
-        vim.schedule(function()
-         vim.fn.setpos(".", pos)
-        end)
-        return require("undo-glow").comment()
-       end,
-       mode = { "n", "x" },
-       desc = "Toggle comment with highlight",
-       expr = true,
-       noremap = true,
-      },
-      {
-       "gc",
-       function()
-        require("undo-glow").comment_textobject()
-       end,
-       mode = "o",
-       desc = "Comment textobject with highlight",
-       noremap = true,
-      },
-      {
-       "gcc",
-       function()
-        return require("undo-glow").comment_line()
-       end,
-       mode = "n",
-       desc = "Toggle comment line with highlight",
-       expr = true,
-       noremap = true,
-      },
-     },
-     init = function()
-      vim.api.nvim_create_autocmd("TextYankPost", {
-       desc = "Highlight when yanking (copying) text",
-       callback = function()
-        require("undo-glow").yank()
-       end,
-      })
-    
-      -- This only handles neovim instance and do not highlight when switching panes in tmux
-      vim.api.nvim_create_autocmd("CursorMoved", {
-       desc = "Highlight when cursor moved significantly",
-       callback = function()
-        require("undo-glow").cursor_moved({
-         animation = {
-          animation_type = "slide",
-         },
-        })
-       end,
-      })
-    
-      -- This will handle highlights when focus gained, including switching panes in tmux
-      vim.api.nvim_create_autocmd("FocusGained", {
-       desc = "Highlight when focus gained",
-       callback = function()
-        ---@type UndoGlow.CommandOpts
-        local opts = {
-         animation = {
-          animation_type = "slide",
-         },
-        }
-    
-        opts = require("undo-glow.utils").merge_command_opts("UgCursor", opts)
-        local pos = require("undo-glow.utils").get_current_cursor_row()
-    
-        require("undo-glow").highlight_region(vim.tbl_extend("force", opts, {
-         s_row = pos.s_row,
-         s_col = pos.s_col,
-         e_row = pos.e_row,
-         e_col = pos.e_col,
-         force_edge = opts.force_edge == nil and true or opts.force_edge,
-        }))
-       end,
-      })
-    
-      vim.api.nvim_create_autocmd("CmdLineLeave", {
-       pattern = { "/", "?" },
-       desc = "Highlight when search cmdline leave",
-       callback = function()
-        require("undo-glow").search_cmd({
-         animation = {
-          animation_type = "fade",
-         },
-        })
-       end,
-      })
-     end,
-    },
+    Parameters: ~
+        {opts?}  (UndoGlow.CommandOpts)  Optional command option
+
+    Returns: ~
+        (nil)
+
+
+M.search_cmd({opts?})                            *undo-glow.nvim.api.search_cmd*
+    Highlight current line after a search is performed.
+    For autocmd usage only.
+
+    Parameters: ~
+        {opts?}  (UndoGlow.CommandOpts)  Optional command option
+
+    Returns: ~
+        (nil)
+
+
+M.search_next({opts?})                          *undo-glow.nvim.api.search_next*
+    Search next command with highlights.
+
+    Parameters: ~
+        {opts?}  (UndoGlow.CommandOpts)  Optional command option
+
+    Returns: ~
+        (nil)
+
+
+M.search_prev({opts?})                          *undo-glow.nvim.api.search_prev*
+    Search prev command with highlights.
+
+    Parameters: ~
+        {opts?}  (UndoGlow.CommandOpts)  Optional command option
+
+    Returns: ~
+        (nil)
+
+
+M.search_star({opts?})                          *undo-glow.nvim.api.search_star*
+    Search star (*) command with highlights.
+
+    Parameters: ~
+        {opts?}  (UndoGlow.CommandOpts)  Optional command option
+
+    Returns: ~
+        (nil)
+
+
+M.search_hash({opts?})                          *undo-glow.nvim.api.search_hash*
+    Search star (#) command with highlights.
+
+    Parameters: ~
+        {opts?}  (UndoGlow.CommandOpts)  Optional command option
+
+    Returns: ~
+        (nil)
+
+
+M.comment({opts?})                                  *undo-glow.nvim.api.comment*
+    Comment with `gc` in `n` and `x` mode with highlights.
+    Requires `expr` = true in ``vim.keymap.set`
+
+    Parameters: ~
+        {opts?}  (UndoGlow.CommandOpts)  Optional command option
+
+    Returns: ~
+        (string|nil)  String for expression and nil for non-expression
+
+
+M.comment_textobject({opts?})            *undo-glow.nvim.api.comment_textobject*
+    Comment with `gc` in `o` mode. E.g. gcip, gcap, etc with highlights.
+
+    Parameters: ~
+        {opts?}  (UndoGlow.CommandOpts)  Optional command option
+
+    Returns: ~
+        (nil)
+
+
+M.comment_line({opts?})                        *undo-glow.nvim.api.comment_line*
+    Comment lines with `gcc` with highlights.
+    Requires `expr` = true in ``vim.keymap.set`
+
+    Parameters: ~
+        {opts?}  (UndoGlow.CommandOpts)  Optional command option
+
+    Returns: ~
+        (string)  String for expression
+
+
+M.cursor_moved({steps_to_trigger?})            *undo-glow.nvim.api.cursor_moved*
+
+    Parameters: ~
+        {steps_to_trigger?}  (number)  Optional number of steps to trigger
+
+    Returns: ~
+        (nil)
+
+
+M.highlight_changes({opts?})              *undo-glow.nvim.api.highlight_changes*
+    Core API to highlight changes in the current buffer.
+
+    Parameters: ~
+        {opts?}  (UndoGlow.HighlightChanges|UndoGlow.CommandOpts)
+
+    Returns: ~
+        (nil)
+
+
+M.highlight_region({opts})                 *undo-glow.nvim.api.highlight_region*
+    Core API to highlight a specified region in the current buffer.
+
+    Parameters: ~
+        {opts}  (UndoGlow.HighlightRegion)
+
+    Returns: ~
+        (nil)
+
+
+==============================================================================
+Configurations                                           *undo-glow.nvim.config*
+
+
+Example Configuration:
+
+>
+{
+	animation = {
+		enabled = false,
+		duration = 100,
+		animation_type = "fade",
+		fps = 120,
+		easing = "in_out_cubic",
+		window_scoped = false,
+	},
+	highlights = {
+		undo = {
+			hl = "UgUndo",
+			hl_color = require("undo-glow.color").default_undo,
+		},
+		redo = {
+			hl = "UgRedo",
+			hl_color = require("undo-glow.color").default_redo,
+		},
+		yank = {
+			hl = "UgYank",
+			hl_color = require("undo-glow.color").default_yank,
+		},
+		paste = {
+			hl = "UgPaste",
+			hl_color = require("undo-glow.color").default_paste,
+		},
+		search = {
+			hl = "UgSearch",
+			hl_color = require("undo-glow.color").default_search,
+		},
+		comment = {
+			hl = "UgComment",
+			hl_color = require("undo-glow.color").default_comment,
+		},
+		cursor = {
+			hl = "UgCursor",
+			hl_color = require("undo-glow.color").default_cursor,
+		},
+	},
+	priority = 4096, -- so that it will work with render-markdown.nvim
+}
 <
 
 
-API                                        *undo-glow.nvim-undo-glow.nvim-api*
+M.config                                          *undo-glow.nvim.config.config*
+    User-provided config, merged with defaults
+
+    Type: ~
+        (UndoGlow.Config)
+
+
+==============================================================================
+Types                                                     *undo-glow.nvim.types*
+
+UndoGlow.AnimationTypeString *undo-glow.nvim.types.UndoGlow.AnimationTypeString*
+    Animation type aliases.
+
+    Variants: ~
+        ("fade")
+        ("fade_reverse")
+        ("blink")
+        ("pulse")
+        ("jitter")
+        ("spring")
+        ("desaturate")
+        ("strobe")
+        ("zoom")
+        ("rainbow")
+        ("slide")
+
+
+UndoGlow.AnimationTypeFn         *undo-glow.nvim.types.UndoGlow.AnimationTypeFn*
+
+    Type: ~
+        fun(opts:UndoGlow.Animation)
+
+
+UndoGlow.EasingString               *undo-glow.nvim.types.UndoGlow.EasingString*
+    Easing function aliases.
+
+    Variants: ~
+        ("linear")
+        ("in_quad")
+        ("out_quad")
+        ("in_out_quad")
+        ("out_in_quad")
+        ("in_cubic")
+        ("out_cubic")
+        ("in_out_cubic")
+        ("out_in_cubic")
+        ("in_quart")
+        ("out_quart")
+        ("in_out_quart")
+        ("out_in_quart")
+        ("in_quint")
+        ("out_quint")
+        ("in_out_quint")
+        ("out_in_quint")
+        ("in_sine")
+        ("out_sine")
+        ("in_out_sine")
+        ("out_in_sine")
+        ("in_expo")
+        ("out_expo")
+        ("in_out_expo")
+        ("out_in_expo")
+        ("in_circ")
+        ("out_circ")
+        ("in_out_circ")
+        ("out_in_circ")
+        ("in_elastic")
+        ("out_elastic")
+        ("in_out_elastic")
+        ("out_in_elastic")
+        ("in_back")
+        ("out_back")
+        ("in_out_back")
+        ("out_in_back")
+        ("in_bounce")
+        ("out_bounce")
+        ("in_out_bounce")
+        ("out_in_bounce")
 
-**undo-glow.nvim** comes with simple API and builtin commands for you to hook
-into your config or DIY.
 
-
-COMMANDS ~
+UndoGlow.EasingFn                       *undo-glow.nvim.types.UndoGlow.EasingFn*
+
+    Type: ~
+        fun(opts:UndoGlow.EasingOpts):integer
+
+
+UndoGlow.Config                           *undo-glow.nvim.types.UndoGlow.Config*
+    Configuration options for undo-glow.
+
+    Fields: ~
+        {animation?}   (UndoGlow.Config.Animation)  Configuration for animations.
+        {highlights?}  (table)
+
+
+UndoGlow.EasingOpts                   *undo-glow.nvim.types.UndoGlow.EasingOpts*
+    Options passed to easing functions.
+
+    Fields: ~
+        {time}        (number)  Elapsed time (e.g. a progress value between 0 and 1).
+        {begin?}      (number)  Optional start value.
+        {change?}     (number)  Optional change value (ending minus beginning).
+        {duration?}   (number)  Optional total duration.
+        {amplitude?}  (number)  Optional amplitude (for elastic easing).
+        {period?}     (number)  Optional period (for elastic easing).
+        {overshoot?}  (number)  Optional overshoot (for back easing).
 
 
-  [!note] These are more like a library of functions that built by me. You can
-  easily copy and paste and add your own logic, like integrate with your existing
-  plugins.
-Each builtin commands takes in optional `opts` take allows to configure
-**color** and **animation** type per command. And the opts type as below:
+UndoGlow.Config.Animation       *undo-glow.nvim.types.UndoGlow.Config.Animation*
+    Animation configuration.
 
+    Fields: ~
+        {enabled?}         (boolean)                                                Whether animation is enabled.
+        {duration?}        (number)                                                 Duration of the highlight animation in milliseconds.
+        {animation_type?}  (UndoGlow.AnimationTypeString|UndoGlow.AnimationTypeFn)  Animation type (a string key or a custom function).
+        {easing?}          (UndoGlow.EasingString|UndoGlow.EasingFn)                Easing function (a string key or a custom function).
+        {fps?}             (number)                                                 Frames per second for the animation.
+        {window_scoped?}   (boolean)                                                If enabled, the highlight effect is constrained to the current active window, even if the buffer is shared across splits.
 
-  [!note] Each animation related options can be configured separately. If you
-  don’t, it will fallback to the default from your configuration.
->lua
-    ---Command options for triggering highlights.
-    ---@class UndoGlow.CommandOpts
-    ---@field hlgroup? string Optional highlight group to use.
-    ---@field animation? UndoGlow.Config.Animation Optional animation configuration.
-    ---@field force_edge? boolean Optional flag to force edge highlighting.
-    
-    ---Animation configuration.
-    ---@class UndoGlow.Config.Animation
-    ---@field enabled? boolean Whether animation is enabled.
-    ---@field duration? number Duration of the highlight animation in milliseconds.
-    ---@field animation_type? UndoGlow.AnimationTypeString|UndoGlow.AnimationTypeFn Animation type (a string key or a custom function).
-    ---@field easing? UndoGlow.EasingString|UndoGlow.EasingFn Easing function (a string key or a custom function).
-    ---@field fps? number Frames per second for the animation.
-    ---@field window_scoped? boolean If enabled, the highlight effect is constrained to the current active window, even if the buffer is shared across splits.
-<
-
-
-UNDO HIGHLIGHTS
-
->lua
-    ---Undo command that highlights.
-    ---@param opts? UndoGlow.CommandOpts Optional command option
-    ---@return nil
-    require("undo-glow").undo(opts)
-<
-
-Usage Example ~
-
->lua
-    vim.keymap.set("n", "u", require("undo-glow").undo, { noremap = true, desc = "Undo with highlight" })
-<
-
-
-REDO HIGHLIGHTS
-
->lua
-    ---Redo command that highlights.
-    ---@param opts? UndoGlow.CommandOpts Optional command option
-    ---@return nil
-    require("undo-glow").redo(opts)
-<
-
-Usage Example ~
-
->lua
-    vim.keymap.set("n", "<C-r>", require("undo-glow").redo, { noremap = true, desc = "Redo with highlight" })
-<
-
-
-YANK HIGHLIGHTS
-
-
-  [!WARNING] This is not a command and it is designed to be used in autocmd
-  callback.
->lua
-    ---Yank command that highlights.
-    ---For autocmd usage only.
-    ---@param opts? UndoGlow.CommandOpts Optional command option
-    ---@return nil
-    require("undo-glow").yank(opts)
-<
-
-Usage Example ~
-
->lua
-    vim.api.nvim_create_autocmd("TextYankPost", {
-     desc = "Highlight when yanking (copying) text",
-     callback = function()
-      require("undo-glow").yank()
-     end,
-    })
-<
-
-
-PASTE HIGHLIGHTS
-
->lua
-    ---Paste below command with highlights.
-    ---@param opts? UndoGlow.CommandOpts Optional command option
-    ---@return nil
-    require("undo-glow").paste_below(opts)
-    
-    ---Paste above command with highlights.
-    ---@param opts? UndoGlow.CommandOpts Optional command option
-    ---@return nil
-    require("undo-glow").paste_above(opts)
-<
-
-Usage Example ~
-
->lua
-    vim.keymap.set("n", "p", require("undo-glow").paste_below, { noremap = true, desc = "Paste below with highlight" })
-    vim.keymap.set("n", "P", require("undo-glow").paste_above, { noremap = true, desc = "Paste above with highlight" })
-<
-
-
-SEARCH HIGHLIGHTS
-
->lua
-    ---Highlight current line after a search is performed.
-    ---For autocmd usage only.
-    ---@param opts? UndoGlow.CommandOpts Optional command option
-    ---@return nil
-    require("undo-glow").search_cmd(opts)
-    
-    ---Search next command with highlights.
-    ---@param opts? UndoGlow.CommandOpts Optional command option
-    ---@return nil
-    require("undo-glow").search_next(opts)
-    
-    ---Search prev command with highlights.
-    ---@param opts? UndoGlow.CommandOpts Optional command option
-    ---@return nil
-    require("undo-glow").search_prev(opts)
-    
-    ---Search star (*) command with highlights.
-    ---@param opts? UndoGlow.CommandOpts Optional command option
-    ---@return nil
-    require("undo-glow").search_star(opts)
-    
-    ---Search star (#) command with highlights.
-    ---@param opts? UndoGlow.CommandOpts Optional command option
-    ---@return nil
-    require("undo-glow").search_hash(opts)
-<
-
-Usage Example ~
-
->lua
-    vim.keymap.set("n", "n", require("undo-glow").search_next, { noremap = true, desc = "Search next with highlight" })
-    vim.keymap.set("n", "N", require("undo-glow").search_prev, { noremap = true, desc = "Search previous with highlight" })
-    vim.keymap.set("n", "*", require("undo-glow").search_star, { noremap = true, desc = "Search * with highlight" })
-    vim.keymap.set("n", "#", require("undo-glow").search_hash, { noremap = true, desc = "Search # with highlight" })
-    
-    vim.api.nvim_create_autocmd("CmdLineLeave", {
-     pattern = { "/", "?" },
-     desc = "Highlight when search cmdline leave",
-     callback = function()
-      require("undo-glow").search_cmd({
-       animation = {
-        animation_type = "fade",
-       },
-      })
-     end,
-    })
-<
-
-
-COMMENT HIGHLIGHTS
-
->lua
-    ---Comment with `gc` in `n` and `x` mode with highlights.
-    ---Requires `expr` = true in ``vim.keymap.set`
-    ---@param opts? UndoGlow.CommandOpts Optional command option
-    ---@return string|nil expression String for expression and nil for non-expression
-    require("undo-glow").comment(opts)
-    
-    ---Comment with `gc` in `o` mode. E.g. gcip, gcap, etc with highlights.
-    ---@param opts? UndoGlow.CommandOpts Optional command option
-    ---@return nil
-    require("undo-glow").comment_textobject(opts)
-    
-    ---Comment lines with `gcc` with highlights.
-    ---Requires `expr` = true in ``vim.keymap.set`
-    ---@param opts? UndoGlow.CommandOpts Optional command option
-    ---@return string expression String for expression
-    require("undo-glow").comment_line(opts) -- Comment lines with `gcc`.
-<
-
-Usage Example ~
-
->lua
-    vim.keymap.set({ "n", "x" }, "gc", require("undo-glow").comment, { expr = true, noremap = true, desc = "Toggle comment with highlight" })
-    vim.keymap.set("o", "gc", require("undo-glow").comment_text_object, { noremap = true, desc = "Comment textobject with highlight" })
-    vim.keymap.set("n", "gcc", require("undo-glow").comment_line, { expr = true, noremap = true, desc = "Toggle comment line with highlight" })
-<
-
-
-SIGNIFICANT CURSOR MOVED HIGHLIGHTS
-
-Best effort to imitate beacon.nvim
-<https://github.com/DanilaMihailov/beacon.nvim> functionality. Highlights when:
-
-- Cursor moved more than 10 steps away
-- On buffer load
-- Split view supported
-- Only in normal mode (I think it make sense)
-
-For now the following are ignored:
-
-- Preview windows
-- Floating windows
-- Buffers that are not text buffers
-- Filetypes that are passed in to be ignored
-
-
-  [!NOTE] Window scoped highlight is disabled by default. To avoid splitted view
-  with same buffer sharing the same highlight, you need to either set
-  `animation.window_scoped = true` in your config, or pass `{ animation = {
-  window_scoped = tue } }` to the cursor_moved opts.
-
-  [!WARNING] This is not a command and it is designed to be used in autocmd
-  callback.
-If you would like to avoid `cursor_changed` to highlight in other places of
-your code, you can add `vim.g.ug_ignore_cursor_moved = true` to any of your
-running function, and it will temporarily set to ignore the cursor_moved
-highlights.
-
->lua
-    ---Cursor move command that highlights.
-    ---For autocmd usage only.
-    ---@param opts? UndoGlow.CommandOpts Optional command option
-    ---@param ignored_ft? table<string> Optional filetypes to ignore
-    ---@param steps_to_trigger? number Optional number of steps to trigger
-    ---@return nil
-    require("undo-glow").cursor_moved(opts, ignored_ft, steps_to_trigger)
-<
-
-Usage Example ~
-
->lua
-    vim.api.nvim_create_autocmd("CursorMoved", {
-     desc = "Highlight when cursor moved significantly",
-     callback = function()
-      require("undo-glow").cursor_moved()
-     end,
-    })
-    
-    -- Ignore certain filetype
-    vim.api.nvim_create_autocmd("CursorMoved", {
-     desc = "Highlight when cursor moved significantly",
-     callback = function()
-      require("undo-glow").cursor_moved(nil, { "mason", "lazy", ... })
-     end,
-    })
-    
-    -- Change steps to trigger the `beacon` highlights
-    vim.api.nvim_create_autocmd("CursorMoved", {
-     desc = "Highlight when cursor moved significantly",
-     callback = function()
-      require("undo-glow").cursor_moved(nil, nil, 5)
-     end,
-    })
-<
-
-
-DO-IT-YOURSELF APIS ~
-
-**undo-glow.nvim** also provides APIs to create your own highlights that are
-not supported out of the box. Under the hood, all the builtin commands are
-created with these APIs.
-
-
-HIGHLIGHT TEXT CHANGES
-
->lua
-    ---Options for highlight changes API.
-    ---@class UndoGlow.HighlightChanges
-    ---@field hlgroup? string Optional highlight group to use.
-    ---@field animation? UndoGlow.Config.Animation Optional animation configuration.
-    ---@field force_edge? boolean Optional flag to force edge highlighting.
-    
-    ---Animation configuration.
-    ---@class UndoGlow.Config.Animation
-    ---@field enabled? boolean Whether animation is enabled.
-    ---@field duration? number Duration of the highlight animation in milliseconds.
-    ---@field animation_type? UndoGlow.AnimationTypeString|UndoGlow.AnimationTypeFn Animation type (a string key or a custom function).
-    ---@field easing? UndoGlow.EasingString|UndoGlow.EasingFn Easing function (a string key or a custom function).
-    ---@field fps? number Frames per second for the animation.
-    ---@field window_scoped? boolean If enabled, the highlight effect is constrained to the current active window, even if the buffer is shared across splits.
-    
-    ---Core API to highlight changes in the current buffer.
-    ---@param opts? UndoGlow.HighlightChanges|UndoGlow.CommandOpts
-    ---@return nil
-    require("undo-glow").highlight_changes(opts)
-<
-
-
-USAGE
-
->lua
-    function some_action()
-     require("undo-glow").highlight_changes({
-      hlgroup = "hlgroup",
-     })
-     do_something_here() -- some action that will cause text changes
-    end
-    
-    --- then you can use it to bind to anywhere just like before. Undo and redo command are fundamentally doing the same thing.
-    vim.keymap.set("n", "key_that_you_like", some_action, { silent = true })
-<
-
-Example with undo command ~
-
->lua
-    ---Undo command that highlights.
-    ---@param opts? UndoGlow.CommandOpts Optional command option
-    ---@return nil
-    function M.undo(opts)
-     opts = require("undo-glow.utils").merge_command_opts("UgUndo", opts)
-     require("undo-glow").highlight_changes(opts)
-     pcall(vim.cmd, "undo")
-    end
-<
-
-
-HIGHLIGHT ANY REGION OF YOUR CHOICE
-
->lua
-    ---Options for highlight region API.
-    ---@class UndoGlow.HighlightRegion
-    ---@field hlgroup? string Optional highlight group to use.
-    ---@field animation? UndoGlow.Config.Animation Optional animation configuration.
-    ---@field force_edge? boolean Optional flag to force edge highlighting.
-    ---@field s_row integer Start row
-    ---@field s_col integer Start column
-    ---@field e_row integer End row
-    ---@field e_col integer End column
-    
-    ---Animation configuration.
-    ---@class UndoGlow.Config.Animation
-    ---@field enabled? boolean Whether animation is enabled.
-    ---@field duration? number Duration of the highlight animation in milliseconds.
-    ---@field animation_type? UndoGlow.AnimationTypeString|UndoGlow.AnimationTypeFn Animation type (a string key or a custom function).
-    ---@field easing? UndoGlow.EasingString|UndoGlow.EasingFn Easing function (a string key or a custom function).
-    ---@field fps? number Frames per second for the animation.
-    ---@field window_scoped? boolean If enabled, the highlight effect is constrained to the current active window, even if the buffer is shared across splits.
-    
-    ---Core API to highlight a specified region in the current buffer.
-    ---@param opts UndoGlow.HighlightRegion
-    ---@return nil
-    require("undo-glow").highlight_region(opts)
-<
-
-
-USAGE EXAMPLE
-
->lua
-    function some_action()
-     -- Do some calculation here and get the region coordinates that you want to highlight as below
-     -- s_row integer
-     -- s_col integer
-     -- e_row integer
-     -- e_col integer
-     local region = get_region() --- This is a sample function
-    
-     -- And then pass those coordinates to the highlight_region function
-     require("undo-glow").highlight_region({
-      hlgroup = "hlgroup",
-      s_row = region.s_row,
-      s_col = region.s_col,
-      e_row = region.e_row,
-      e_col = region.e_col,
-     })
-    end
-    
-    --- then you can use it to bind to anywhere just like before. Undo and redo command are fundamentally doing the same thing.
-    vim.keymap.set("n", "key_that_you_like", some_action, { silent = true })
-<
-
-Example with yank ~
-
->lua
-    ---Yank command that highlights.
-    ---For autocmd usage only.
-    ---@param opts? UndoGlow.CommandOpts Optional command option
-    ---@return nil
-    function M.yank(opts)
-     opts = require("undo-glow.utils").merge_command_opts("UgYank", opts)
-    
-     local pos = vim.fn.getpos("'[")
-     local pos2 = vim.fn.getpos("']")
-    
-     require("undo-glow").highlight_region(vim.tbl_extend("force", opts, {
-      s_row = pos[2] - 1,
-      s_col = pos[3] - 1,
-      e_row = pos2[2] - 1,
-      e_col = pos2[3],
-     }))
-    end
-<
-
-
-LAZY MODE: CREATING AN AUTOCMD THAT WILL HIGHLIGHT ANYTHING THAT CHANGED ~
-
-
-  [!WARNING] I personally don’t use this in my config, but it should work just
-  fine. Use at your own risk!
->lua
-    -- Also add `BufReadPost` so that it will also highlight for first changes
-    vim.api.nvim_create_autocmd({ "BufReadPost", "TextChanged" }, {
-     pattern = "*",
-     callback = function()
-      -- Either provide a list of ignored filetypes
-      local ignored_filetypes = { "mason", "snacks_picker_list", "lazy" }
-      if vim.tbl_contains(ignored_filetypes, vim.bo.filetype) then
-       return
-      end
-    
-      -- or just use buftype to ignore all other type
-      if vim.bo.buftype ~= "" then
-       return
-      end
-    
-      -- then run undo-glow with your desired hlgroup
-      require("undo-glow").highlight_changes({
-       hlgroup = "UgUndo",
-      })
-     end,
-    })
-<
-
-
-RECIPES ~
-
-With all the API that **undo-glow.nvim** provides, you can easily integrate
-with other plugins or creating some nice highlights that are not supported by
-the plugin. Check out the recipes <recipes.md> page for more details.
-
-
-HLGROUPS                              *undo-glow.nvim-undo-glow.nvim-hlgroups*
-
-
-EXISTING HLGROUPS ~
-
-The default colors are fairly ugly in my opinion, but they are sharp enough for
-any themes. You should change the color to whatever you like.
-
-  Opts Key   Default Group   Color Code (Background)
-  ---------- --------------- -------------------------
-  undo       UgUndo          #FF5555
-  redo       UguRedo         #50FA7B
-  yank       UgYank          #F1FA8C
-  paste      UgPaste         #8BE9FD
-  search     UgSearch        #BD93F9
-  comment    UgComment       #FFB86C
-  cursor     UgCursor        #FF79C6
-
-OVERIDING HLGROUPS AND COLORS (INTERNALLY) ~
-
-You can easily override the colors from configuration `opts`. And the types are
-as below:
-
->lua
-    ---@field highlights? table<"undo" | "redo" | "yank" | "paste" | "search" | "comment", { hl: string, hl_color: UndoGlow.HlColor }>
-    
-    ---Highlight color information.
-    ---@class UndoGlow.HlColor
-    ---@field bg string Background color as a hex string.
-    ---@field fg? string Optional foreground color as a hex string.
-<
-
-By setting hlgroup name to other value, the plugin will grab the colors of the
-target hlgroup and apply to it. For example:
-
-
-  [!note] If you specify a hl other than the default, you no longer need to
-  specify the hl_color key, as it will be ignored.
->lua
-    -- ✅ Valid
-    {
-      undo = {
-       hl = "Cursor",
-     }
-    }
-    
-    -- ✅ Valid
-    {
-      undo = {
-       hl_color = { bg = "#FF5555" },
-     }
-    }
-    
-    -- ✅ Valid but hl_color with be ignored
-    {
-      undo = {
-       hl = "Cursor",
-       hl_color = { bg = "#FF5555" },
-     }
-    }
-<
-
-
-OVERIDING HLGROUPS AND COLORS (EXTERNALLY) ~
-
-
-  [!note] It’s recommended to set the colors from the configuration table.
-The most common way to override the colors externally are with
-`vim.api.nvim_set_hl`. Note that setting up this way will take precedent than
-**undo-glow.nvim** configurations.
-
->lua
-    -- Link to other hlgroups
-    vim.api.nvim_set_hl(0, "UgYank", { link = "CurSearch" })
-    -- Set specific colors directly
-    vim.api.nvim_set_hl(0, "UgYank", { bg = "#F4DBD6", fg = "#24273A" })
-<
-
-Or if you’re using `snacks.nvim`, you can do as below:
-
->lua
-    -- Link to other hlgroups
-    Snacks.util.set_hl({ UgYank = "Cursor" })
-    -- Set specific colors directly
-    Snacks.util.set_hl({ UgYank = { bg = "#CBA6F7", fg = "#11111B" } })
-<
-
-
-  [!note] You don’t have to set anything for the configuration opts if you’re
-  setting it in other places.
-
-ANIMATIONS & EASINGS      *undo-glow.nvim-undo-glow.nvim-animations-&-easings*
-
-
-ANIMATIONS ~
-
-
-  [!note] Animation is `off` by default. You can turn it on in your config with
-  `animation.enabled = true`.
-**undo-glow.nvim** comes with numerous default animations out of the box and
-can be toggled on and off and swap globally or per action (incuding your custom
-actions).
-
-
-  [!note] If you wish to, every different action can have different animation
-  configurations.
->lua
-    ---@alias UndoGlow.AnimationTypeString "fade" <- default | "fade_reverse" | "blink" | "pulse" | "jitter" | "spring" | "desaturate" | "strobe" | "zoom" | "rainbow" | "slide"
-    ---@alias UndoGlow.AnimationTypeFn fun(opts: UndoGlow.Animation)
-    
-    ---@field animation_type? UndoGlow.AnimationTypeString | UndoGlow.AnimationTypeFn A animation_type string or function that does the animation
-<
-
-
-CHANGING ANIMATION FROM CONFIGURATION
-
-
-ANIMATION TYPE IN STRING
-
->lua
-    -- configuration opts
-    {
-     animation = {
-      --- rest of configurations
-      animation_type = "jitter" -- one of the builtins
-      --- rest of configurations
-     }
-    }
-<
-
-
-ANIMATION TYPE IN FUNCTION
-
-
-  [!warning] This API is just re-exported from the source code and that’s
-  exactly how the animation internally works. There’s a lot of manual
-  configuration for now, and I don’t think lots of people will want to
-  configure their own animation. But hey, if you need to, it’s there for you.
->lua
-    ---Parameters for an animation.
-    ---@class UndoGlow.Animation
-    ---@field bufnr integer Buffer number.
-    ---@field ns integer Namespace id.
-    ---@field hlgroup string Highlight group name.
-    ---@field extmark_ids? integer[] Extmark identifiers.
-    ---@field start_bg UndoGlow.RGBColor Starting background color.
-    ---@field end_bg UndoGlow.RGBColor Ending background color.
-    ---@field start_fg? UndoGlow.RGBColor Optional starting foreground color.
-    ---@field end_fg? UndoGlow.RGBColor Optional ending foreground color.
-    ---@field duration number Animation duration in milliseconds.
-    ---@field config UndoGlow.Config Configuration for undo-glow.
-    ---@field state UndoGlow.State Current state of the highlight.
-    ---@field coordinates UndoGlow.RowCol Current sanitized coordinates
-    
-    ---Represents a region (row/column coordinates) in the buffer.
-    ---@class UndoGlow.RowCol
-    ---@field s_row integer Start row.
-    ---@field s_col integer Start column.
-    ---@field e_row integer End row.
-    ---@field e_col integer End column.
-    
-    -- configuration opts
-    {
-     animation = {
-      ---rest of configurations
-      ---@param opts UndoGlow.Animation The animation options.
-      ---@return boolean|nil status Return `false` to fallback to fade
-      animation_type = function(opts)
-       --- Sometimes thing just don't work and if your custom animation don't support certain thing
-    
-       --- First create an extmark to be used later by appending the opts for `extmark_ids`
-       local extmark_id = vim.api.nvim_buf_set_extmark() -- refer next section for detail on how
-    
-       --- Merge extmark_id to opts.extmark_ids table
-       --- We can then use the extmark during the animation and all extmarks here will be cleared after the animation ends.
-       table.insert(opts.extmark_ids, extmark_id)
-    
-       --- You can return false, and it will fallback to `fade` animation.
-       --- E.g. since `e_col` will always be 0 if you highlight with visual block, it will be troublesome to do calculation.
-       if should_fallback then
-        return false
-       end
-    
-       ---@param opts UndoGlow.Animation The animation options.
-       ---@param animate_fn fun(progress: number, end_animation: function): UndoGlow.HlColor|nil A function that receives the current progress (0 = start, 1 = end) and return the hl colors or nothing.
-       ---@return nil
-       require("undo-glow").animate_start(opts, function(progress, end_animation)
-        -- do something for your animation
-        -- normally you will do some calculation with the progress value (0 = start, 1 = end)
-        -- you also have access to the current extmark via `opts.extmark_ids`
-    
-        -- Just in case you have some edge cases that you would like to end the animation
-        -- You can use this function
-        if should_end_animation then
-         end_animation()
-        end
-    
-        -- lastly, return the bg and fg (optional) if you want the color to be set automatically or...
-        -- not return anything, but you need to set the color yourself in this function
-        return hl_opts
-       end)
-      end
-      --- rest of configurations
-     }
-    }
-<
-
-
-EXAMPLE USING BLINK ANIMATION FROM SOURCE CODE
-
->lua
-    -- configuration opts
-    {
-     animation = {
-      --- rest of configurations
-      animation_type = function(opts)
-       local extmark_opts =
-        require("undo-glow.utils").create_extmark_opts({
-         bufnr = opts.bufnr,
-         hlgroup = opts.hlgroup,
-         s_row = opts.coordinates.s_row,
-         s_col = opts.coordinates.s_col,
-         e_row = opts.coordinates.e_row,
-         e_col = opts.coordinates.e_col,
-         priority = require("undo-glow.config").config.priority,
-         force_edge = opts.state.force_edge,
-         window_scoped = opts.state.animation.window_scoped,
-        })
-    
-       local extmark_id = vim.api.nvim_buf_set_extmark(
-        opts.bufnr,
-        opts.ns,
-        opts.coordinates.s_row,
-        opts.coordinates.s_col,
-        extmark_opts
-       )
-    
-       table.insert(opts.extmark_ids, extmark_id)
-    
-       require("undo-glow").animate_start(opts, function(progress)
-        local blink_period = 200
-        local phase = (progress * opts.duration % blink_period)
-         < (blink_period / 2)
-    
-        if phase then
-         return {
-          bg = require("undo-glow.color").rgb_to_hex(
-           opts.start_bg
-          ),
-          fg = opts.start_fg
-            and require("undo-glow.color").rgb_to_hex(
-             opts.start_fg
-            )
-           or nil,
-         }
-        else
-         return {
-          bg = require("undo-glow.color").rgb_to_hex(opts.end_bg),
-          fg = opts.end_fg
-            and require("undo-glow.color").rgb_to_hex(
-             opts.end_fg
-            )
-           or nil,
-         }
-        end
-       end)
-      end,
-      --- rest of configurations
-     },
-    }
-<
-
-
-EASING ~
-
-**undo-glow.nvim** comes with a handful of default easing options as below
-(Thanks to EmmanuelOga/easing) <https://github.com/EmmanuelOga/easing>. Feel
-free to send PRs for more interesting easings.
-
-
-  [!note] Not all animation supports easing. Only `fade (default)` and
-  `fade_reverse` and `slide` supports easing. If you use other animation and set
-  easing, it will just get ignored.
-
-  [!warning] Easing wil be ignored if `animation.enabled` is `off`. Make sure you
-  turn it on if you want easing.
-
-BUILTIN EASINGS
-
->lua
-    ---@alias UndoGlow.EasingString "linear" | "in_quad" | "out_quad" | "in_out_quad" | "out_in_quad" | "in_cubic" | "out_cubic" | "in_out_cubic" | "out_in_cubic" | "in_quart" | "out_quart" | "in_out_quart" | "out_in_quart" | "in_quint" | "out_quint" | "in_out_quint" | "out_in_quint" | "in_sine" | "out_sine" | "in_out_sine" | "out_in_sine" | "in_expo" | "out_expo" | "in_out_expo" | "out_in_expo" | "in_circ" | "out_circ" | "in_out_circ" | "out_in_circ" | "in_elastic" | "out_elastic" | "in_out_elastic" | "out_in_elastic" | "in_back" | "out_back" | "in_out_back" | "out_in_back" | "in_bounce" | "out_bounce" | "in_out_bounce" | "out_in_bounce"
-    
-    require("undo-glow").easing.linear
-    require("undo-glow").easing.in_quad
-    require("undo-glow").easing.out_quad
-    require("undo-glow").easing.in_out_quad
-    require("undo-glow").easing.out_in_quad
-    require("undo-glow").easing.in_cubic
-    require("undo-glow").easing.out_cubic
-    require("undo-glow").easing.in_out_cubic -- default
-    require("undo-glow").easing.out_in_cubic
-    require("undo-glow").easing.in_quart
-    require("undo-glow").easing.out_quart
-    require("undo-glow").easing.in_out_quart
-    require("undo-glow").easing.out_in_quart
-    require("undo-glow").easing.in_quint
-    require("undo-glow").easing.out_quint
-    require("undo-glow").easing.in_out_quint
-    require("undo-glow").easing.out_in_quint
-    require("undo-glow").easing.in_sine
-    require("undo-glow").easing.out_sine
-    require("undo-glow").easing.in_out_sine
-    require("undo-glow").easing.out_in_sine
-    require("undo-glow").easing.in_expo
-    require("undo-glow").easing.out_expo
-    require("undo-glow").easing.in_out_expo
-    require("undo-glow").easing.out_in_expo
-    require("undo-glow").easing.in_circ
-    require("undo-glow").easing.out_circ
-    require("undo-glow").easing.in_out_circ
-    require("undo-glow").easing.out_in_circ
-    require("undo-glow").easing.in_elastic
-    require("undo-glow").easing.out_elastic
-    require("undo-glow").easing.in_out_elastic
-    require("undo-glow").easing.out_in_elastic
-    require("undo-glow").easing.in_back
-    require("undo-glow").easing.out_back
-    require("undo-glow").easing.in_out_back
-    require("undo-glow").easing.out_in_back
-    require("undo-glow").easing.out_bounce
-    require("undo-glow").easing.in_bounce
-    require("undo-glow").easing.in_out_bounce
-    require("undo-glow").easing.out_in_bounce
-<
-
-
-CHANGING EASING FROM CONFIGURATION WITH BUILTIN
-
-
-EASING IN STRING
-
->lua
-    -- configuration opts
-    {
-     animation = {
-      --- rest of configurations
-      easing = "ease_in_sine"
-      --- rest of configurations
-     }
-    }
-<
-
-
-EASING IN FUNCTION
-
->lua
-    -- configuration opts
-    {
-     animation = {
-      --- rest of configurations
-      easing = function(easing_opts)
-       -- do some calculation
-       return integer
-      end
-      --- rest of configurations
-     }
-    }
-<
-
-
-OVERRIDING EASING PROPERTIES
-
-
-  [!note] The easing function should always return an integer!
->lua
-    ---Options passed to easing functions.
-    ---@class UndoGlow.EasingOpts
-    ---@field time number Elapsed time (e.g. a progress value between 0 and 1).
-    ---@field begin? number Optional start value.
-    ---@field change? number Optional change value (ending minus beginning).
-    ---@field duration? number Optional total duration.
-    ---@field amplitude? number Optional amplitude (for elastic easing).
-    ---@field period? number Optional period (for elastic easing).
-    ---@field overshoot? number Optional overshoot (for back easing).
-    
-    ---@param easing_opts UndoGlow.EasingOpts
-    ---@return integer
-    easing = function(easing_opts)
-     -- Override any properties you like
-     -- You can refer to the source code of what opts are taking in from each easing function.
-     easing_opts.duration = 2
-     -- Then pass the `easing_opts` back to the function
-     return require("undo-glow").easing.in_back(easing_opts)
-    end
-<
-
-
-CUSTOM EASING FUNCTIONS
-
-Other than the defaults, you can also create your own easing function like
-below.
-
->lua
-    ---@param easing_opts UndoGlow.EasingOpts
-    ---@return integer
-    function my_custom_easing(easing_opts)
-     easing_opts.begin = 0
-     easing_opts.change = 1
-     easing_opts.duration = 1
-    
-     return easing_opts.change * easing_opts.time / easing_opts.duration + easing_opts.begin
-    end
-<
-
-
-CONTRIBUTING                      *undo-glow.nvim-undo-glow.nvim-contributing*
-
-Read the documentation carefully before submitting any issue.
-
-Feature and pull requests are welcome.
-
-Generated by panvimdoc <https://github.com/kdheepak/panvimdoc>
+
+UndoGlow.HlColor                         *undo-glow.nvim.types.UndoGlow.HlColor*
+    Highlight color information.
+
+    Fields: ~
+        {bg}   (string)  Background color as a hex string.
+        {fg?}  (string)  Optional foreground color as a hex string.
+
+
+UndoGlow.State                             *undo-glow.nvim.types.UndoGlow.State*
+    State for the undo-glow highlight.
+
+    Fields: ~
+        {current_hlgroup}  (string)                     The current highlight group in use.
+        {should_detach}    (boolean)                    Whether the highlight should detach.
+        {animation?}       (UndoGlow.Config.Animation)  Animation configuration.
+        {force_edge?}      (boolean)                    Whether to force edge highlighting.
+
+
+UndoGlow.RGBColor                       *undo-glow.nvim.types.UndoGlow.RGBColor*
+    RGB color representation.
+
+    Fields: ~
+        {r}  (integer)  Red (0-255)
+        {g}  (integer)  Green (0-255)
+        {b}  (integer)  Blue (0-255)
+
+
+UndoGlow.HSLColor                       *undo-glow.nvim.types.UndoGlow.HSLColor*
+    HSL color representation.
+
+    Fields: ~
+        {h}  (integer)  Hue component in degrees (0-360)
+        {s}  (integer)  Saturation component as a percentage (0-100)
+        {l}  (integer)  Lightness component as a percentage (0-100)
+
+
+UndoGlow.CommandOpts                 *undo-glow.nvim.types.UndoGlow.CommandOpts*
+    Command options for triggering highlights.
+
+    Fields: ~
+        {hlgroup?}     (string)                     Optional highlight group to use.
+        {animation?}   (UndoGlow.Config.Animation)  Optional animation configuration.
+        {force_edge?}  (boolean)                    Optional flag to force edge highlighting.
+
+
+                                *undo-glow.nvim.types.UndoGlow.HighlightChanges*
+UndoGlow.HighlightChanges : UndoGlow.CommandOpts
+    Options for highlight changes API.
+
+
+                                 *undo-glow.nvim.types.UndoGlow.HighlightRegion*
+UndoGlow.HighlightRegion : UndoGlow.CommandOpts, UndoGlow.RowCol
+    Options for highlight region API.
+
+
+UndoGlow.Animation                     *undo-glow.nvim.types.UndoGlow.Animation*
+    Parameters for an animation.
+
+    Fields: ~
+        {bufnr}         (integer)            Buffer number.
+        {ns}            (integer)            Namespace id.
+        {hlgroup}       (string)             Highlight group name.
+        {extmark_ids?}  (integer[])          Extmark identifiers.
+        {start_bg}      (UndoGlow.RGBColor)  Starting background color.
+        {end_bg}        (UndoGlow.RGBColor)  Ending background color.
+        {start_fg?}     (UndoGlow.RGBColor)  Optional starting foreground color.
+        {end_fg?}       (UndoGlow.RGBColor)  Optional ending foreground color.
+        {duration}      (number)             Animation duration in milliseconds.
+        {config}        (UndoGlow.Config)    Configuration for undo-glow.
+        {state}         (UndoGlow.State)     Current state of the highlight.
+        {coordinates}   (UndoGlow.RowCol)    Current sanitized coordinates
+
+
+                                 *undo-glow.nvim.types.UndoGlow.HandleHighlight*
+UndoGlow.HandleHighlight : UndoGlow.RowCol
+    Handle for highlighting operations, including region coordinates.
+
+    Fields: ~
+        {bufnr}  (integer)         Buffer number.
+        {ns?}    (integer)         Namespace id.
+        {state}  (UndoGlow.State)  Current state of the highlight.
+
+
+UndoGlow.RowCol                           *undo-glow.nvim.types.UndoGlow.RowCol*
+    Represents a region (row/column coordinates) in the buffer.
+
+    Fields: ~
+        {s_row}  (integer)  Start row.
+        {s_col}  (integer)  Start column.
+        {e_row}  (integer)  End row.
+        {e_col}  (integer)  End column.
+
+
+                                     *undo-glow.nvim.types.UndoGlow.ExtmarkOpts*
+UndoGlow.ExtmarkOpts : UndoGlow.RowCol
+    Opts to create an extmark
+
+    Fields: ~
+        {bufnr}           (integer)  Buffer number.
+        {hlgroup}         (string)   Highlight group name.
+        {priority}        (integer)  Extmark priority to render the highlight (Default 4096).
+        {force_edge?}     (boolean)  Whether to force edge highlighting.
+        {window_scoped?}  (boolean)  If enabled, the highlight effect is constrained to the current active window, even if the buffer is shared across splits.
+
 
 vim:tw=78:ts=8:noet:ft=help:norl:

@@ -1,15 +1,29 @@
 ---@module "undo-glow"
 
+---@brief [[
+---*undo-glow.nvim.txt*
+---
+---Add animated glow/highlight effects to your neovim operation (undo, redo, yank, paste and more) with simple APIs.
+---Alternatives to highlight-undo.nvim and tiny-glimmer.nvim.
+---@brief ]]
+
+---@toc undo-glow.nvim.toc
+
+---@mod undo-glow.nvim.api API
+
 local M = {}
 
+---Entry point to setup the plugin
+---@type fun(user_config?: UndoGlow.Config)
 M.setup = require("undo-glow.config").setup
 
-------- Public API -------
-
 ---Easing functions that are builtin.
+---@type table<UndoGlow.EasingString, fun(opts: UndoGlow.EasingOpts): integer>
 M.easing = require("undo-glow.easing")
 
 ---Start animation function.
+---Repeatedly calls the provided animation function with a progress value between 0 and 1 until the animation completes.
+---@type fun(opts: UndoGlow.Animation, animate_fn: fun(progress: number, end_animation: function): UndoGlow.HlColor|nil): nil
 M.animate_start = require("undo-glow.animation").animate_start
 
 ---Undo command that highlights.
