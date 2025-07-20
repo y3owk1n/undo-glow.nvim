@@ -259,7 +259,8 @@ M.config                                          *undo-glow.nvim.config.config*
 ==============================================================================
 Types                                                     *undo-glow.nvim.types*
 
-UndoGlow.AnimationTypeString *undo-glow.nvim.types.UndoGlow.AnimationTypeString*
+                             *undo-glow.nvim.types.UndoGlow.AnimationTypeString*
+UndoGlow.AnimationTypeString
     Animation type aliases.
 
     Variants: ~
@@ -276,13 +277,15 @@ UndoGlow.AnimationTypeString *undo-glow.nvim.types.UndoGlow.AnimationTypeString*
         ("slide")
 
 
-UndoGlow.AnimationTypeFn         *undo-glow.nvim.types.UndoGlow.AnimationTypeFn*
+                                 *undo-glow.nvim.types.UndoGlow.AnimationTypeFn*
+UndoGlow.AnimationTypeFn
 
     Type: ~
         fun(opts:UndoGlow.Animation)
 
 
-UndoGlow.EasingString               *undo-glow.nvim.types.UndoGlow.EasingString*
+                                    *undo-glow.nvim.types.UndoGlow.EasingString*
+UndoGlow.EasingString
     Easing function aliases.
 
     Variants: ~
@@ -356,7 +359,8 @@ UndoGlow.EasingOpts                   *undo-glow.nvim.types.UndoGlow.EasingOpts*
         {overshoot?}  (number)  Optional overshoot (for back easing).
 
 
-UndoGlow.Config.Animation       *undo-glow.nvim.types.UndoGlow.Config.Animation*
+                                *undo-glow.nvim.types.UndoGlow.Config.Animation*
+UndoGlow.Config.Animation
     Animation configuration.
 
     Fields: ~
@@ -404,7 +408,8 @@ UndoGlow.HSLColor                       *undo-glow.nvim.types.UndoGlow.HSLColor*
         {l}  (integer)  Lightness component as a percentage (0-100)
 
 
-UndoGlow.CommandOpts                 *undo-glow.nvim.types.UndoGlow.CommandOpts*
+                                     *undo-glow.nvim.types.UndoGlow.CommandOpts*
+UndoGlow.CommandOpts
     Command options for triggering highlights.
 
     Fields: ~
