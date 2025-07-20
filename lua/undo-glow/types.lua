@@ -1,5 +1,4 @@
 ---@mod undo-glow.nvim.types Types
----
 
 local M = {}
 
