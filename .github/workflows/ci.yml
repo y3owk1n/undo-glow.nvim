@@ -1,73 +1,73 @@
 name: CI
 
 on:
-    pull_request:
-        branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
-    stylua:
-        name: stylua-check
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
-            - uses: JohnnyMorganz/stylua-action@v4
-              with:
-                  token: ${{ secrets.GITHUB_TOKEN }}
-                  version: latest
-                  args: --check lua
+  stylua:
+    name: stylua-check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: JohnnyMorganz/stylua-action@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          version: latest
+          args: --check lua
 
-    test:
-        runs-on: ubuntu-latest
-        timeout-minutes: 10
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v4
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-            - name: Install Neovim
-              uses: folke/github/neovim@main
+      - name: Install Neovim
+        uses: folke/github/neovim@main
 
-            - name: Install Just
-              uses: extractions/setup-just@v2
+      - name: Install Just
+        uses: extractions/setup-just@v2
 
-            - name: Test Cache
-              uses: actions/cache@v4
-              with:
-                  path: .tests
-                  key: ${{ runner.os }}-tests-${{ hashFiles('tests/minit.lua') }}
+      - name: Test Cache
+        uses: actions/cache@v4
+        with:
+          path: .tests
+          key: ${{ runner.os }}-tests-${{ hashFiles('tests/minit.lua') }}
 
-            - name: Run tests
-              run: just test
+      - name: Run tests
+        run: just test
 
-    doc:
-        runs-on: ubuntu-latest
-        timeout-minutes: 5
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v4
-              with:
-                  token: ${{ secrets.PAT }}
+  doc:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PAT }}
 
-            - name: Create /doc
-              run: mkdir -p doc
+      - name: Create /doc
+        run: mkdir -p doc
 
-            - name: Install Rust
-              uses: dtolnay/rust-toolchain@master
-              with:
-                  toolchain: stable
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: stable
 
-            - name: Install vimcats
-              run: cargo install vimcats --features=cli
+      - name: Install vimcats
+        run: cargo install vimcats --features=cli
 
-            - name: Install Just
-              uses: extractions/setup-just@v3
+      - name: Install Just
+        uses: extractions/setup-just@v3
 
-            - name: Generate docs
-              run: just doc
+      - name: Generate docs
+        run: just doc
 
-            - name: Push changes
-              uses: stefanzweifel/git-auto-commit-action@v5
-              with:
-                  commit_message: |
-                      chore(build): auto-generate docs from readme
+      - name: Push changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: |
+            chore(build): auto-generate docs from readme
 
-                      This is an automated commit.
+            This is an automated commit.
