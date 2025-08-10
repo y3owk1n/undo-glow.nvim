@@ -686,7 +686,7 @@ For now the following are ignored:
 - Filetypes that are passed in to be ignored
 
 > [!NOTE]
-> Window scoped highlight is disabled by default. To avoid splitted view with same buffer sharing the same highlight, you need to either set `animation.window_scoped = true` in your config, or pass `{ animation = { window_scoped = tue } }` to the cursor_moved opts.
+> Window scoped highlight is disabled by default. To avoid splitted view with the same buffer sharing the same highlight, you need to either set `animation.window_scoped = true` in your config, or pass `{ animation = { window_scoped = true } }` to the cursor_moved opts.
 
 > [!WARNING]
 > This is not a command and it is designed to be used in autocmd callback.
