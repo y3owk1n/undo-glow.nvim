@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.5](https://github.com/y3owk1n/undo-glow.nvim/compare/v1.10.4...v1.10.5) (2025-08-10)
+
+
+### Bug Fixes
+
+* **ci:** split out docs generation from CI for better collaborations ([#253](https://github.com/y3owk1n/undo-glow.nvim/issues/253)) ([03a9624](https://github.com/y3owk1n/undo-glow.nvim/commit/03a96242e95ec7df24b97169aa04720c190cb83b))
+
 ## [1.10.4](https://github.com/y3owk1n/undo-glow.nvim/compare/v1.10.3...v1.10.4) (2025-07-20)
 
 
