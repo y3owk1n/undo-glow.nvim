@@ -492,6 +492,12 @@ function M.create_extmark_opts(opts)
 			opts.s_row + 1,
 			false
 		)[1] or ""
+
+		-- If it's not a string, might be a `Blob`, we just ignore everything and send back the default extmark options
+		if vim.fn.type(line) ~= 1 then
+			return extmark_opts
+		end
+
 		local text_width = vim.fn.strdisplaywidth(line)
 		local win_width = vim.api.nvim_win_get_width(0)
 		local pad = win_width - text_width
@@ -560,6 +566,16 @@ function M.create_namespace(bufnr, window_scoped)
 	end
 
 	return M.ns
+end
+
+---Ensures that the given value is a string.
+---@param value any The value to be checked.
+---@return string The string representation of the value.
+function M.ensure_string(value)
+	if vim.fn.type(value) == 1 then
+		return value
+	end
+	return ""
 end
 
 return M
