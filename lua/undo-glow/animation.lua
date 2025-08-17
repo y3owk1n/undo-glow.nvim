@@ -647,12 +647,16 @@ function M.animate.slide(opts)
 			)
 
 			local line = (success_lines and lines[1] or "") or ""
+
+			line = require("undo-glow.utils").ensure_string(line)
+
 			local line_end = opts.coordinates.e_col
 
 			if opts.coordinates.e_col == 0 then
 				line_end = #line
 			end
 			local line_display = vim.fn.strdisplaywidth(line)
+
 			local win_width = vim.api.nvim_win_get_width(0)
 			local is_force_edge = (
 				type(opts.state.force_edge) == "boolean"
@@ -791,6 +795,8 @@ function M.animate.slide(opts)
 				local success_lines, lines =
 					pcall(vim.api.nvim_buf_get_lines, buf, row, row + 1, false)
 				local line = (success_lines and lines[1] or "") or ""
+
+				line = require("undo-glow.utils").ensure_string(line)
 
 				local line_display = vim.fn.strdisplaywidth(line)
 				if target_e_col == 0 then
