@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.6](https://github.com/y3owk1n/undo-glow.nvim/compare/v1.10.5...v1.10.6) (2025-08-17)
+
+
+### Bug Fixes
+
+* ensure line are actually string instead of blob before pass to `vim.fn.strdisplay` (fixes [#255](https://github.com/y3owk1n/undo-glow.nvim/issues/255)) ([#256](https://github.com/y3owk1n/undo-glow.nvim/issues/256)) ([290bd9d](https://github.com/y3owk1n/undo-glow.nvim/commit/290bd9d639b5a724248e6766f39af8cba3b567cc))
+
 ## [1.10.5](https://github.com/y3owk1n/undo-glow.nvim/compare/v1.10.4...v1.10.5) (2025-08-10)
 
 
