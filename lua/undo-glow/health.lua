@@ -139,7 +139,7 @@ function M.check()
 	-- Test setting a highlight group.
 	local test_hl = "UgHealthTest"
 	local highlight_ok, highlight_err = pcall(function()
-		vim.api.nvim_set_hl(0, test_hl, { bg = "#000000", fg = "#ffffff" })
+		vim.api.nvim_set_hl(0, test_hl, { bg = "#000000", fg = "#FFFFFF" })
 	end)
 	if highlight_ok then
 		report_status("ok", "Able to set highlight group '" .. test_hl .. "'.")

@@ -15,7 +15,7 @@
 ---	},
 ---	fallback_for_transparency = {
 ---		bg = "#000000",
----		fg = "#ffffff",
+---		fg = "#FFFFFF",
 ---	},
 ---	highlights = {
 ---		undo = {
@@ -72,7 +72,7 @@ local defaults = {
 	},
 	fallback_for_transparency = {
 		bg = "#000000",
-		fg = "#ffffff",
+		fg = "#FFFFFF",
 	},
 	highlights = {
 		undo = {

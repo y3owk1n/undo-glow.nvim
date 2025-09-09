@@ -379,8 +379,8 @@ describe("undo-glow.utils", function()
 
 			hlgroup = "TestHighlight"
 			extmark_ids = { 1 }
-			start_bg = "#ff0000"
-			start_fg = "#ffffff"
+			start_bg = "#FF0000"
+			start_fg = "#FFFFFF"
 		end)
 
 		after_each(function()
