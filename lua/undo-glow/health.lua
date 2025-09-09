@@ -225,6 +225,26 @@ function M.check()
 	elseif config.animation.enabled and config.animation.fps > 30 then
 		report_status("ok", "FPS is reasonably set")
 	end
+
+	local normal = vim.api.nvim_get_hl(0, { name = "Normal" })
+
+	if not normal.bg then
+		if not config.fallback_for_transparency.bg then
+			report_status(
+				"error",
+				"Transparent background detected, but no fallback color is set, please set `config.fallback_for_transparency.bg` to a valid color."
+			)
+		end
+	end
+
+	if not normal.fg then
+		if not config.fallback_for_transparency.fg then
+			report_status(
+				"error",
+				"Transparent foreground detected, but no fallback color is set, please set `config.fallback_for_transparency.fg` to a valid color."
+			)
+		end
+	end
 end
 
 return M
