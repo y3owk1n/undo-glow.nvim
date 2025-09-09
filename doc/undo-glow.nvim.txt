@@ -214,6 +214,10 @@ Example Configuration:
 		easing = "in_out_cubic",
 		window_scoped = false,
 	},
+	fallback_for_transparency = {
+		bg = "#000000",
+		fg = "#FFFFFF",
+	},
 	highlights = {
 		undo = {
 			hl = "UgUndo",
@@ -344,6 +348,15 @@ UndoGlow.Config                           *undo-glow.nvim.types.UndoGlow.Config*
     Fields: ~
         {animation?}   (UndoGlow.Config.Animation)  Configuration for animations.
         {highlights?}  (table)
+
+
+                  *undo-glow.nvim.types.UndoGlow.Config.FallbackForTransparency*
+UndoGlow.Config.FallbackForTransparency
+    Fallback color for when the highlight is transparent.
+
+    Fields: ~
+        {bg?}  (string)  Background color as a hex string.
+        {fg?}  (string)  Optional foreground color as a hex string.
 
 
 UndoGlow.EasingOpts                   *undo-glow.nvim.types.UndoGlow.EasingOpts*
