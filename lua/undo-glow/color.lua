@@ -153,9 +153,11 @@ end
 ---@return string hex_code The Normal highlight group's background color as a hexadecimal string.
 function M.get_normal_bg()
 	local success, normal = pcall(vim.api.nvim_get_hl, 0, { name = "Normal" })
+	local fallback =
+		require("undo-glow.config").config.fallback_for_transparency
 
 	if not success or not normal.bg then
-		return M.default_bg
+		return (fallback and fallback.bg) or M.default_bg
 	end
 
 	return string.format("#%06X", normal.bg)
@@ -165,9 +167,11 @@ end
 ---@return string hex_code The Normal highlight group's foreground color as a hexadecimal string.
 function M.get_normal_fg()
 	local success, normal = pcall(vim.api.nvim_get_hl, 0, { name = "Normal" })
+	local fallback =
+		require("undo-glow.config").config.fallback_for_transparency
 
 	if not success or not normal.fg then
-		return M.default_fg
+		return (fallback and fallback.fg) or M.default_fg
 	end
 
 	return string.format("#%06X", normal.fg)

@@ -67,6 +67,12 @@ local M = {}
 ---@field animation? UndoGlow.Config.Animation Configuration for animations.
 ---@field highlights? table<"undo" | "redo" | "yank" | "paste" | "search" | "comment" | "cursor", { hl: string, hl_color: UndoGlow.HlColor }> Highlight configurations for various actions.
 ---@field priority? integer Extmark priority to render the highlight (Default 4096)
+---@field fallback_for_transparency? UndoGlow.Config.FallbackForTransparency Fallback color for when the highlight is transparent.
+
+---Fallback color for when the highlight is transparent.
+---@class UndoGlow.Config.FallbackForTransparency
+---@field bg? string Background color as a hex string.
+---@field fg? string Optional foreground color as a hex string.
 
 ---Options passed to easing functions.
 ---@class UndoGlow.EasingOpts
