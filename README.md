@@ -152,6 +152,12 @@ require("undo-glow").setup({
 ---@field animation? UndoGlow.Config.Animation Configuration for animations.
 ---@field highlights? table<"undo" | "redo" | "yank" | "paste" | "search" | "comment" | "cursor", { hl: string, hl_color: UndoGlow.HlColor }> Highlight configurations for various actions.
 ---@field priority? integer Extmark priority to render the highlight (Default 4096)
+---@field fallback_for_transparency? UndoGlow.Config.FallbackForTransparency Fallback color for when the highlight is transparent.
+
+---Fallback color for when the highlight is transparent.
+---@class UndoGlow.Config.FallbackForTransparency
+---@field bg? string Background color as a hex string.
+---@field fg? string Optional foreground color as a hex string.
 
 ---Animation configuration.
 ---@class UndoGlow.Config.Animation
@@ -185,6 +191,10 @@ require("undo-glow").setup({
   fps = 120, -- change the fps, normally either 60 / 120, but it can be whatever number
   easing = "in_out_cubic", -- see more at easing section on how to change and create your own
   window_scoped = false, -- this uses an experimental extmark options (it might not work depends on your version of neovim)
+ },
+ fallback_for_transparency = {
+  bg = "#000000", -- fallback color for when the highlight is transparent
+  fg = "#FFFFFF", -- fallback color for when the highlight is transparent
  },
  highlights = { -- Any keys other than these defaults will be ignored and omitted
   undo = {
@@ -776,7 +786,7 @@ end
 
 --- then you can use it to bind to anywhere just like before. Undo and redo command are fundamentally doing the same thing.
 vim.keymap.set("n", "key_that_you_like", some_action, { silent = true })
-````
+```
 
 <details><summary>Example with undo command</summary>
 
@@ -848,7 +858,7 @@ end
 
 --- then you can use it to bind to anywhere just like before. Undo and redo command are fundamentally doing the same thing.
 vim.keymap.set("n", "key_that_you_like", some_action, { silent = true })
-````
+```
 
 <details><summary>Example with yank</summary>
 
@@ -919,15 +929,15 @@ The default colors are fairly ugly in my opinion, but they are sharp enough for 
 
 <!-- colors:start -->
 
-| Opts Key | Default Group | Color Code (Background) |
-| --- | --- | --- |
-| **undo** | ***UgUndo*** | #FF5555  |
-| **redo** | ***UguRedo*** | #50FA7B |
-| **yank** | ***UgYank*** | #F1FA8C |
-| **paste** | ***UgPaste*** | #8BE9FD |
-| **search** | ***UgSearch*** | #BD93F9 |
-| **comment** | ***UgComment*** | #FFB86C  |
-| **cursor** | ***UgCursor*** | #FF79C6  |
+| Opts Key    | Default Group   | Color Code (Background) |
+| ----------- | --------------- | ----------------------- |
+| **undo**    | **_UgUndo_**    | #FF5555                 |
+| **redo**    | **_UguRedo_**   | #50FA7B                 |
+| **yank**    | **_UgYank_**    | #F1FA8C                 |
+| **paste**   | **_UgPaste_**   | #8BE9FD                 |
+| **search**  | **_UgSearch_**  | #BD93F9                 |
+| **comment** | **_UgComment_** | #FFB86C                 |
+| **cursor**  | **_UgCursor_**  | #FF79C6                 |
 
 <!-- colors:end -->
 

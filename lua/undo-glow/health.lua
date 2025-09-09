@@ -139,7 +139,7 @@ function M.check()
 	-- Test setting a highlight group.
 	local test_hl = "UgHealthTest"
 	local highlight_ok, highlight_err = pcall(function()
-		vim.api.nvim_set_hl(0, test_hl, { bg = "#000000", fg = "#ffffff" })
+		vim.api.nvim_set_hl(0, test_hl, { bg = "#000000", fg = "#FFFFFF" })
 	end)
 	if highlight_ok then
 		report_status("ok", "Able to set highlight group '" .. test_hl .. "'.")
@@ -224,6 +224,26 @@ function M.check()
 		report_status("warn", "FPS less than 30 might be visually unappealling")
 	elseif config.animation.enabled and config.animation.fps > 30 then
 		report_status("ok", "FPS is reasonably set")
+	end
+
+	local normal = vim.api.nvim_get_hl(0, { name = "Normal" })
+
+	if not normal.bg then
+		if not config.fallback_for_transparency.bg then
+			report_status(
+				"error",
+				"Transparent background detected, but no fallback color is set, please set `config.fallback_for_transparency.bg` to a valid color."
+			)
+		end
+	end
+
+	if not normal.fg then
+		if not config.fallback_for_transparency.fg then
+			report_status(
+				"error",
+				"Transparent foreground detected, but no fallback color is set, please set `config.fallback_for_transparency.fg` to a valid color."
+			)
+		end
 	end
 end
 

@@ -13,6 +13,10 @@
 ---		easing = "in_out_cubic",
 ---		window_scoped = false,
 ---	},
+---	fallback_for_transparency = {
+---		bg = "#000000",
+---		fg = "#FFFFFF",
+---	},
 ---	highlights = {
 ---		undo = {
 ---			hl = "UgUndo",
@@ -66,6 +70,7 @@ local defaults = {
 		easing = "in_out_cubic",
 		window_scoped = false,
 	},
+	fallback_for_transparency = {},
 	highlights = {
 		undo = {
 			hl = "UgUndo",

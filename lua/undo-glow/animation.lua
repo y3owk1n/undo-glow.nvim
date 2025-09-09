@@ -590,7 +590,9 @@ function M.animate.slide(opts)
 		-- try to match the cursorline style if single line
 		local success, normal =
 			pcall(vim.api.nvim_get_hl, 0, { name = "CursorLine" })
+
 		opts.end_bg = success
+				and normal.bg
 				and require("undo-glow.color").hex_to_rgb(
 					string.format("#%06X", normal.bg)
 				)
