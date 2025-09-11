@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.7](https://github.com/y3owk1n/undo-glow.nvim/compare/v1.10.6...v1.10.7) (2025-09-09)
+
+
+### Bug Fixes
+
+* add `fallback_for_transparency` to support actual transparent background themes ([#259](https://github.com/y3owk1n/undo-glow.nvim/issues/259)) ([5d1bf88](https://github.com/y3owk1n/undo-glow.nvim/commit/5d1bf88c9da54be462e1dc17d8bb449ecd3282a8))
+
 ## [1.10.6](https://github.com/y3owk1n/undo-glow.nvim/compare/v1.10.5...v1.10.6) (2025-08-17)
 
 
