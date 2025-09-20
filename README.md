@@ -921,6 +921,13 @@ vim.api.nvim_create_autocmd({ "BufReadPost", "TextChanged" }, {
 
 With all the API that **undo-glow.nvim** provides, you can easily integrate with other plugins or creating some nice highlights that are not supported by the plugin. Check out the [recipes](recipes.md) page for more details.
 
+TLDR for recipes:
+
+- implementation with [flash.nvim](https://github.com/folke/flash.nvim)
+- implementation with [yanky.nvim](https://github.com/gbprod/yanky.nvim)
+- implementation with [substitute.nvim](https://github.com/gbprod/substitute.nvim)
+- cursor moved highlights for out side of Neovim switching (e.g. Tmux)
+
 ## 🎨 Hlgroups
 
 ### Existing hlgroups

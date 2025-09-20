@@ -24,24 +24,62 @@ end,
 
 ## With Yanky.nvim
 
+Remember to disable highlights from `yanky.nvim`
+
+```lua
+-- yanky.nvim config
+{
+ highlight = {
+  on_put = false,
+  on_yank = false,
+ },
+}
+```
+
 ### Put text after cursor
 
 ```lua
-function()
+vim.keymap.set("n", "p", function()
  local opts = require("undo-glow.utils").merge_command_opts("UgPaste")
  require("undo-glow").highlight_changes(opts)
  return "<Plug>(YankyPutAfter)"
-end,
+end, { desc = "Paste below with highlight", noremap = true, expr = true })
 ```
 
 ### Put text before cursor
 
 ```lua
-function()
+vim.keymap.set("n", "p", function()
  local opts = require("undo-glow.utils").merge_command_opts("UgPaste")
  require("undo-glow").highlight_changes(opts)
  return "<Plug>(YankyPutBefore)"
-end,
+end, { desc = "Paste below with highlight", noremap = true, expr = true })
+```
+
+## With Substitute.nvim
+
+Remember to disable highlights from `substitute.nvim`
+
+```lua
+-- substitute.nvim config
+{
+ highlight_substituted_text = {
+   enabled = false,
+ },
+}
+```
+
+### Substitute line
+
+The rest of the commands should be almost the identical.
+
+```lua
+vim.keymap.set("n", "ss", function()
+ local opts = require("undo-glow.utils").merge_command_opts("UgPaste", {}) -- Set this to whatever hlgroup you like
+ require("undo-glow").highlight_changes(opts)
+
+ require("substitute").line()
+end, { noremap = true })
 ```
 
 ## Cursor Moved Highlights for out side of Neovim Switching E.g. Tmux
