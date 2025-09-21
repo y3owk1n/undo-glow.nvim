@@ -178,6 +178,22 @@ M.cursor_moved({steps_to_trigger?})            *undo-glow.nvim.api.cursor_moved*
         (nil)
 
 
+M.yanky_put({yanky_action}, {opts?})              *undo-glow.nvim.api.yanky_put*
+    Yanky.nvim put command that highlights.
+
+    Parameters: ~
+        {yanky_action}  (string)                The yanky action to perform.
+        {opts?}         (UndoGlow.CommandOpts)  Optional command option
+
+    Returns: ~
+        (nil)
+
+    Usage: ~
+>lua
+        require("undo-glow").yanky_put("YankyPutAfter")
+<
+
+
 M.highlight_changes({opts?})              *undo-glow.nvim.api.highlight_changes*
     Core API to highlight changes in the current buffer.
 
