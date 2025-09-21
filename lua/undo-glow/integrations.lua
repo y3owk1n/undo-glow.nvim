@@ -7,6 +7,15 @@ M.yanky = {}
 ---@param opts? UndoGlow.CommandOpts Optional command option
 ---@return string|nil The plug command.
 function M.yanky.put(yanky_action, opts)
+	local yanky_ok = pcall(require, "yanky")
+	if not yanky_ok then
+		vim.notify(
+			"[UndoGlow] Yanky.nvim is not installed",
+			vim.log.levels.ERROR
+		)
+		return
+	end
+
 	if type(yanky_action) ~= "string" then
 		vim.notify(
 			"[UndoGlow] Yanky action must be a string, e.g. (YankyPutAfter)",
@@ -30,6 +39,15 @@ M.substitute = {}
 ---@param opts? UndoGlow.CommandOpts Optional command option
 ---@return nil
 function M.substitute.action(action, opts)
+	local substitute_ok = pcall(require, "substitute")
+	if not substitute_ok then
+		vim.notify(
+			"[UndoGlow] Substitute.nvim is not installed",
+			vim.log.levels.ERROR
+		)
+		return
+	end
+
 	if type(action) ~= "function" then
 		vim.notify(
 			"[UndoGlow] Substitute.nvim action must be a function, learn more from the plugin's README",
