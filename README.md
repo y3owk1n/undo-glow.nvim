@@ -959,6 +959,52 @@ vim.keymap.set("n", "P", return require("undo-glow").yanky_put("YankyPutBefore")
 
 </details>
 
+#### Substitute.nvim
+
+You can use the `substitute_action` API to highlight the changes made by the substitute action.
+
+```lua
+require("undo-glow").substitute_action(require("substitute").line)
+```
+
+> [!note]
+> Remember to turn off highlights in your `substitute.nvim` config
+
+```lua
+-- substitute.nvim config
+{
+ highlight_substituted_text = {
+  enabled = false,
+ },
+}
+```
+
+<details><summary>Example with substitute.nvim</summary>
+
+<!-- config:start -->
+
+```lua
+vim.keymap.set("n", "s", function()
+ require("undo-glow").substitute_action(require("substitute").operator)
+end, { noremap = true })
+
+vim.keymap.set("n", "ss", function()
+ require("undo-glow").substitute_action(require("substitute").line)
+end, { noremap = true })
+
+vim.keymap.set("n", "S", function()
+ require("undo-glow").substitute_action(require("substitute").eol)
+end, { noremap = true })
+
+vim.keymap.set("x", "s", function()
+ require("undo-glow").substitute_action(require("substitute").visual)
+end, { noremap = true })
+```
+
+<!-- config:end -->
+
+</details>
+
 ### Recipes
 
 With all the API that **undo-glow.nvim** provides, you can easily integrate with other plugins or creating some nice highlights that are not supported by the plugin. Check out the [recipes](recipes.md) page for more details.
