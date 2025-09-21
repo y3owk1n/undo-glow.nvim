@@ -14,6 +14,7 @@
 - **Zero Dependencies:** Uses Neovim's native APIs for efficient real-time highlighting with zero dependencies.
 - **Window-Specific Highlighting:** Restrict highlights & animations to the active window when the same buffers are splitted, ensuring that only the current view displays the visual feedback.
 - **Seamless Integration**: Harmoniously works with plugins like `mini.cursorword`, `Snacks.words` and `render-markdown.nvim` to provide a consistent and enhanced highlighting experience.
+- **Built-in Integrations**: Built-in integrations with `yanky.nvim` and more.
 
 <!-- panvimdoc-ignore-start -->
 
@@ -919,7 +920,7 @@ vim.api.nvim_create_autocmd({ "BufReadPost", "TextChanged" }, {
 
 ### Built-in Integrations
 
-#### ![yanky.nvim](https://github.com/gbprod/yanky.nvim)
+#### [yanky.nvim](https://github.com/gbprod/yanky.nvim)
 
 ```lua
 ---Yanky.nvim put command that highlights.
@@ -955,6 +956,8 @@ vim.keymap.set("n", "P", return require("undo-glow").yanky_put("YankyPutBefore")
 ```
 
 <!-- config:end -->
+
+</details>
 
 ### Recipes
 
