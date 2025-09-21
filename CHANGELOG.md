@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.11.0](https://github.com/y3owk1n/undo-glow.nvim/compare/v1.10.7...v1.11.0) (2025-09-21)
+
+
+### Features
+
+* **integrations:** add `flash.nvim` integration ([#268](https://github.com/y3owk1n/undo-glow.nvim/issues/268)) ([00532e9](https://github.com/y3owk1n/undo-glow.nvim/commit/00532e94f448b15ce255c80e64c61555b577e543))
+* **integrations:** add `substitute.nvim` integration ([#267](https://github.com/y3owk1n/undo-glow.nvim/issues/267)) ([da5a162](https://github.com/y3owk1n/undo-glow.nvim/commit/da5a162456fdcc7dde0f3d1cfb0469af1ebd0a14))
+* **integrations:** add `yanky.nvim` integration ([#264](https://github.com/y3owk1n/undo-glow.nvim/issues/264)) ([074aed1](https://github.com/y3owk1n/undo-glow.nvim/commit/074aed154ca3f850f1a37f698db56b9fa1c2a97f))
+
+
+### Bug Fixes
+
+* **integrations:** guard integrations with pcall to package ([#269](https://github.com/y3owk1n/undo-glow.nvim/issues/269)) ([a001ccc](https://github.com/y3owk1n/undo-glow.nvim/commit/a001ccc57bc07f5ab7ee9a400d57dd92a97b6695))
+
 ## [1.10.7](https://github.com/y3owk1n/undo-glow.nvim/compare/v1.10.6...v1.10.7) (2025-09-09)
 
 
