@@ -145,6 +145,16 @@ function M.cursor_moved(opts, ignored_ft, steps_to_trigger)
 	return commands.cursor_moved(opts, ignored_ft, steps_to_trigger)
 end
 
+---Yanky.nvim put command that highlights.
+---@param yanky_action string The yanky action to perform.
+---@param opts? UndoGlow.CommandOpts Optional command option
+---@return nil
+---@usage `require("undo-glow").yanky_put("YankyPutAfter")`
+function M.yanky_put(yanky_action, opts)
+	local yanky = require("undo-glow.integrations").yanky
+	return yanky.put(yanky_action, opts)
+end
+
 ---Core API to highlight changes in the current buffer.
 ---@param opts? UndoGlow.HighlightChanges|UndoGlow.CommandOpts
 ---@return nil
