@@ -194,6 +194,22 @@ M.yanky_put({yanky_action}, {opts?})              *undo-glow.nvim.api.yanky_put*
 <
 
 
+M.substitute_action({action}, {opts?})    *undo-glow.nvim.api.substitute_action*
+    Substitute.nvim action command that highlights.
+
+    Parameters: ~
+        {action}  (fun())                 The action to perform.
+        {opts?}   (UndoGlow.CommandOpts)  Optional command option
+
+    Returns: ~
+        (nil)
+
+    Usage: ~
+>lua
+        require("undo-glow").substitute_action(require("substitute").line)
+<
+
+
 M.highlight_changes({opts?})              *undo-glow.nvim.api.highlight_changes*
     Core API to highlight changes in the current buffer.
 
