@@ -210,6 +210,22 @@ M.substitute_action({action}, {opts?})    *undo-glow.nvim.api.substitute_action*
 <
 
 
+M.flash_jump({flash_opts?}, {opts?})             *undo-glow.nvim.api.flash_jump*
+    Flash.nvim jump command that highlights.
+
+    Parameters: ~
+        {flash_opts?}  (table)                 The flash jump options.
+        {opts?}        (UndoGlow.CommandOpts)  Optional command option
+
+    Returns: ~
+        (nil)
+
+    Usage: ~
+>lua
+        require("undo-glow").flash_jump(flash_opts, opts)
+<
+
+
 M.highlight_changes({opts?})              *undo-glow.nvim.api.highlight_changes*
     Core API to highlight changes in the current buffer.
 
