@@ -19,9 +19,12 @@ vim.keymap.set({ "i", "c" }, "<C-r>", function()
 end, { expr = true, desc = "Register paste with highlighting flag" })
 ```
 
-## Highlight on jumping to a mark with key "`"
+## Highlight on jumping to a mark
 
 This snippet does not work with `which-key.nvim`, no idea how to make it work together. PR is welcome.
+
+> [!note]
+> This snippet uses key backtick as example, you can also do keys like `', g`, g', etc`, it should work just fine.
 
 ```lua
 vim.keymap.set("n", "`", function()
