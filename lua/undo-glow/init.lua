@@ -155,6 +155,16 @@ function M.yanky_put(yanky_action, opts)
 	return yanky.put(yanky_action, opts)
 end
 
+---Substitute.nvim action command that highlights.
+---@param action fun() The action to perform.
+---@param opts? UndoGlow.CommandOpts Optional command option
+---@return nil
+---@usage `require("undo-glow").substitute_action(require("substitute").line)`
+function M.substitute_action(action, opts)
+	local substitute = require("undo-glow.integrations").substitute
+	substitute.action(action, opts)
+end
+
 ---Core API to highlight changes in the current buffer.
 ---@param opts? UndoGlow.HighlightChanges|UndoGlow.CommandOpts
 ---@return nil
