@@ -14,7 +14,7 @@
 - **Zero Dependencies:** Uses Neovim's native APIs for efficient real-time highlighting with zero dependencies.
 - **Window-Specific Highlighting:** Restrict highlights & animations to the active window when the same buffers are splitted, ensuring that only the current view displays the visual feedback.
 - **Seamless Integration**: Harmoniously works with plugins like `mini.cursorword`, `Snacks.words` and `render-markdown.nvim` to provide a consistent and enhanced highlighting experience.
-- **Built-in Integrations**: Built-in integrations with `yanky.nvim` and more.
+- **Built-in Integrations**: Built-in integrations with `yanky.nvim`, `substitute.nvim`, `flash.nvim` and more.
 
 <!-- panvimdoc-ignore-start -->
 
