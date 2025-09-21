@@ -9,11 +9,44 @@ This snippet does not work with `which-key.nvim`, no idea how to make it work to
 
 ```lua
 vim.keymap.set({ "i", "c" }, "<C-r>", function()
- local opts = require("undo-glow.utils").merge_command_opts("UgPaste", {})
+ ---@type UndoGlow.CommandOpts
+ local opts = {}
+
+ local opts = require("undo-glow.utils").merge_command_opts("UgPaste", opts)
  require("undo-glow").highlight_changes(opts)
 
  return "<C-r>"
 end, { expr = true, desc = "Register paste with highlighting flag" })
+```
+
+## Highlight on jumping to a mark with key "`"
+
+This snippet does not work with `which-key.nvim`, no idea how to make it work together. PR is welcome.
+
+```lua
+vim.keymap.set("n", "`", function()
+ ---@type UndoGlow.CommandOpts
+ local opts = {
+  animation = {
+   animation_type = "slide",
+  },
+ }
+
+ opts = require("undo-glow.utils").merge_command_opts("UgCursor", opts)
+
+ vim.schedule(function()
+  local pos = require("undo-glow.utils").get_current_cursor_row()
+  require("undo-glow").highlight_region(vim.tbl_extend("force", opts, {
+   s_row = pos.s_row,
+   s_col = pos.s_col,
+   e_row = pos.e_row,
+   e_col = pos.e_col,
+   force_edge = opts.force_edge == nil and true or opts.force_edge,
+  }))
+ end)
+
+ return "`"
+end, { expr = true, desc = "Jump to mark with highlighting" })
 ```
 
 ## Cursor Moved Highlights for out side of Neovim Switching E.g. Tmux
