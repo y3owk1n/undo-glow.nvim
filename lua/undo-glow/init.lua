@@ -165,6 +165,16 @@ function M.substitute_action(action, opts)
 	substitute.action(action, opts)
 end
 
+---Flash.nvim jump command that highlights.
+---@param flash_opts? table The flash jump options.
+---@param opts? UndoGlow.CommandOpts Optional command option
+---@return nil
+---@usage `require("undo-glow").flash_jump(flash_opts, opts)`
+function M.flash_jump(flash_opts, opts)
+	local flash = require("undo-glow.integrations").flash
+	flash.jump(flash_opts, opts)
+end
+
 ---Core API to highlight changes in the current buffer.
 ---@param opts? UndoGlow.HighlightChanges|UndoGlow.CommandOpts
 ---@return nil

@@ -959,11 +959,16 @@ vim.keymap.set("n", "P", return require("undo-glow").yanky_put("YankyPutBefore")
 
 </details>
 
-#### Substitute.nvim
+#### [substitute.nvim](https://github.com/gbprod/substitute.nvim)
 
 You can use the `substitute_action` API to highlight the changes made by the substitute action.
 
 ```lua
+---Substitute.nvim action command that highlights.
+---@param action fun() The action to perform.
+---@param opts? UndoGlow.CommandOpts Optional command option
+---@return nil
+---@usage `require("undo-glow").substitute_action(require("substitute").line)`
 require("undo-glow").substitute_action(require("substitute").line)
 ```
 
@@ -998,6 +1003,41 @@ end, { noremap = true })
 
 vim.keymap.set("x", "s", function()
  require("undo-glow").substitute_action(require("substitute").visual)
+end, { noremap = true })
+```
+
+<!-- config:end -->
+
+</details>
+
+#### [flash.nvim](https://github.com/folke/flash.nvim)
+
+You can use the `flash_jump` API to highlight the cursor line after jump.
+
+```lua
+---Flash.nvim jump command that highlights.
+---@param flash_opts? table The flash jump options.
+---@param opts? UndoGlow.CommandOpts Optional command option
+---@return nil
+---@usage `require("undo-glow").flash_jump(flash_opts, opts)`
+require("undo-glow").flash_jump(flash_opts, opts)
+```
+
+<details><summary>Example with flash.nvim</summary>
+
+<!-- config:start -->
+
+```lua
+-- highlight the cursor line after jump
+vim.keymap.set({ "n", "x", "o" }, "s", function()
+ require("undo-glow").flash_jump()
+end, { noremap = true })
+
+-- highlight the cursor line after jump with force_edge = true
+vim.keymap.set({ "n", "x", "o" }, "s", function()
+ require("undo-glow").flash_jump({}, {
+   force_edge = true,
+ })
 end, { noremap = true })
 ```
 
