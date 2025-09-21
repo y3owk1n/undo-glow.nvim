@@ -957,6 +957,8 @@ vim.keymap.set("n", "P", return require("undo-glow").yanky_put("YankyPutBefore")
 
 <!-- config:end -->
 
+</details>
+
 ### Recipes
 
 With all the API that **undo-glow.nvim** provides, you can easily integrate with other plugins or creating some nice highlights that are not supported by the plugin. Check out the [recipes](recipes.md) page for more details.
