@@ -951,8 +951,13 @@ require("undo-glow").yanky_put(yanky_action, opts)
 The important bit is that you need to `return the function` and set `expr = true` in the `vim.keymap.set` function.
 
 ```lua
-vim.keymap.set("n", "p", return require("undo-glow").yanky_put("YankyPutAfter"), { noremap = true, desc = "Paste below with highlight", expr = true })
-vim.keymap.set("n", "P", return require("undo-glow").yanky_put("YankyPutBefore"), { noremap = true, desc = "Paste above with highlight", expr = true })
+vim.keymap.set("n", "p", function()
+ return require("undo-glow").yanky_put("YankyPutAfter")
+end, { noremap = true, desc = "Paste below with highlight", expr = true })
+
+vim.keymap.set("n", "p", function()
+ return require("undo-glow").yanky_put("YankyPutBefore")
+end, { noremap = true, desc = "Paste above with highlight", expr = true })
 ```
 
 <!-- config:end -->
@@ -969,7 +974,7 @@ You can use the `substitute_action` API to highlight the changes made by the sub
 ---@param opts? UndoGlow.CommandOpts Optional command option
 ---@return nil
 ---@usage `require("undo-glow").substitute_action(require("substitute").line)`
-require("undo-glow").substitute_action(require("substitute").line)
+require("undo-glow").substitute_action(action, opts)
 ```
 
 > [!note]
