@@ -3,83 +3,17 @@
 > [!note]
 > If you have more recipes, feel free to send a PR to add them here.
 
-## With Flash.nvim
+## Highlight on `<C-R>` in Insert Mode
+
+This snippet does not work with `which-key.nvim`, no idea how to make it work together. PR is welcome.
 
 ```lua
-function()
- vim.g.ug_ignore_cursor_moved = true
- require("flash").jump()
-
- vim.defer_fn(function()
-  local region = require("undo-glow.utils").get_current_cursor_row()
-
-  local undo_glow_opts = require("undo-glow.utils").merge_command_opts("UgSearch", {
-   force_edge = true,
-  })
-
-  require("undo-glow").highlight_region(vim.tbl_extend("force", undo_glow_opts, region))
- end, 5)
-end,
-```
-
-## With Yanky.nvim
-
-Remember to disable highlights from `yanky.nvim`
-
-```lua
--- yanky.nvim config
-{
- highlight = {
-  on_put = false,
-  on_yank = false,
- },
-}
-```
-
-### Put text after cursor
-
-```lua
-vim.keymap.set("n", "p", function()
- local opts = require("undo-glow.utils").merge_command_opts("UgPaste")
- require("undo-glow").highlight_changes(opts)
- return "<Plug>(YankyPutAfter)"
-end, { desc = "Paste below with highlight", noremap = true, expr = true })
-```
-
-### Put text before cursor
-
-```lua
-vim.keymap.set("n", "p", function()
- local opts = require("undo-glow.utils").merge_command_opts("UgPaste")
- require("undo-glow").highlight_changes(opts)
- return "<Plug>(YankyPutBefore)"
-end, { desc = "Paste below with highlight", noremap = true, expr = true })
-```
-
-## With Substitute.nvim
-
-Remember to disable highlights from `substitute.nvim`
-
-```lua
--- substitute.nvim config
-{
- highlight_substituted_text = {
-   enabled = false,
- },
-}
-```
-
-### Substitute line
-
-The rest of the commands should be almost the identical.
-
-```lua
-vim.keymap.set("n", "ss", function()
- local opts = require("undo-glow.utils").merge_command_opts("UgPaste", {}) -- Set this to whatever hlgroup you like
+vim.keymap.set({ "i", "c" }, "<C-r>", function()
+ local opts = require("undo-glow.utils").merge_command_opts("UgPaste", {})
  require("undo-glow").highlight_changes(opts)
 
- require("substitute").line()
-end, { noremap = true })
+ return "<C-r>"
+end, { expr = true, desc = "Register paste with highlighting flag" })
 ```
 
 ## Cursor Moved Highlights for out side of Neovim Switching E.g. Tmux
