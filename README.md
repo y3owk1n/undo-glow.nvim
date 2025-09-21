@@ -917,16 +917,48 @@ vim.api.nvim_create_autocmd({ "BufReadPost", "TextChanged" }, {
 })
 ```
 
+### Built-in Integrations
+
+#### ![yanky.nvim](https://github.com/gbprod/yanky.nvim)
+
+```lua
+---Yanky.nvim put command that highlights.
+---@param yanky_action string The yanky action to perform.
+---@param opts? UndoGlow.CommandOpts Optional command option
+---@return nil
+---@usage `require("undo-glow").yanky_put("YankyPutAfter")`
+require("undo-glow").yanky_put(yanky_action, opts)
+```
+
+> [!NOTE]
+> Remember to turn off highlights in your `yanky.nvim` config
+
+```lua
+-- yanky.nvim config
+{
+ highlight = {
+  on_put = false,
+  on_yank = false,
+ },
+}
+```
+
+<details><summary>Example with yanky.nvim</summary>
+
+<!-- config:start -->
+
+The important bit is that you need to `return the function` and set `expr = true` in the `vim.keymap.set` function.
+
+```lua
+vim.keymap.set("n", "p", return require("undo-glow").yanky_put("YankyPutAfter"), { noremap = true, desc = "Paste below with highlight", expr = true })
+vim.keymap.set("n", "P", return require("undo-glow").yanky_put("YankyPutBefore"), { noremap = true, desc = "Paste above with highlight", expr = true })
+```
+
+<!-- config:end -->
+
 ### Recipes
 
 With all the API that **undo-glow.nvim** provides, you can easily integrate with other plugins or creating some nice highlights that are not supported by the plugin. Check out the [recipes](recipes.md) page for more details.
-
-TLDR for recipes:
-
-- implementation with [flash.nvim](https://github.com/folke/flash.nvim)
-- implementation with [yanky.nvim](https://github.com/gbprod/yanky.nvim)
-- implementation with [substitute.nvim](https://github.com/gbprod/substitute.nvim)
-- cursor moved highlights for out side of Neovim switching (e.g. Tmux)
 
 ## 🎨 Hlgroups
 
