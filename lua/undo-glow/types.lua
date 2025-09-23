@@ -165,4 +165,11 @@ local M = {}
 ---@field force_edge? boolean Whether to force edge highlighting.
 ---@field window_scoped? boolean If enabled, the highlight effect is constrained to the current active window, even if the buffer is shared across splits.
 
+---Opts for cursor moved command
+---@class UndoGlow.CursorMovedOpts
+---@field ignored_ft? table<string> Optional filetypes to ignore
+---@field steps_to_trigger? number Optional number of steps to trigger
+---@field trigger_on_new_buffer? boolean Optional trigger on new buffer
+---@field trigger_on_new_window? boolean Optional trigger on new window
+
 return M

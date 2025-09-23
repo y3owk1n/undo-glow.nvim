@@ -663,8 +663,9 @@ vim.keymap.set("n", "gcc", require("undo-glow").comment_line, { expr = true, nor
 
 Best effort to imitate [beacon.nvim](https://github.com/DanilaMihailov/beacon.nvim) functionality. Highlights when:
 
-- Cursor moved more than 10 steps away
-- On buffer load
+- Cursor moved more than 10 steps away - Configurable
+- On buffer load/switch - Configurable
+- On window load/switch - Configurable
 - Split view supported
 - Only in normal mode (I think it make sense)
 
@@ -684,13 +685,19 @@ For now the following are ignored:
 If you would like to avoid `cursor_changed` to highlight in other places of your code, you can add `vim.g.ug_ignore_cursor_moved = true` to any of your running function, and it will temporarily set to ignore the cursor_moved highlights.
 
 ```lua
+---Opts for cursor moved command
+---@class UndoGlow.CursorMovedOpts
+---@field ignored_ft? table<string> Optional filetypes to ignore
+---@field steps_to_trigger? number Optional number of steps to trigger
+---@field trigger_on_new_buffer? boolean Optional trigger on new buffer
+---@field trigger_on_new_window? boolean Optional trigger on new window
+
 ---Cursor move command that highlights.
 ---For autocmd usage only.
 ---@param opts? UndoGlow.CommandOpts Optional command option
----@param ignored_ft? table<string> Optional filetypes to ignore
----@param steps_to_trigger? number Optional number of steps to trigger
+---@param cursor_moved_opts? UndoGlow.CursorMovedOpts Optional cursor move options
 ---@return nil
-require("undo-glow").cursor_moved(opts, ignored_ft, steps_to_trigger)
+require("undo-glow").cursor_moved(opts, cursor_moved_opts)
 ```
 
 <details><summary>Usage Example</summary>
@@ -709,7 +716,13 @@ vim.api.nvim_create_autocmd("CursorMoved", {
 vim.api.nvim_create_autocmd("CursorMoved", {
  desc = "Highlight when cursor moved significantly",
  callback = function()
-  require("undo-glow").cursor_moved(nil, { "mason", "lazy", ... })
+  require("undo-glow").cursor_moved({}, {
+   ignored_ft = {
+    "mason",
+    "lazy",
+    ...
+   },
+  })
  end,
 })
 
@@ -717,7 +730,29 @@ vim.api.nvim_create_autocmd("CursorMoved", {
 vim.api.nvim_create_autocmd("CursorMoved", {
  desc = "Highlight when cursor moved significantly",
  callback = function()
-  require("undo-glow").cursor_moved(nil, nil, 5)
+  require("undo-glow").cursor_moved({}, {
+   steps_to_trigger = 5,
+  })
+ end,
+})
+
+-- Trigger when buffer changes or new buffer
+vim.api.nvim_create_autocmd("CursorMoved", {
+ desc = "Highlight when cursor moved significantly",
+ callback = function()
+  require("undo-glow").cursor_moved({}, {
+   trigger_on_new_buffer = true, -- turn off if you dont like it
+  })
+ end,
+})
+
+-- Trigger when window changes or new window
+vim.api.nvim_create_autocmd("CursorMoved", {
+ desc = "Highlight when cursor moved significantly",
+ callback = function()
+  require("undo-glow").cursor_moved({}, {
+   trigger_on_new_window = true, -- turn off if you dont like it
+  })
  end,
 })
 ```
