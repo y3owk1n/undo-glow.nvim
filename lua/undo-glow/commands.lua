@@ -238,15 +238,21 @@ end
 ---Cursor move command that highlights.
 ---For autocmd usage only.
 ---@param opts? UndoGlow.CommandOpts Optional command option
----@param ignored_ft? table<string> Optional filetypes to ignore
----@param steps_to_trigger? number Optional number of steps to trigger
+---@param cursor_moved_opts? UndoGlow.CursorMovedOpts Optional cursor move options
 ---@return nil
-function M.cursor_moved(opts, ignored_ft, steps_to_trigger)
+function M.cursor_moved(opts, cursor_moved_opts)
 	if vim.api.nvim_get_mode().mode ~= "n" then
 		return
 	end
 
 	opts = require("undo-glow.utils").merge_command_opts("UgCursor", opts)
+
+	cursor_moved_opts = vim.tbl_deep_extend("force", {
+		ignored_ft = {},
+		steps_to_trigger = 10,
+		trigger_on_new_buffer = true,
+		trigger_on_new_window = true,
+	}, cursor_moved_opts or {})
 
 	local current_buf = vim.api.nvim_get_current_buf()
 	local current_win = vim.api.nvim_get_current_win()
@@ -266,7 +272,8 @@ function M.cursor_moved(opts, ignored_ft, steps_to_trigger)
 
 	local is_not_text_buffer = vim.bo.buftype ~= ""
 
-	local is_ignored_ft = vim.tbl_contains(ignored_ft or {}, vim.bo.filetype)
+	local is_ignored_ft =
+		vim.tbl_contains(cursor_moved_opts.ignored_ft, vim.bo.filetype)
 
 	if
 		is_preview_window
@@ -288,9 +295,11 @@ function M.cursor_moved(opts, ignored_ft, steps_to_trigger)
 	local new_window = (prev_win ~= current_win)
 
 	if not vim.g.ug_ignore_cursor_moved then
-		steps_to_trigger = steps_to_trigger or 10
-
-		if diff > steps_to_trigger or new_buffer or new_window then
+		if
+			diff > cursor_moved_opts.steps_to_trigger
+			or (cursor_moved_opts.trigger_on_new_buffer and new_buffer)
+			or (cursor_moved_opts.trigger_on_new_window and new_window)
+		then
 			require("undo-glow").highlight_region(
 				vim.tbl_extend("force", opts, {
 					s_row = pos.s_row,

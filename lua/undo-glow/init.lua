@@ -137,12 +137,11 @@ end
 ---Cursor move command that highlights.
 ---For autocmd usage only.
 ---@param opts? UndoGlow.CommandOpts Optional command option
----@param ignored_ft? table<string> Optional filetypes to ignore
----@param steps_to_trigger? number Optional number of steps to trigger
+---@param cursor_moved_opts? UndoGlow.CursorMovedOpts Optional cursor move options
 ---@return nil
-function M.cursor_moved(opts, ignored_ft, steps_to_trigger)
+function M.cursor_moved(opts, cursor_moved_opts)
 	local commands = require("undo-glow.commands")
-	return commands.cursor_moved(opts, ignored_ft, steps_to_trigger)
+	return commands.cursor_moved(opts, cursor_moved_opts)
 end
 
 ---Yanky.nvim put command that highlights.
