@@ -169,10 +169,14 @@ M.comment_line({opts?})                        *undo-glow.nvim.api.comment_line*
         (string)  String for expression
 
 
-M.cursor_moved({steps_to_trigger?})            *undo-glow.nvim.api.cursor_moved*
+                                               *undo-glow.nvim.api.cursor_moved*
+M.cursor_moved({opts?}, {cursor_moved_opts?})
+    Cursor move command that highlights.
+    For autocmd usage only.
 
     Parameters: ~
-        {steps_to_trigger?}  (number)  Optional number of steps to trigger
+        {opts?}               (UndoGlow.CommandOpts)      Optional command option
+        {cursor_moved_opts?}  (UndoGlow.CursorMovedOpts)  Optional cursor move options
 
     Returns: ~
         (nil)
@@ -537,6 +541,14 @@ UndoGlow.ExtmarkOpts : UndoGlow.RowCol
         {priority}        (integer)  Extmark priority to render the highlight (Default 4096).
         {force_edge?}     (boolean)  Whether to force edge highlighting.
         {window_scoped?}  (boolean)  If enabled, the highlight effect is constrained to the current active window, even if the buffer is shared across splits.
+
+
+                                 *undo-glow.nvim.types.UndoGlow.CursorMovedOpts*
+UndoGlow.CursorMovedOpts
+    Opts for cursor moved command
+
+    Fields: ~
+        {ignored_ft?}  (table)
 
 
 vim:tw=78:ts=8:noet:ft=help:norl:
