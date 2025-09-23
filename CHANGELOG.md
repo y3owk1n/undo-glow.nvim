@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.12.0](https://github.com/y3owk1n/undo-glow.nvim/compare/v1.11.0...v1.12.0) (2025-09-23)
+
+
+### Features
+
+* **commands.cursor_moved:** expose more variables to configure ([#275](https://github.com/y3owk1n/undo-glow.nvim/issues/275)) ([a2e801f](https://github.com/y3owk1n/undo-glow.nvim/commit/a2e801f3b9e7375cc01e9a9d99189cebce145867))
+
 ## [1.11.0](https://github.com/y3owk1n/undo-glow.nvim/compare/v1.10.7...v1.11.0) (2025-09-21)
 
 
