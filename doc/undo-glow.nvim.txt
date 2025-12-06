@@ -169,8 +169,7 @@ M.comment_line({opts?})                        *undo-glow.nvim.api.comment_line*
         (string)  String for expression
 
 
-                                               *undo-glow.nvim.api.cursor_moved*
-M.cursor_moved({opts?}, {cursor_moved_opts?})
+M.cursor_moved({opts?}, {cursor_moved_opts?})  *undo-glow.nvim.api.cursor_moved*
     Cursor move command that highlights.
     For autocmd usage only.
 
@@ -315,8 +314,7 @@ M.config                                          *undo-glow.nvim.config.config*
 ==============================================================================
 Types                                                     *undo-glow.nvim.types*
 
-                             *undo-glow.nvim.types.UndoGlow.AnimationTypeString*
-UndoGlow.AnimationTypeString
+UndoGlow.AnimationTypeString *undo-glow.nvim.types.UndoGlow.AnimationTypeString*
     Animation type aliases.
 
     Variants: ~
@@ -333,15 +331,13 @@ UndoGlow.AnimationTypeString
         ("slide")
 
 
-                                 *undo-glow.nvim.types.UndoGlow.AnimationTypeFn*
-UndoGlow.AnimationTypeFn
+UndoGlow.AnimationTypeFn         *undo-glow.nvim.types.UndoGlow.AnimationTypeFn*
 
     Type: ~
         fun(opts:UndoGlow.Animation)
 
 
-                                    *undo-glow.nvim.types.UndoGlow.EasingString*
-UndoGlow.EasingString
+UndoGlow.EasingString               *undo-glow.nvim.types.UndoGlow.EasingString*
     Easing function aliases.
 
     Variants: ~
@@ -424,8 +420,7 @@ UndoGlow.EasingOpts                   *undo-glow.nvim.types.UndoGlow.EasingOpts*
         {overshoot?}  (number)  Optional overshoot (for back easing).
 
 
-                                *undo-glow.nvim.types.UndoGlow.Config.Animation*
-UndoGlow.Config.Animation
+UndoGlow.Config.Animation       *undo-glow.nvim.types.UndoGlow.Config.Animation*
     Animation configuration.
 
     Fields: ~
@@ -473,8 +468,7 @@ UndoGlow.HSLColor                       *undo-glow.nvim.types.UndoGlow.HSLColor*
         {l}  (integer)  Lightness component as a percentage (0-100)
 
 
-                                     *undo-glow.nvim.types.UndoGlow.CommandOpts*
-UndoGlow.CommandOpts
+UndoGlow.CommandOpts                 *undo-glow.nvim.types.UndoGlow.CommandOpts*
     Command options for triggering highlights.
 
     Fields: ~
@@ -543,8 +537,7 @@ UndoGlow.ExtmarkOpts : UndoGlow.RowCol
         {window_scoped?}  (boolean)  If enabled, the highlight effect is constrained to the current active window, even if the buffer is shared across splits.
 
 
-                                 *undo-glow.nvim.types.UndoGlow.CursorMovedOpts*
-UndoGlow.CursorMovedOpts
+UndoGlow.CursorMovedOpts         *undo-glow.nvim.types.UndoGlow.CursorMovedOpts*
     Opts for cursor moved command
 
     Fields: ~
