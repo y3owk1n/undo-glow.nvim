@@ -18,7 +18,7 @@ jobs:
           token: ${{ secrets.PAT }}
 
       - name: Install Devbox
-        uses: jetify-com/devbox-install-action@v0.14.0
+        uses: jetify-com/devbox-install-action@v0.16.0
         with:
           enable-cache: true
 
@@ -26,7 +26,7 @@ jobs:
         run: mkdir -p doc
 
       - name: Generate docs
-        run: just doc
+        run: devbox run -- just doc
 
       - name: Push changes
         uses: stefanzweifel/git-auto-commit-action@v7
