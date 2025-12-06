@@ -4,36 +4,40 @@ on:
   pull_request:
     branches: [main]
 
-jobs:
-  stylua:
-    name: stylua-check
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: JohnnyMorganz/stylua-action@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          version: latest
-          args: --check lua
+permissions:
+  contents: read
+  pull-requests: read
 
-  test:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
+jobs:
+  checks:
+    name: ${{ matrix.check }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        check: [formatting, test]
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Install Neovim
-        uses: folke/github/neovim@main
-
-      - name: Install Just
-        uses: extractions/setup-just@v2
-
-      - name: Test Cache
-        uses: actions/cache@v4
+        uses: actions/checkout@v6
         with:
-          path: .tests
-          key: ${{ runner.os }}-tests-${{ hashFiles('tests/minit.lua') }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.head_ref }}
 
-      - name: Run tests
-        run: just test
+      - name: Install Devbox
+        uses: jetify-com/devbox-install-action@v0.14.0
+        with:
+          enable-cache: true
+
+      - name: Setup Neovim
+        if: ${{ matrix.check == 'test' }}
+        uses: y3owk1n/nvs@main
+        with:
+          version: stable
+
+      - name: Run just fmt-check
+        if: ${{ matrix.check == 'formatting' }}
+        run: devbox run -- just fmt-check
+
+      - name: Run just test
+        if: ${{ matrix.check == 'test' }}
+        run: devbox run -- just test

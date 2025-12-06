@@ -4,35 +4,32 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: write
+
 jobs:
   doc:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           token: ${{ secrets.PAT }}
 
+      - name: Install Devbox
+        uses: jetify-com/devbox-install-action@v0.14.0
+        with:
+          enable-cache: true
+
       - name: Create /doc
         run: mkdir -p doc
-
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: stable
-
-      - name: Install vimcats
-        run: cargo install vimcats --features=cli
-
-      - name: Install Just
-        uses: extractions/setup-just@v3
 
       - name: Generate docs
         run: just doc
 
       - name: Push changes
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: |
             chore(build): auto-generate docs from readme
