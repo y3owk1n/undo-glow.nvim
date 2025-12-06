@@ -26,7 +26,7 @@ jobs:
         run: mkdir -p doc
 
       - name: Generate docs
-        run: just doc
+        run: devbox run -- just doc
 
       - name: Push changes
         uses: stefanzweifel/git-auto-commit-action@v7
