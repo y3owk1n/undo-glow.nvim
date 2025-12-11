@@ -180,6 +180,9 @@ require("undo-glow").setup({
 ---Logging configuration options.
 ---@class UndoGlow.Config.Logging
 ---@field level? "TRACE"|"DEBUG"|"INFO"|"WARN"|"ERROR"|"OFF" Log level for filtering messages (Default "INFO")
+---@field notify? boolean Enable Neovim notification output (Default true)
+---@field file? boolean Enable file logging output (Default false)
+---@field file_path? string Custom path for log file (auto-generated if not set)
 
 ---Options passed to easing functions.
 ---@class UndoGlow.EasingOpts
@@ -247,6 +250,9 @@ require("undo-glow").setup({
   },
   logging = {
     level = "INFO", -- Log level: "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "OFF"
+    notify = true, -- Show logs in Neovim notifications
+    file = false, -- Write logs to file
+    file_path = nil, -- Custom log file path (auto-generated if nil)
   },
 }
 ```
@@ -527,6 +533,22 @@ logging = {
 - **ERROR**: Error messages for failed operations
 - **OFF**: Disable all logging
 
+### Output Destinations
+
+Configure where log messages are sent:
+
+```lua
+logging = {
+  notify = true, -- Show in Neovim notifications (default: true)
+  file = false,  -- Write to log file (default: false)
+  file_path = nil, -- Custom log file path (auto-generated if nil)
+}
+```
+
+- **notify**: Displays logs in Neovim's notification system
+- **file**: Writes logs to a file for persistent storage
+- **file_path**: Custom path for log file (defaults to `~/.cache/nvim/undo-glow.log`)
+
 ### Log Message Format
 
 All log messages follow a structured format:
@@ -538,10 +560,12 @@ Context: {additional_info}
 
 ### Logging Recommendations
 
-- **Development**: Use `"DEBUG"` or `"TRACE"` for detailed troubleshooting
-- **Production**: Use `"INFO"` for general monitoring (default)
-- **Performance**: Use `"WARN"` or `"ERROR"` to reduce logging overhead
+- **Development**: Use `"DEBUG"` or `"TRACE"` with `file = true` for detailed troubleshooting
+- **Production**: Use `"INFO"` with `notify = true` for general monitoring (default)
+- **Performance**: Use `"WARN"` or `"ERROR"` with `notify = false` to reduce overhead
 - **Silent**: Use `"OFF"` to disable all logging
+- **Debugging**: Enable `file = true` to persist logs for analysis
+- **CI/Headless**: Use `notify = false` and `file = true` for log capture
 
 ### Health Check Integration
 

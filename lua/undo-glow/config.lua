@@ -118,6 +118,10 @@ local defaults = {
 	logging = {
 		-- Log level: "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "OFF"
 		level = "INFO", -- Default log level
+		-- Output destinations
+		notify = true, -- Show logs in Neovim notifications
+		file = false, -- Write logs to file
+		file_path = nil, -- Custom log file path (auto-generated if nil)
 	},
 }
 
@@ -203,6 +207,13 @@ function M.setup(user_config)
 		if M.config.logging.level and level_map[M.config.logging.level] then
 			log.set_level(level_map[M.config.logging.level])
 		end
+
+		-- Configure output destinations
+		log.set_outputs(
+			M.config.logging.notify,
+			M.config.logging.file,
+			M.config.logging.file_path
+		)
 	end
 
 	local valid_keys = {

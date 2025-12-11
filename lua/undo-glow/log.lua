@@ -23,6 +23,15 @@ M.levels = {
 ---Current minimum log level (configurable)
 local current_level = M.levels.INFO
 
+---Log output destinations
+local outputs = {
+	notify = true,  -- Neovim notifications (default)
+	file = false,   -- File logging (optional)
+}
+
+---Log file path (when file logging is enabled)
+local log_file_path = nil
+
 ---Set the minimum log level
 ---@param level integer The minimum log level to display
 function M.set_level(level)
@@ -33,6 +42,49 @@ end
 ---@return integer
 function M.get_level()
 	return current_level
+end
+
+---Enable or disable log outputs
+---@param notify? boolean Enable Neovim notifications
+---@param file? boolean Enable file logging
+---@param file_path? string Path to log file (required if file=true)
+function M.set_outputs(notify, file, file_path)
+	outputs.notify = notify ~= false
+	outputs.file = file == true
+
+	if outputs.file then
+		if not file_path then
+			-- Default log file location
+			local cache_dir = vim.fn.stdpath("cache")
+			log_file_path = vim.fs.joinpath(cache_dir, "undo-glow.log")
+		else
+			log_file_path = file_path
+		end
+
+		-- Ensure log directory exists
+		local log_dir = vim.fs.dirname(log_file_path)
+		if not vim.uv.fs_stat(log_dir) then
+			vim.uv.fs_mkdir(log_dir, 493) -- 0755 permissions
+		end
+	end
+end
+
+---Write a message to the log file
+---@param message string The formatted log message
+local function write_to_file(message)
+	if not outputs.file or not log_file_path then return end
+
+	local file = io.open(log_file_path, "a")
+	if file then
+		file:write(message .. "\n")
+		file:close()
+	end
+end
+
+---Get the current log file path
+---@return string|nil
+function M.get_log_file()
+	return log_file_path
 end
 
 ---Format a log message with consistent structure
@@ -65,7 +117,13 @@ end
 function M.error(message, context)
 	if not should_log(M.levels.ERROR) then return end
 	local formatted = format_message("ERROR", message, context)
-	vim.notify(formatted, vim.log.levels.ERROR)
+
+	if outputs.notify then
+		vim.notify(formatted, vim.log.levels.ERROR)
+	end
+	if outputs.file then
+		write_to_file(formatted)
+	end
 end
 
 ---Log a warning message with structured formatting
@@ -74,7 +132,13 @@ end
 function M.warn(message, context)
 	if not should_log(M.levels.WARN) then return end
 	local formatted = format_message("WARN", message, context)
-	vim.notify(formatted, vim.log.levels.WARN)
+
+	if outputs.notify then
+		vim.notify(formatted, vim.log.levels.WARN)
+	end
+	if outputs.file then
+		write_to_file(formatted)
+	end
 end
 
 ---Log an info message with structured formatting
@@ -83,7 +147,13 @@ end
 function M.info(message, context)
 	if not should_log(M.levels.INFO) then return end
 	local formatted = format_message("INFO", message, context)
-	vim.notify(formatted, vim.log.levels.INFO)
+
+	if outputs.notify then
+		vim.notify(formatted, vim.log.levels.INFO)
+	end
+	if outputs.file then
+		write_to_file(formatted)
+	end
 end
 
 ---Log a debug message with structured formatting
@@ -92,7 +162,13 @@ end
 function M.debug(message, context)
 	if not should_log(M.levels.DEBUG) then return end
 	local formatted = format_message("DEBUG", message, context)
-	vim.notify(formatted, vim.log.levels.DEBUG)
+
+	if outputs.notify then
+		vim.notify(formatted, vim.log.levels.DEBUG)
+	end
+	if outputs.file then
+		write_to_file(formatted)
+	end
 end
 
 ---Log a trace message with structured formatting (most verbose)
@@ -101,7 +177,13 @@ end
 function M.trace(message, context)
 	if not should_log(M.levels.TRACE) then return end
 	local formatted = format_message("TRACE", message, context)
-	vim.notify(formatted, vim.log.levels.DEBUG) -- Use DEBUG level for trace
+
+	if outputs.notify then
+		vim.notify(formatted, vim.log.levels.DEBUG) -- Use DEBUG level for trace
+	end
+	if outputs.file then
+		write_to_file(formatted)
+	end
 end
 
 return M
