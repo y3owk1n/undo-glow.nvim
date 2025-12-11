@@ -14,7 +14,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        check: [formatting, test]
+        check: [formatting, linting, test]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout code
@@ -37,6 +37,10 @@ jobs:
       - name: Run just fmt-check
         if: ${{ matrix.check == 'formatting' }}
         run: devbox run -- just fmt-check
+
+      - name: Run just lint
+        if: ${{ matrix.check == 'linting' }}
+        run: devbox run -- just lint
 
       - name: Run just test
         if: ${{ matrix.check == 'test' }}

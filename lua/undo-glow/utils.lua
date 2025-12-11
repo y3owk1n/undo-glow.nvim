@@ -315,9 +315,8 @@ function M.animate_or_clear_highlights(
 			pcall(opts.state.animation.animation_type, animation_opts)
 
 		if not success then
-			vim.notify(
-				"[UndoGlow]: Animation type must be one of the builtin or a function... Fallback to fade",
-				vim.log.levels.ERROR
+			require("undo-glow.log").error(
+				"Animation type must be one of the builtin or a function. Falling back to fade."
 			)
 			status = false
 		end
@@ -335,9 +334,8 @@ function M.animate_or_clear_highlights(
 				end
 			end, opts.state.animation.duration)
 		else
-			vim.notify(
-				"[UndoGlow]: Unable to clear highlights without extmark_ids",
-				vim.log.levels.ERROR
+			require("undo-glow.log").error(
+				"Unable to clear highlights without extmark_ids"
 			)
 		end
 	end

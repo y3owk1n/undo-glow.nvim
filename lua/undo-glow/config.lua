@@ -105,12 +105,57 @@ local defaults = {
 }
 
 ---@private
+---Validates user configuration
+---@param user_config UndoGlow.Config
+---@return boolean
+local function validate_config(user_config)
+	local validate = require("undo-glow.validate")
+
+	-- Validate animation config
+	if
+		user_config.animation
+		and not validate.validate_animation_config(user_config.animation)
+	then
+		return false
+	end
+
+	-- Validate highlights config
+	if
+		user_config.highlights
+		and not validate.validate_highlight_config(user_config.highlights)
+	then
+		return false
+	end
+
+	-- Validate priority
+	if
+		user_config.priority ~= nil
+		and not validate.is_number(user_config.priority, "priority", 0, 65535)
+	then
+		return false
+	end
+
+	return true
+end
+
+---@private
 ---Setup function for undo-glow.
 ---Merges the user configuration with the default configuration and sets up the highlights.
 ---@param user_config? UndoGlow.Config Optional user configuration.
 ---@return nil
 function M.setup(user_config)
-	M.config = vim.tbl_deep_extend("force", defaults, user_config or {})
+	user_config = user_config or {}
+
+	-- Validate user config before merging
+	if not validate_config(user_config) then
+		require("undo-glow.log").error(
+			"Invalid configuration provided. Using defaults."
+		)
+		M.config = vim.tbl_deep_extend("force", {}, defaults)
+		return
+	end
+
+	M.config = vim.tbl_deep_extend("force", defaults, user_config)
 
 	local valid_keys = {
 		undo = true,

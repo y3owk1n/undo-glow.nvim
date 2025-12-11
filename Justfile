@@ -13,6 +13,9 @@ fmt-check:
 fmt:
     stylua --config-path=.stylua.toml lua
 
+lint:
+    selene lua
+
 test:
     @echo "Running tests in headless Neovim using test_init.lua..."
     nvim -l tests/minit.lua --minitest
