@@ -215,6 +215,14 @@ end
 ---@param opts? UndoGlow.CommandOpts Optional command option
 ---@return nil
 function M.search_cmd(opts)
+	local cmdtype = vim.fn.getcmdtype()
+
+	local search_cmd_patterns = { "/", "?" }
+
+	if not vim.tbl_contains(search_cmd_patterns, cmdtype) then
+		return
+	end
+
 	vim.g.ug_ignore_cursor_moved = true
 	opts = require("undo-glow.utils").merge_command_opts("UgSearch", opts)
 	opts._operation = "search_cmd"
