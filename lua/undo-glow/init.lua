@@ -178,6 +178,12 @@ end
 ---@param opts? UndoGlow.HighlightChanges|UndoGlow.CommandOpts
 ---@return nil
 function M.highlight_changes(opts)
+	if
+		opts and not require("undo-glow.validate").validate_command_opts(opts)
+	then
+		return
+	end
+
 	local bufnr = vim.api.nvim_get_current_buf()
 
 	local state = require("undo-glow.utils").create_state(opts)
@@ -193,6 +199,31 @@ end
 ---@param opts UndoGlow.HighlightRegion
 ---@return nil
 function M.highlight_region(opts)
+	if not require("undo-glow.validate").is_table(opts, "opts") then
+		return
+	end
+
+	if
+		not require("undo-glow.validate").is_number(opts.s_row, "opts.s_row", 0)
+	then
+		return
+	end
+	if
+		not require("undo-glow.validate").is_number(opts.s_col, "opts.s_col", 0)
+	then
+		return
+	end
+	if
+		not require("undo-glow.validate").is_number(opts.e_row, "opts.e_row", 0)
+	then
+		return
+	end
+	if
+		not require("undo-glow.validate").is_number(opts.e_col, "opts.e_col", 0)
+	then
+		return
+	end
+
 	local bufnr = vim.api.nvim_get_current_buf()
 
 	local state = require("undo-glow.utils").create_state(opts)

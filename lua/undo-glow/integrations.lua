@@ -9,17 +9,13 @@ M.yanky = {}
 function M.yanky.put(yanky_action, opts)
 	local yanky_ok = pcall(require, "yanky")
 	if not yanky_ok then
-		vim.notify(
-			"[UndoGlow] Yanky.nvim is not installed",
-			vim.log.levels.ERROR
-		)
+		require("undo-glow.log").error("Yanky.nvim is not installed")
 		return
 	end
 
 	if type(yanky_action) ~= "string" then
-		vim.notify(
-			"[UndoGlow] Yanky action must be a string, e.g. (YankyPutAfter)",
-			vim.log.levels.ERROR
+		require("undo-glow.log").error(
+			"Yanky action must be a string, e.g. 'YankyPutAfter'"
 		)
 		return
 	end
@@ -41,17 +37,13 @@ M.substitute = {}
 function M.substitute.action(action, opts)
 	local substitute_ok = pcall(require, "substitute")
 	if not substitute_ok then
-		vim.notify(
-			"[UndoGlow] Substitute.nvim is not installed",
-			vim.log.levels.ERROR
-		)
+		require("undo-glow.log").error("Substitute.nvim is not installed")
 		return
 	end
 
 	if type(action) ~= "function" then
-		vim.notify(
-			"[UndoGlow] Substitute.nvim action must be a function, learn more from the plugin's README",
-			vim.log.levels.ERROR
+		require("undo-glow.log").error(
+			"Substitute action must be a function. See the plugin's README for examples."
 		)
 		return
 	end
@@ -72,9 +64,13 @@ M.flash = {}
 function M.flash.jump(flash_opts, opts)
 	local flash_ok, flash = pcall(require, "flash")
 	if not flash_ok then
-		vim.notify(
-			"[UndoGlow] Flash.nvim is not installed",
-			vim.log.levels.ERROR
+		require("undo-glow.log").error("Flash.nvim is not installed")
+		return
+	end
+
+	if type(flash_opts) ~= "table" then
+		require("undo-glow.log").error(
+			"Flash options must be a table. See the plugin's README for examples."
 		)
 		return
 	end
