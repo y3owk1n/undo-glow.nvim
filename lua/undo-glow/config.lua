@@ -191,7 +191,11 @@ function M.setup(user_config)
 
 		-- Validate and apply debounce delay
 		local debounce_delay = M.config.performance.debounce_delay
-		if debounce_delay and type(debounce_delay) == "number" and debounce_delay > 0 then
+		if
+			debounce_delay
+			and type(debounce_delay) == "number"
+			and debounce_delay > 0
+		then
 			debounce.set_default_delay(debounce_delay)
 		end
 	end
@@ -221,8 +225,8 @@ function M.setup(user_config)
 
 		log.set_outputs(
 			notify ~= false, -- Default to true if not explicitly false
-			file == true,    -- Only enable file logging if explicitly true
-			file_path        -- Use provided path or default
+			file == true, -- Only enable file logging if explicitly true
+			file_path -- Use provided path or default
 		)
 	end
 

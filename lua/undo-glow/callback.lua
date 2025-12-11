@@ -68,7 +68,9 @@ function M.on_bytes_wrapper(
 
 		if not success then
 			-- Graceful degradation: log error but don't crash
-			require("undo-glow.log").error("Failed to highlight changes: " .. tostring(err))
+			require("undo-glow.log").error(
+				"Failed to highlight changes: " .. tostring(err)
+			)
 		end
 	end, 50, debounce_key) -- 50ms debounce delay
 

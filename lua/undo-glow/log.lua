@@ -25,8 +25,8 @@ local current_level = M.levels.INFO
 
 ---Log output destinations
 local outputs = {
-	notify = true,  -- Neovim notifications (default)
-	file = false,   -- File logging (optional)
+	notify = true, -- Neovim notifications (default)
+	file = false, -- File logging (optional)
 }
 
 ---Log file path (when file logging is enabled)
@@ -72,7 +72,9 @@ end
 ---Write a message to the log file
 ---@param message string The formatted log message
 local function write_to_file(message)
-	if not outputs.file or not log_file_path then return end
+	if not outputs.file or not log_file_path then
+		return
+	end
 
 	local file = io.open(log_file_path, "a")
 	if file then
@@ -94,8 +96,13 @@ end
 ---@return string formatted_message The formatted log message
 local function format_message(level_name, message, context)
 	local timestamp = os.date("%H:%M:%S")
-	local full_message = string.format("[%s] %s %s: %s",
-		timestamp, PLUGIN_PREFIX, level_name, message)
+	local full_message = string.format(
+		"[%s] %s %s: %s",
+		timestamp,
+		PLUGIN_PREFIX,
+		level_name,
+		message
+	)
 
 	if context then
 		full_message = full_message .. "\nContext: " .. vim.inspect(context)
@@ -115,7 +122,9 @@ end
 ---@param message string The error message
 ---@param context? table Optional context information
 function M.error(message, context)
-	if not should_log(M.levels.ERROR) then return end
+	if not should_log(M.levels.ERROR) then
+		return
+	end
 	local formatted = format_message("ERROR", message, context)
 
 	if outputs.notify then
@@ -130,7 +139,9 @@ end
 ---@param message string The warning message
 ---@param context? table Optional context information
 function M.warn(message, context)
-	if not should_log(M.levels.WARN) then return end
+	if not should_log(M.levels.WARN) then
+		return
+	end
 	local formatted = format_message("WARN", message, context)
 
 	if outputs.notify then
@@ -145,7 +156,9 @@ end
 ---@param message string The info message
 ---@param context? table Optional context information
 function M.info(message, context)
-	if not should_log(M.levels.INFO) then return end
+	if not should_log(M.levels.INFO) then
+		return
+	end
 	local formatted = format_message("INFO", message, context)
 
 	if outputs.notify then
@@ -160,7 +173,9 @@ end
 ---@param message string The debug message
 ---@param context? table Optional context information
 function M.debug(message, context)
-	if not should_log(M.levels.DEBUG) then return end
+	if not should_log(M.levels.DEBUG) then
+		return
+	end
 	local formatted = format_message("DEBUG", message, context)
 
 	if outputs.notify then
@@ -175,7 +190,9 @@ end
 ---@param message string The trace message
 ---@param context? table Optional context information
 function M.trace(message, context)
-	if not should_log(M.levels.TRACE) then return end
+	if not should_log(M.levels.TRACE) then
+		return
+	end
 	local formatted = format_message("TRACE", message, context)
 
 	if outputs.notify then

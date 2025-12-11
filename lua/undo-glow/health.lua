@@ -201,7 +201,10 @@ function M.check()
 	if yanky_ok then
 		report_status("ok", "yanky.nvim is available for integration.")
 	else
-		report_status("warn", "yanky.nvim is not installed. Yank highlighting will be limited.")
+		report_status(
+			"warn",
+			"yanky.nvim is not installed. Yank highlighting will be limited."
+		)
 	end
 
 	-- Check substitute integration
@@ -209,7 +212,10 @@ function M.check()
 	if substitute_ok then
 		report_status("ok", "substitute.nvim is available for integration.")
 	else
-		report_status("warn", "substitute.nvim is not installed. Substitute highlighting will be limited.")
+		report_status(
+			"warn",
+			"substitute.nvim is not installed. Substitute highlighting will be limited."
+		)
 	end
 
 	-- Check flash integration
@@ -217,7 +223,10 @@ function M.check()
 	if flash_ok then
 		report_status("ok", "flash.nvim is available for integration.")
 	else
-		report_status("warn", "flash.nvim is not installed. Flash highlighting will be limited.")
+		report_status(
+			"warn",
+			"flash.nvim is not installed. Flash highlighting will be limited."
+		)
 	end
 
 	separator("Config Checks")
@@ -244,9 +253,15 @@ function M.check()
 	end
 
 	if config.animation.enabled and config.animation.fps < 15 then
-		report_status("warn", "FPS less than 15 might result in choppy animation")
+		report_status(
+			"warn",
+			"FPS less than 15 might result in choppy animation"
+		)
 	elseif config.animation.enabled and config.animation.fps > 120 then
-		report_status("warn", "FPS greater than 120 might cause performance issues")
+		report_status(
+			"warn",
+			"FPS greater than 120 might cause performance issues"
+		)
 	elseif config.animation.enabled then
 		report_status("ok", "FPS is reasonably set")
 	end
@@ -254,12 +269,27 @@ function M.check()
 	-- Check animation type validity
 	if config.animation.enabled then
 		local valid_types = {
-			"fade", "fade_reverse", "blink", "pulse", "jitter", "spring",
-			"desaturate", "strobe", "zoom", "rainbow", "slide"
+			"fade",
+			"fade_reverse",
+			"blink",
+			"pulse",
+			"jitter",
+			"spring",
+			"desaturate",
+			"strobe",
+			"zoom",
+			"rainbow",
+			"slide",
 		}
 		local anim_type = config.animation.animation_type
-		if type(anim_type) == "string" and not vim.tbl_contains(valid_types, anim_type) then
-			report_status("error", "Invalid animation_type: '" .. anim_type .. "'")
+		if
+			type(anim_type) == "string"
+			and not vim.tbl_contains(valid_types, anim_type)
+		then
+			report_status(
+				"error",
+				"Invalid animation_type: '" .. anim_type .. "'"
+			)
 		elseif type(anim_type) == "function" then
 			report_status("ok", "Custom animation function is configured")
 		else
@@ -271,26 +301,56 @@ function M.check()
 
 	-- Check performance settings
 	if config.performance then
-		if config.performance.color_cache_size and config.performance.color_cache_size < 100 then
-			report_status("warn", "Color cache size is very small (< 100), might reduce performance benefits")
-		elseif config.performance.color_cache_size and config.performance.color_cache_size > 10000 then
-			report_status("warn", "Color cache size is very large (> 10000), might use excessive memory")
+		if
+			config.performance.color_cache_size
+			and config.performance.color_cache_size < 100
+		then
+			report_status(
+				"warn",
+				"Color cache size is very small (< 100), might reduce performance benefits"
+			)
+		elseif
+			config.performance.color_cache_size
+			and config.performance.color_cache_size > 10000
+		then
+			report_status(
+				"warn",
+				"Color cache size is very large (> 10000), might use excessive memory"
+			)
 		else
 			report_status("ok", "Color cache size is reasonably configured")
 		end
 
-		if config.performance.debounce_delay and config.performance.debounce_delay < 10 then
-			report_status("warn", "Debounce delay is very short (< 10ms), might cause performance issues")
-		elseif config.performance.debounce_delay and config.performance.debounce_delay > 500 then
-			report_status("warn", "Debounce delay is very long (> 500ms), might feel unresponsive")
+		if
+			config.performance.debounce_delay
+			and config.performance.debounce_delay < 10
+		then
+			report_status(
+				"warn",
+				"Debounce delay is very short (< 10ms), might cause performance issues"
+			)
+		elseif
+			config.performance.debounce_delay
+			and config.performance.debounce_delay > 500
+		then
+			report_status(
+				"warn",
+				"Debounce delay is very long (> 500ms), might feel unresponsive"
+			)
 		else
 			report_status("ok", "Debounce delay is reasonably configured")
 		end
 
 		if config.performance.animation_skip_unchanged == false then
-			report_status("info", "Animation optimization is disabled - all frames will be rendered")
+			report_status(
+				"info",
+				"Animation optimization is disabled - all frames will be rendered"
+			)
 		else
-			report_status("ok", "Animation optimization is enabled for better performance")
+			report_status(
+				"ok",
+				"Animation optimization is enabled for better performance"
+			)
 		end
 	else
 		report_status("ok", "Using default performance settings")
@@ -299,15 +359,29 @@ function M.check()
 	separator("Highlight Configuration Checks")
 
 	-- Check highlight configurations
-	local required_highlights = { "undo", "redo", "yank", "paste", "search", "comment", "cursor" }
+	local required_highlights =
+		{ "undo", "redo", "yank", "paste", "search", "comment", "cursor" }
 	for _, hl_name in ipairs(required_highlights) do
 		local hl_config = config.highlights[hl_name]
 		if not hl_config then
-			report_status("error", "Missing highlight configuration for '" .. hl_name .. "'")
+			report_status(
+				"error",
+				"Missing highlight configuration for '" .. hl_name .. "'"
+			)
 		elseif not hl_config.hl then
-			report_status("error", "Missing 'hl' field in " .. hl_name .. " highlight configuration")
+			report_status(
+				"error",
+				"Missing 'hl' field in "
+					.. hl_name
+					.. " highlight configuration"
+			)
 		elseif not hl_config.hl_color then
-			report_status("error", "Missing 'hl_color' field in " .. hl_name .. " highlight configuration")
+			report_status(
+				"error",
+				"Missing 'hl_color' field in "
+					.. hl_name
+					.. " highlight configuration"
+			)
 		else
 			report_status("ok", hl_name .. " highlight configuration is valid")
 		end
@@ -317,29 +391,47 @@ function M.check()
 	local normal = vim.api.nvim_get_hl(0, { name = "Normal" })
 
 	if not normal.bg then
-		if not config.fallback_for_transparency or not config.fallback_for_transparency.bg then
+		if
+			not config.fallback_for_transparency
+			or not config.fallback_for_transparency.bg
+		then
 			report_status(
 				"error",
 				"Transparent background detected, but no fallback color is set. Please set `config.fallback_for_transparency.bg` to a valid color."
 			)
 		else
-			report_status("ok", "Fallback background color is configured for transparency")
+			report_status(
+				"ok",
+				"Fallback background color is configured for transparency"
+			)
 		end
 	else
-		report_status("ok", "Background color is set, no transparency fallback needed")
+		report_status(
+			"ok",
+			"Background color is set, no transparency fallback needed"
+		)
 	end
 
 	if not normal.fg then
-		if not config.fallback_for_transparency or not config.fallback_for_transparency.fg then
+		if
+			not config.fallback_for_transparency
+			or not config.fallback_for_transparency.fg
+		then
 			report_status(
 				"error",
 				"Transparent foreground detected, but no fallback color is set. Please set `config.fallback_for_transparency.fg` to a valid color."
 			)
 		else
-			report_status("ok", "Fallback foreground color is configured for transparency")
+			report_status(
+				"ok",
+				"Fallback foreground color is configured for transparency"
+			)
 		end
 	else
-		report_status("ok", "Foreground color is set, no transparency fallback needed")
+		report_status(
+			"ok",
+			"Foreground color is set, no transparency fallback needed"
+		)
 	end
 
 	separator("Priority Configuration Check")
@@ -348,7 +440,10 @@ function M.check()
 	elseif config.priority > 65535 then
 		report_status("error", "Extmark priority cannot exceed 65535")
 	elseif config.priority < 1000 then
-		report_status("warn", "Extmark priority is low (< 1000), highlights might be hidden by other plugins")
+		report_status(
+			"warn",
+			"Extmark priority is low (< 1000), highlights might be hidden by other plugins"
+		)
 	else
 		report_status("ok", "Extmark priority is reasonably configured")
 	end
