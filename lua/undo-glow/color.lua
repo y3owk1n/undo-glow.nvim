@@ -1,3 +1,10 @@
+---@mod undo-glow.color Color utilities
+---@brief [[
+---
+---Color conversion and manipulation utilities with caching.
+---
+---@brief ]]
+
 local M = {}
 
 -- Color caches for performance optimization
@@ -70,24 +77,47 @@ end
 function M.hex_to_rgb(hex)
 	-- Check cache first
 	if hex_to_rgb_cache[hex] then
+		local api = require("undo-glow.api")
+		api.emit("color_cache_hit", {
+			operation = "hex_to_rgb",
+			input = hex,
+			cached = true,
+		})
 		return hex_to_rgb_cache[hex]
 	end
+
+	local api = require("undo-glow.api")
+	api.emit("color_conversion", {
+		operation = "hex_to_rgb",
+		input = hex,
+	})
 
 	local clean_hex = hex:gsub("#", "")
 	local rgb_color
 
-	if #clean_hex == 3 then
-		rgb_color = {
-			r = tonumber(clean_hex:sub(1, 1) .. clean_hex:sub(1, 1), 16),
-			g = tonumber(clean_hex:sub(2, 2) .. clean_hex:sub(2, 2), 16),
-			b = tonumber(clean_hex:sub(3, 3) .. clean_hex:sub(3, 3), 16),
-		}
-	else
-		rgb_color = {
-			r = tonumber(clean_hex:sub(1, 2), 16),
-			g = tonumber(clean_hex:sub(3, 4), 16),
-			b = tonumber(clean_hex:sub(5, 6), 16),
-		}
+	local success, err = pcall(function()
+		if #clean_hex == 3 then
+			rgb_color = {
+				r = tonumber(clean_hex:sub(1, 1) .. clean_hex:sub(1, 1), 16),
+				g = tonumber(clean_hex:sub(2, 2) .. clean_hex:sub(2, 2), 16),
+				b = tonumber(clean_hex:sub(3, 3) .. clean_hex:sub(3, 3), 16),
+			}
+		else
+			rgb_color = {
+				r = tonumber(clean_hex:sub(1, 2), 16),
+				g = tonumber(clean_hex:sub(3, 4), 16),
+				b = tonumber(clean_hex:sub(5, 6), 16),
+			}
+		end
+	end)
+
+	if not success then
+		api.call_hook("on_error", {
+			operation = "hex_to_rgb_conversion",
+			error = err,
+			input = hex,
+		})
+		return { r = 0, g = 0, b = 0 }
 	end
 
 	-- Cache the result

@@ -224,23 +224,51 @@ function M.highlight_region(opts)
 		return
 	end
 
-	local bufnr = vim.api.nvim_get_current_buf()
+	-- Call pre-highlight hook
+	local api = require("undo-glow.api")
+	local start_time = vim.uv.hrtime()
+	opts._start_time = start_time
+	api.call_hook("pre_highlight", {
+		opts = opts,
+		operation = opts._operation or "unknown",
+		timestamp = start_time,
+	})
 
-	local state = require("undo-glow.utils").create_state(opts)
+	local success, err = pcall(function()
+		local bufnr = vim.api.nvim_get_current_buf()
 
-	vim.schedule(function()
-		---@type UndoGlow.HandleHighlight
-		local handle_highlight_opts = {
-			bufnr = bufnr,
-			state = state,
-			s_row = opts.s_row,
-			s_col = opts.s_col,
-			e_row = opts.e_row,
-			e_col = opts.e_col,
-		}
+		local state = require("undo-glow.utils").create_state(opts)
 
-		require("undo-glow.utils").handle_highlight(handle_highlight_opts)
+		vim.schedule(function()
+			---@type UndoGlow.HandleHighlight
+			local handle_highlight_opts = {
+				bufnr = bufnr,
+				state = state,
+				s_row = opts.s_row,
+				s_col = opts.s_col,
+				e_row = opts.e_row,
+				e_col = opts.e_col,
+			}
+
+			require("undo-glow.utils").handle_highlight(handle_highlight_opts)
+		end)
 	end)
+
+	if not success then
+		api.call_hook(
+			"on_error",
+			{ operation = "highlight_region", error = err, opts = opts }
+		)
+		require("undo-glow.log").error("Highlight region failed: " .. err)
+	else
+		-- Call post-highlight hook
+		api.call_hook("post_highlight", {
+			opts = opts,
+			operation = opts._operation or "unknown",
+			timestamp = vim.uv.hrtime(),
+			duration = vim.uv.hrtime() - (opts._start_time or vim.uv.hrtime()),
+		})
+	end
 end
 
 return M

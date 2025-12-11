@@ -1,3 +1,10 @@
+---@mod undo-glow.health Health checks
+---@brief [[
+---
+---Health check utilities for plugin diagnostics.
+---
+---@brief ]]
+
 local M = {}
 
 ---Reports a status message using vim.health.
@@ -29,6 +36,10 @@ local function separator(title)
 end
 
 function M.check()
+	-- Emit health check start event
+	local api = require("undo-glow.api")
+	api.emit("health_check_started")
+
 	separator("Neovim Version Check")
 	local v = vim.version()
 	if v.major > 0 or (v.major == 0 and v.minor >= 10) then
@@ -447,6 +458,9 @@ function M.check()
 	else
 		report_status("ok", "Extmark priority is reasonably configured")
 	end
+
+	-- Emit health check completed event
+	api.emit("health_check_completed")
 end
 
 return M

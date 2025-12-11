@@ -1,3 +1,24 @@
+---@mod undo-glow.utils Utility functions
+---@brief [[
+---
+---General utility functions and helpers for undo-glow.
+---
+---This module provides core utility functions for:
+---• Highlight group management and pooling
+---• Coordinate calculation and sanitization
+---• Namespace management
+---• Animation state handling
+---• Command option merging
+---• Extmark creation and management
+---
+---Key utilities:
+---• Highlight pool management for performance
+---• Coordinate validation and boundary checking
+---• Animation state creation and validation
+---• Command configuration merging
+---
+---@brief ]]
+
 local M = {}
 
 M.ns = vim.api.nvim_create_namespace("undo-glow")
@@ -5,10 +26,11 @@ M.ns = vim.api.nvim_create_namespace("undo-glow")
 local hl_pool_size = 50
 local hl_pool_index = 1
 
----Generates a unique highlight group name based on the given base.
----Increments an internal counter and appends it to the base string.
----@param base string The base name for the highlight group.
----@return string unique_hlgroup The unique highlight group name.
+---Generates a unique highlight group name for animations.
+---Uses a rotating pool to prevent highlight group accumulation.
+---@param base string The base name for the highlight group (e.g., "UgUndo").
+---@return string unique_hlgroup The unique highlight group name with pool index.
+---@usage `local hlgroup = require("undo-glow.utils").get_unique_hlgroup("UgUndo")`
 function M.get_unique_hlgroup(base)
 	local key = base .. "_" .. hl_pool_index
 	hl_pool_index = (hl_pool_index % hl_pool_size) + 1
@@ -26,6 +48,17 @@ end
 ---@return integer end_row Sanitized end row (1-based).
 ---@return integer end_col Sanitized end column (1-based).
 function M.sanitize_coords(bufnr, s_row, s_col, e_row, e_col)
+	local api = require("undo-glow.api")
+	api.emit("coordinates_sanitized", {
+		bufnr = bufnr,
+		original = {
+			s_row = s_row,
+			s_col = s_col,
+			e_row = e_row,
+			e_col = e_col,
+		},
+	})
+
 	local line_count = vim.api.nvim_buf_line_count(bufnr)
 
 	s_row = math.max(0, math.min(s_row, line_count))
@@ -44,6 +77,12 @@ function M.sanitize_coords(bufnr, s_row, s_col, e_row, e_col)
 		s_col = math.max(0, math.min(s_col, #start_line))
 		e_col = math.max(0, math.min(e_col, #end_line))
 	end
+
+	api.emit("coordinates_sanitized", {
+		bufnr = bufnr,
+		result = { s_row = s_row, s_col = s_col, e_row = e_row, e_col = e_col },
+		sanitized = true,
+	})
 
 	return s_row, s_col, e_row, e_col
 end
@@ -315,6 +354,19 @@ function M.animate_or_clear_highlights(
 		local factory = require("undo-glow.factory")
 		local animation_type = opts.state.animation.animation_type
 
+		-- Call pre-animation hook to allow modifying animation_type
+		local api = require("undo-glow.api")
+		local hook_data = {
+			opts = opts,
+			animation_opts = animation_opts,
+			animation_type = animation_type,
+			operation = opts.state._operation or "unknown",
+		}
+		api.call_hook("pre_animation", hook_data)
+
+		-- Hook can modify animation_type
+		animation_type = hook_data.animation_type or animation_type
+
 		local animation_fn
 		if type(animation_type) == "function" then
 			-- Custom animation function (including spy functions from tests)
@@ -373,10 +425,11 @@ function M.animate_or_clear_highlights(
 	opts.state.should_detach = true
 end
 
----Merges a given highlight group into the command options.
----@param hlgroup string The highlight group name.
----@param opts? UndoGlow.CommandOpts Optional command options.
----@return UndoGlow.CommandOpts The merged command options.
+---Merges command options with global configuration and highlight group settings.
+---@param hlgroup string The highlight group name (e.g., "UgUndo").
+---@param opts? UndoGlow.CommandOpts Optional command options to merge with defaults.
+---@return UndoGlow.CommandOpts The merged command options with fallbacks applied.
+---@usage `local merged = require("undo-glow.utils").merge_command_opts("UgUndo", { animation = { duration = 500 } })`
 function M.merge_command_opts(hlgroup, opts)
 	if type(opts) ~= "table" then
 		opts = {}
@@ -415,6 +468,7 @@ function M.create_state(opts)
 		current_hlgroup = opts.hlgroup or "UgUndo",
 		force_edge = type(opts.force_edge) == "nil" and false
 			or opts.force_edge,
+		_operation = opts._operation,
 		animation = {
 			animation_type = M.get_animation_type(
 				opts.animation.animation_type
@@ -432,6 +486,10 @@ end
 ---@param opts UndoGlow.HandleHighlight The handle highlight options.
 ---@return UndoGlow.HandleHighlight The validated and updated handle highlight options.
 function M.validate_state_for_highlight(opts)
+	if not opts.state then
+		opts.state = M.create_state(opts)
+	end
+
 	local config = require("undo-glow.config").config
 
 	-- Check animation status and fallback to global

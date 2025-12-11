@@ -23,6 +23,11 @@ M.levels = {
 ---Current minimum log level (configurable)
 local current_level = M.levels.INFO
 
+---Check if we're in test mode (checked at runtime to handle load order issues)
+local function is_test_mode()
+	return vim.env.NVIM_TESTING or vim.g.undo_glow_testing or false
+end
+
 ---Log output destinations
 local outputs = {
 	notify = true, -- Neovim notifications (default)
@@ -115,6 +120,10 @@ end
 ---@param level integer The level to check
 ---@return boolean
 local function should_log(level)
+	-- In test mode, only show ERROR level messages
+	if is_test_mode() then
+		return level >= M.levels.ERROR
+	end
 	return level >= current_level
 end
 
@@ -126,6 +135,15 @@ function M.error(message, context)
 		return
 	end
 	local formatted = format_message("ERROR", message, context)
+
+	-- Emit log event
+	local api = require("undo-glow.api")
+	api.emit("log_message", {
+		level = "ERROR",
+		message = message,
+		context = context,
+		formatted = formatted,
+	})
 
 	if outputs.notify then
 		vim.notify(formatted, vim.log.levels.ERROR)
@@ -143,6 +161,15 @@ function M.warn(message, context)
 		return
 	end
 	local formatted = format_message("WARN", message, context)
+
+	-- Emit log event
+	local api = require("undo-glow.api")
+	api.emit("log_message", {
+		level = "WARN",
+		message = message,
+		context = context,
+		formatted = formatted,
+	})
 
 	if outputs.notify then
 		vim.notify(formatted, vim.log.levels.WARN)

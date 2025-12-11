@@ -167,16 +167,59 @@ end
 function M.setup(user_config)
 	user_config = user_config or {}
 
+	-- Call pre-config hook
+	local api = require("undo-glow.api")
+	api.call_hook(
+		"on_config_change",
+		{ phase = "pre", user_config = user_config }
+	)
+
 	-- Validate user config before merging
 	if not validate_config(user_config) then
 		require("undo-glow.log").error(
 			"Invalid configuration provided. Using defaults."
 		)
 		M.config = vim.tbl_deep_extend("force", {}, defaults)
+
+		-- Emit config error event
+		api.emit(
+			"config_error",
+			{ reason = "validation_failed", user_config = user_config }
+		)
 		return
 	end
 
+	local old_config = M.config
 	M.config = vim.tbl_deep_extend("force", defaults, user_config)
+
+	-- Configure logging outputs
+	if M.config.logging then
+		local log = require("undo-glow.log")
+		log.set_outputs(
+			M.config.logging.notify,
+			M.config.logging.file,
+			M.config.logging.file and M.config.logging.file_path
+		)
+		if M.config.logging.level then
+			local level_map = {
+				TRACE = log.levels.TRACE,
+				DEBUG = log.levels.DEBUG,
+				INFO = log.levels.INFO,
+				WARN = log.levels.WARN,
+				ERROR = log.levels.ERROR,
+				OFF = log.levels.OFF,
+			}
+			log.set_level(
+				level_map[M.config.logging.level:upper()] or log.levels.INFO
+			)
+		end
+	end
+
+	-- Emit config change event
+	api.emit(
+		"config_changed",
+		{ old_config = old_config, new_config = M.config }
+	)
 
 	-- Apply performance settings with validation
 	if M.config.performance then
@@ -264,6 +307,9 @@ function M.setup(user_config)
 			highlight.hl_color
 		)
 	end
+
+	-- Call post-config hook
+	api.call_hook("on_config_change", { phase = "post", config = M.config })
 end
 
 return M
