@@ -369,7 +369,7 @@ function M.animate_or_clear_highlights(
 			opts = opts,
 			animation_opts = animation_opts,
 			animation_type = animation_type,
-			operation = opts.state._operation or "unknown",
+			operation = opts.state.operation or "unknown",
 		}
 		api.call_hook("pre_animation", hook_data)
 
@@ -477,7 +477,7 @@ function M.create_state(opts)
 		current_hlgroup = opts.hlgroup or "UgUndo",
 		force_edge = type(opts.force_edge) == "nil" and false
 			or opts.force_edge,
-		_operation = opts._operation,
+		operation = opts.operation,
 		animation = {
 			animation_type = M.get_animation_type(
 				opts.animation.animation_type

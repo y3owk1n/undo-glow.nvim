@@ -58,7 +58,7 @@ function M.yanky.put(yanky_action, opts)
 
 	vim.g.ug_ignore_cursor_moved = true
 	opts = require("undo-glow.utils").merge_command_opts("UgPaste", opts)
-	opts._operation = "yanky_paste"
+	opts.operation = "yanky_paste"
 	require("undo-glow").highlight_changes(opts)
 
 	local action_plug = string.format("<Plug>(%s)", yanky_action)
@@ -103,7 +103,7 @@ function M.substitute.action(action, opts)
 
 	vim.g.ug_ignore_cursor_moved = true
 	opts = require("undo-glow.utils").merge_command_opts("UgPaste", opts)
-	opts._operation = "substitute_paste"
+	opts.operation = "substitute_paste"
 	require("undo-glow").highlight_changes(opts)
 
 	local success, err = pcall(action)

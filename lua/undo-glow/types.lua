@@ -129,7 +129,7 @@ local M = {}
 ---@field should_detach boolean Whether the highlight should detach.
 ---@field animation? UndoGlow.Config.Animation Animation configuration.
 ---@field force_edge? boolean Whether to force edge highlighting.
----@field _operation? string Internal operation type.
+---@field operation? string Operation type.
 
 ---RGB color representation.
 ---@class UndoGlow.RGBColor
@@ -148,7 +148,7 @@ local M = {}
 ---@field hlgroup? string Optional highlight group to use.
 ---@field animation? UndoGlow.Config.Animation Optional animation configuration.
 ---@field force_edge? boolean Optional flag to force edge highlighting.
----@field _operation? string Internal operation type.
+---@field operation? string Operation type.
 
 ---Options for highlight changes API.
 ---@class UndoGlow.HighlightChanges : UndoGlow.CommandOpts

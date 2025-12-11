@@ -24,12 +24,12 @@ local M = {}
 ---require("undo-glow").undo({ animation = { duration = 1000 } })
 ---@usage ]]
 function M.undo(opts)
-	local api = require("undo-glow.api")
-	api.emit("command_executed", { command = "undo", opts = opts })
-
 	vim.g.ug_ignore_cursor_moved = true
 	opts = require("undo-glow.utils").merge_command_opts("UgUndo", opts)
-	opts._operation = "undo"
+	opts.operation = "undo"
+
+	local api = require("undo-glow.api")
+	api.emit("command_executed", { command = "undo", opts = opts })
 
 	-- Always trigger hooks by calling highlight_region_enhanced
 	-- This ensures all hooks fire even if there are no text changes to highlight
@@ -39,7 +39,7 @@ function M.undo(opts)
 			s_col = 0,
 			e_row = 0,
 			e_col = 1,
-			_operation = "undo",
+			operation = "undo",
 		})
 	)
 
@@ -62,12 +62,12 @@ end
 ---require("undo-glow").redo({ animation = { animation_type = "pulse" } })
 ---@usage ]]
 function M.redo(opts)
-	local api = require("undo-glow.api")
-	api.emit("command_executed", { command = "redo", opts = opts })
-
 	vim.g.ug_ignore_cursor_moved = true
 	opts = require("undo-glow.utils").merge_command_opts("UgRedo", opts)
-	opts._operation = "redo"
+	opts.operation = "redo"
+
+	local api = require("undo-glow.api")
+	api.emit("command_executed", { command = "redo", opts = opts })
 
 	-- Always trigger hooks by calling highlight_region_enhanced
 	-- This ensures all hooks fire even if there are no text changes to highlight
@@ -77,7 +77,7 @@ function M.redo(opts)
 			s_col = 0,
 			e_row = 0,
 			e_col = 1,
-			_operation = "redo",
+			operation = "redo",
 		})
 	)
 
@@ -104,7 +104,7 @@ function M.yank(opts)
 
 	vim.g.ug_ignore_cursor_moved = true
 	opts = require("undo-glow.utils").merge_command_opts("UgYank", opts)
-	opts._operation = "yank"
+	opts.operation = "yank"
 
 	-- Always trigger hooks by calling highlight_region directly
 	require("undo-glow.api").highlight_region_enhanced(
@@ -113,7 +113,7 @@ function M.yank(opts)
 			s_col = 0,
 			e_row = 0,
 			e_col = 1,
-			_operation = "yank",
+			operation = "yank",
 		})
 	)
 
@@ -142,12 +142,12 @@ end
 ---@param opts? UndoGlow.CommandOpts Optional command option
 ---@return nil
 function M.paste_below(opts)
-	local api = require("undo-glow.api")
-	api.emit("command_executed", { command = "paste_below", opts = opts })
-
 	vim.g.ug_ignore_cursor_moved = true
 	opts = require("undo-glow.utils").merge_command_opts("UgPaste", opts)
-	opts._operation = "paste_below"
+	opts.operation = "paste_below"
+
+	local api = require("undo-glow.api")
+	api.emit("command_executed", { command = "paste_below", opts = opts })
 
 	-- Always trigger hooks by calling highlight_region directly
 	require("undo-glow.api").highlight_region_enhanced(
@@ -156,7 +156,7 @@ function M.paste_below(opts)
 			s_col = 0,
 			e_row = 0,
 			e_col = 1,
-			_operation = "paste_below",
+			operation = "paste_below",
 		})
 	)
 
@@ -179,12 +179,12 @@ end
 ---@param opts? UndoGlow.CommandOpts Optional command option
 ---@return nil
 function M.paste_above(opts)
-	local api = require("undo-glow.api")
-	api.emit("command_executed", { command = "paste_above", opts = opts })
-
 	vim.g.ug_ignore_cursor_moved = true
 	opts = require("undo-glow.utils").merge_command_opts("UgPaste", opts)
-	opts._operation = "paste_above"
+	opts.operation = "paste_above"
+
+	local api = require("undo-glow.api")
+	api.emit("command_executed", { command = "paste_above", opts = opts })
 
 	-- Always trigger hooks by calling highlight_region directly
 	require("undo-glow.api").highlight_region_enhanced(
@@ -193,7 +193,7 @@ function M.paste_above(opts)
 			s_col = 0,
 			e_row = 0,
 			e_col = 1,
-			_operation = "paste_above",
+			operation = "paste_above",
 		})
 	)
 
@@ -227,7 +227,7 @@ function M.search_cmd(opts)
 
 	vim.g.ug_ignore_cursor_moved = true
 	opts = require("undo-glow.utils").merge_command_opts("UgSearch", opts)
-	opts._operation = "search_cmd"
+	opts.operation = "search_cmd"
 
 	local region = require("undo-glow.utils").get_current_cursor_row()
 
@@ -265,7 +265,10 @@ function M.search_next(opts)
 	end
 
 	opts = require("undo-glow.utils").merge_command_opts("UgSearch", opts)
-	opts._operation = "search_next"
+	opts.operation = "search_next"
+
+	local api = require("undo-glow.api")
+	api.emit("command_executed", { command = "search_next", opts = opts })
 
 	require("undo-glow.api").highlight_region_enhanced(
 		vim.tbl_extend("force", opts, {
@@ -295,7 +298,10 @@ function M.search_prev(opts)
 	end
 
 	opts = require("undo-glow.utils").merge_command_opts("UgSearch", opts)
-	opts._operation = "search_prev"
+	opts.operation = "search_prev"
+
+	local api = require("undo-glow.api")
+	api.emit("command_executed", { command = "search_prev", opts = opts })
 
 	require("undo-glow.api").highlight_region_enhanced(
 		vim.tbl_extend("force", opts, {
@@ -325,7 +331,10 @@ function M.search_star(opts)
 	end
 
 	opts = require("undo-glow.utils").merge_command_opts("UgSearch", opts)
-	opts._operation = "search_star"
+	opts.operation = "search_star"
+
+	local api = require("undo-glow.api")
+	api.emit("command_executed", { command = "search_star", opts = opts })
 
 	require("undo-glow.api").highlight_region_enhanced(
 		vim.tbl_extend("force", opts, {
@@ -355,7 +364,10 @@ function M.search_hash(opts)
 	end
 
 	opts = require("undo-glow.utils").merge_command_opts("UgSearch", opts)
-	opts._operation = "search_hash"
+	opts.operation = "search_hash"
+
+	local api = require("undo-glow.api")
+	api.emit("command_executed", { command = "search_hash", opts = opts })
 
 	require("undo-glow.api").highlight_region_enhanced(
 		vim.tbl_extend("force", opts, {
@@ -374,7 +386,11 @@ end
 function M.comment(opts)
 	vim.g.ug_ignore_cursor_moved = true
 	opts = require("undo-glow.utils").merge_command_opts("UgComment", opts)
-	opts._operation = "comment"
+	opts.operation = "comment"
+
+	local api = require("undo-glow.api")
+	api.emit("command_executed", { command = "comment", opts = opts })
+
 	require("undo-glow").highlight_changes(opts)
 	return require("vim._comment").operator()
 end
@@ -385,7 +401,14 @@ end
 function M.comment_textobject(opts)
 	vim.g.ug_ignore_cursor_moved = true
 	opts = require("undo-glow.utils").merge_command_opts("UgComment", opts)
-	opts._operation = "comment_textobject"
+	opts.operation = "comment_textobject"
+
+	local api = require("undo-glow.api")
+	api.emit(
+		"command_executed",
+		{ command = "comment_textobject", opts = opts }
+	)
+
 	require("undo-glow").highlight_changes(opts)
 	return require("vim._comment").textobject()
 end
@@ -396,7 +419,11 @@ end
 ---@return string expression String for expression
 function M.comment_line(opts)
 	opts = require("undo-glow.utils").merge_command_opts("UgComment", opts)
-	opts._operation = "comment_line"
+	opts.operation = "comment_line"
+
+	local api = require("undo-glow.api")
+	api.emit("command_executed", { command = "comment_line", opts = opts })
+
 	require("undo-glow").highlight_changes(opts)
 	return require("vim._comment").operator() .. "_"
 end
@@ -420,7 +447,7 @@ function M.cursor_moved(opts, cursor_moved_opts)
 	end
 
 	opts = require("undo-glow.utils").merge_command_opts("UgCursor", opts)
-	opts._operation = "cursor_moved"
+	opts.operation = "cursor_moved"
 
 	cursor_moved_opts = vim.tbl_deep_extend("force", {
 		ignored_ft = {},

@@ -230,7 +230,7 @@ function M.highlight_region(opts)
 	opts._start_time = start_time
 	api.call_hook("pre_highlight", {
 		opts = opts,
-		operation = opts._operation or "unknown",
+		operation = opts.operation or "unknown",
 		timestamp = start_time,
 	})
 
@@ -264,7 +264,7 @@ function M.highlight_region(opts)
 		-- Call post-highlight hook
 		api.call_hook("post_highlight", {
 			opts = opts,
-			operation = opts._operation or "unknown",
+			operation = opts.operation or "unknown",
 			timestamp = vim.uv.hrtime(),
 			duration = vim.uv.hrtime() - (opts._start_time or vim.uv.hrtime()),
 		})
