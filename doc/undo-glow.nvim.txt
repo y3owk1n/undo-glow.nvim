@@ -621,6 +621,7 @@ UndoGlow.State                             *undo-glow.nvim.types.UndoGlow.State*
 
     Fields: ~
         {current_hlgroup}  (string)                     The current highlight group in use.
+        {hl_color?}        (UndoGlow.HlColor)           Override color for the highlight.
         {should_detach}    (boolean)                    Whether the highlight should detach.
         {animation?}       (UndoGlow.Config.Animation)  Animation configuration.
         {force_edge?}      (boolean)                    Whether to force edge highlighting.
@@ -650,6 +651,7 @@ UndoGlow.CommandOpts                 *undo-glow.nvim.types.UndoGlow.CommandOpts*
 
     Fields: ~
         {hlgroup?}     (string)                     Optional highlight group to use.
+        {hl_color?}    (UndoGlow.HlColor)           Override color for the highlight.
         {animation?}   (UndoGlow.Config.Animation)  Optional animation configuration.
         {force_edge?}  (boolean)                    Optional flag to force edge highlighting.
         {operation?}   (string)                     Operation type.
