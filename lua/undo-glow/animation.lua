@@ -39,6 +39,7 @@ function M.animate_clear(opts, timer)
 		timer:close()
 	end
 	if vim.api.nvim_buf_is_valid(opts.bufnr) and opts.extmark_ids then
+		---@type integer[]
 		local ids = opts.extmark_ids
 		if not vim.islist(ids) then
 			local list = {}

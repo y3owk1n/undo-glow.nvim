@@ -11,7 +11,7 @@ describe("Configuration Tests", function()
 					color_cache_size = 500,
 					debounce_delay = 100,
 					animation_skip_unchanged = false,
-				}
+				},
 			}
 
 			local success = pcall(M.setup, test_config)
@@ -20,27 +20,36 @@ describe("Configuration Tests", function()
 			-- Verify config was applied
 			assert.equals(500, config.config.performance.color_cache_size)
 			assert.equals(100, config.config.performance.debounce_delay)
-			assert.equals(false, config.config.performance.animation_skip_unchanged)
+			assert.equals(
+				false,
+				config.config.performance.animation_skip_unchanged
+			)
 		end)
 
-		it("should use default performance settings when not specified", function()
-			local test_config = {} -- Empty config
+		it(
+			"should use default performance settings when not specified",
+			function()
+				local test_config = {} -- Empty config
 
-			local success = pcall(M.setup, test_config)
-			assert.is_true(success)
+				local success = pcall(M.setup, test_config)
+				assert.is_true(success)
 
-			-- Verify defaults are applied
-			assert.equals(1000, config.config.performance.color_cache_size)
-			assert.equals(50, config.config.performance.debounce_delay)
-			assert.equals(true, config.config.performance.animation_skip_unchanged)
-		end)
+				-- Verify defaults are applied
+				assert.equals(1000, config.config.performance.color_cache_size)
+				assert.equals(50, config.config.performance.debounce_delay)
+				assert.equals(
+					true,
+					config.config.performance.animation_skip_unchanged
+				)
+			end
+		)
 
 		it("should handle invalid performance settings gracefully", function()
 			local test_config = {
 				performance = {
 					color_cache_size = -100, -- Invalid
 					debounce_delay = "invalid", -- Invalid type
-				}
+				},
 			}
 
 			local success = pcall(M.setup, test_config)
@@ -60,7 +69,7 @@ describe("Configuration Tests", function()
 					notify = false,
 					file = true,
 					file_path = "/tmp/test.log",
-				}
+				},
 			}
 
 			local success = pcall(M.setup, test_config)
@@ -91,7 +100,7 @@ describe("Configuration Tests", function()
 				logging = {
 					level = "INVALID_LEVEL", -- Invalid
 					notify = "not_boolean", -- Invalid type
-				}
+				},
 			}
 
 			local success = pcall(M.setup, test_config)

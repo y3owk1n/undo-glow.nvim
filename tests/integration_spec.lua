@@ -29,13 +29,20 @@ describe("undo-glow.integrations", function()
 				assert.is_true(vim.g.ug_ignore_cursor_moved)
 			end)
 
-			it("should return nil and log error for invalid action type", function()
-				local result = integrations.yanky.put(123)
-				assert.is_nil(result)
-			end)
+			it(
+				"should return nil and log error for invalid action type",
+				function()
+					---@diagnostic disable-next-line: param-type-mismatch
+					local result = integrations.yanky.put(123)
+					assert.is_nil(result)
+				end
+			)
 
 			it("should accept command options", function()
-				local result = integrations.yanky.put("YankyPutAfter", { hlgroup = "CustomHL" })
+				local result = integrations.yanky.put(
+					"YankyPutAfter",
+					{ hlgroup = "CustomHL" }
+				)
 				assert.equals("<Plug>(YankyPutAfter)", result)
 				assert.is_true(vim.g.ug_ignore_cursor_moved)
 			end)
@@ -78,6 +85,7 @@ describe("undo-glow.integrations", function()
 			end)
 
 			it("should log error for invalid action type", function()
+				---@diagnostic disable-next-line: param-type-mismatch
 				integrations.substitute.action("not_a_function")
 			end)
 
@@ -87,7 +95,10 @@ describe("undo-glow.integrations", function()
 					action_called = true
 				end
 
-				integrations.substitute.action(test_action, { hlgroup = "CustomHL" })
+				integrations.substitute.action(
+					test_action,
+					{ hlgroup = "CustomHL" }
+				)
 				assert.is_true(action_called)
 				assert.is_true(vim.g.ug_ignore_cursor_moved)
 			end)
@@ -118,6 +129,7 @@ describe("undo-glow.integrations", function()
 			end)
 
 			it("should log error for invalid flash options type", function()
+				---@diagnostic disable-next-line: param-type-mismatch
 				integrations.flash.jump("not_a_table")
 			end)
 

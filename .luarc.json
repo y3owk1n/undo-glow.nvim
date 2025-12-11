@@ -1,0 +1,18 @@
+{
+	"Lua": {
+		"runtime": {
+			"version": "LuaJIT",
+			"path": ["lua/?.lua", "lua/?/init.lua"]
+		},
+		"workspace": {
+			"library": ["${3rd}/neovim/library", "${3rd}/luv/library", "lua/types"],
+			"checkThirdParty": false,
+			"ignoreDir": [".devbox", "**/.devbox/**"],
+			"ignoreSubmodules": true
+		},
+		"diagnostics": {
+			"globals": ["vim", "assert", "it", "before_each", "after_each", "describe"],
+			"ignoredFiles": "Disable"
+		}
+	}
+}

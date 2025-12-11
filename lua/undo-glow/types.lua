@@ -60,7 +60,7 @@ local M = {}
 ---| '"out_bounce"'
 ---| '"in_out_bounce"'
 ---| '"out_in_bounce"'
----@alias UndoGlow.EasingFn fun(opts: UndoGlow.EasingOpts): integer
+---@alias UndoGlow.EasingFn fun(opts: UndoGlow.EasingOpts): number
 
 ---Configuration options for undo-glow.
 ---@class UndoGlow.Config
@@ -68,6 +68,8 @@ local M = {}
 ---@field highlights? table<"undo" | "redo" | "yank" | "paste" | "search" | "comment" | "cursor", { hl: string, hl_color: UndoGlow.HlColor }> Highlight configurations for various actions.
 ---@field priority? integer Extmark priority to render the highlight (Default 4096)
 ---@field fallback_for_transparency? UndoGlow.Config.FallbackForTransparency Fallback color for when the highlight is transparent.
+---@field performance? UndoGlow.Config.Performance Performance-related configuration.
+---@field logging? UndoGlow.Config.Logging Logging configuration.
 
 ---Fallback color for when the highlight is transparent.
 ---@class UndoGlow.Config.FallbackForTransparency
@@ -93,6 +95,29 @@ local M = {}
 ---@field fps? number Frames per second for the animation.
 ---@field window_scoped? boolean If enabled, the highlight effect is constrained to the current active window, even if the buffer is shared across splits.
 
+---Performance-related configuration.
+---@class UndoGlow.Config.Performance
+---@field color_cache_size? integer Maximum cached color conversions.
+---@field debounce_delay? integer Milliseconds to debounce rapid operations.
+---@field animation_skip_unchanged? boolean Skip redraws when highlights haven't changed.
+
+---Logging configuration.
+---@class UndoGlow.Config.Logging
+---@field level? string Log level: "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "OFF".
+---@field notify? boolean Show logs in Neovim notifications.
+---@field file? boolean Write logs to file.
+---@field file_path? string Custom log file path.
+
+---Neovim highlight info from nvim_get_hl.
+---@class vim.api.keyset.hl_info
+---@field bg? integer Background color.
+---@field fg? integer Foreground color.
+
+---Neovim extmark options for nvim_buf_set_extmark.
+---@class vim.api.keyset.set_extmark
+---@field virt_text? table Virtual text to display.
+---@field virt_text_win_col? integer Column position for virtual text.
+
 ---Highlight color information.
 ---@class UndoGlow.HlColor
 ---@field bg string Background color as a hex string.
@@ -104,6 +129,7 @@ local M = {}
 ---@field should_detach boolean Whether the highlight should detach.
 ---@field animation? UndoGlow.Config.Animation Animation configuration.
 ---@field force_edge? boolean Whether to force edge highlighting.
+---@field _operation? string Internal operation type.
 
 ---RGB color representation.
 ---@class UndoGlow.RGBColor
@@ -122,19 +148,21 @@ local M = {}
 ---@field hlgroup? string Optional highlight group to use.
 ---@field animation? UndoGlow.Config.Animation Optional animation configuration.
 ---@field force_edge? boolean Optional flag to force edge highlighting.
+---@field _operation? string Internal operation type.
 
 ---Options for highlight changes API.
 ---@class UndoGlow.HighlightChanges : UndoGlow.CommandOpts
 
 ---Options for highlight region API.
 ---@class UndoGlow.HighlightRegion : UndoGlow.CommandOpts,UndoGlow.RowCol
+---@field _start_time? number Internal start time.
 
 ---Parameters for an animation.
 ---@class UndoGlow.Animation
 ---@field bufnr integer Buffer number.
 ---@field ns integer Namespace id.
 ---@field hlgroup string Highlight group name.
----@field extmark_ids? integer[] Extmark identifiers.
+---@field extmark_ids? integer[] | nil Extmark identifiers.
 ---@field start_bg UndoGlow.RGBColor Starting background color.
 ---@field end_bg UndoGlow.RGBColor Ending background color.
 ---@field start_fg? UndoGlow.RGBColor Optional starting foreground color.

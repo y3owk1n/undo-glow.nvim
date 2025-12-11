@@ -146,7 +146,7 @@ function M.animate_enhanced(opts)
 	M.call_hook("pre_animation", opts)
 
 	local success, err = pcall(function()
-		require("undo-glow.animation").animate_start(opts)
+		require("undo-glow.animation").animate_start(opts, function() end)
 	end)
 
 	if not success then

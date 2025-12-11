@@ -16,7 +16,7 @@ describe("Documentation Examples", function()
 					highlights = {
 						undo = {
 							hl = "UndoGlow",
-							hl_color = "#FF0000",
+							hl_color = { bg = "#FF0000" },
 						},
 					},
 				})
@@ -29,10 +29,10 @@ describe("Documentation Examples", function()
 			local success = pcall(function()
 				require("undo-glow").setup({
 					highlights = {
-						undo = { hl_color = "#FF6B6B" },
-						redo = { hl_color = "#4ECDC4" },
-						yank = { hl_color = "#45B7D1" },
-						paste = { hl_color = "#96CEB4" },
+						undo = { hl_color = { bg = "#FF6B6B" } },
+						redo = { hl_color = { bg = "#4ECDC4" } },
+						yank = { hl_color = { bg = "#45B7D1" } },
+						paste = { hl_color = { bg = "#96CEB4" } },
 					},
 				})
 			end)

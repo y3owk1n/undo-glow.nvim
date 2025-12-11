@@ -265,7 +265,7 @@ describe("undo-glow.utils", function()
 				vim.fn.setreg("/", "Search")
 				vim.api.nvim_win_set_cursor(0, { 2, 5 })
 				local result = utils.get_search_region()
-				assert.is_not_nil(result)
+				assert(result, "result should not be nil")
 				assert.equals(1, result.s_row)
 				assert.equals(0, result.s_col)
 				assert.equals(1, result.e_row)
@@ -277,7 +277,7 @@ describe("undo-glow.utils", function()
 			vim.fn.setreg("/", "Hello")
 			vim.api.nvim_win_set_cursor(0, { 1, 1 })
 			local result = utils.get_search_region()
-			assert.is_not_nil(result)
+			assert(result, "result should not be nil")
 			assert.equals(0, result.s_row)
 			assert.equals(0, result.s_col)
 			assert.equals(0, result.e_row)
@@ -321,7 +321,7 @@ describe("undo-glow.utils", function()
 				vim.fn.setreg("/", "pattern")
 				vim.api.nvim_win_set_cursor(0, { 2, 10 })
 				local result = utils.get_current_search_match_region()
-				assert.is_not_nil(result)
+				assert(result, "result should not be nil")
 				assert.equals(1, result.s_row)
 				assert.equals(16, result.s_col)
 				assert.equals(1, result.e_row)
@@ -335,7 +335,7 @@ describe("undo-glow.utils", function()
 				vim.fn.setreg("/", "Hello")
 				vim.api.nvim_win_set_cursor(0, { 1, 0 })
 				local result = utils.get_current_search_match_region()
-				assert.is_not_nil(result)
+				assert(result, "result should not be nil")
 				assert.equals(0, result.s_row)
 				assert.equals(0, result.s_col)
 				assert.equals(0, result.e_row)
@@ -358,7 +358,13 @@ describe("undo-glow.utils", function()
 			local test_ns = vim.api.nvim_create_namespace("TestNamespace")
 			local bufnr = vim.api.nvim_create_buf(false, true)
 			-- Add some content to the buffer
-			vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, {"This is a test line with enough content"})
+			vim.api.nvim_buf_set_lines(
+				bufnr,
+				0,
+				-1,
+				false,
+				{ "This is a test line with enough content" }
+			)
 
 			---@type UndoGlow.HandleHighlight
 			opts = {
@@ -414,7 +420,7 @@ describe("undo-glow.utils", function()
 
 		it("should call animation function if enabled", function()
 			opts.state.animation.enabled = true
-			opts.state.animation.animation_type = "fade"  -- Use built-in animation
+			opts.state.animation.animation_type = "fade" -- Use built-in animation
 
 			extmark_ids = {}
 
@@ -481,6 +487,7 @@ describe("undo-glow.utils", function()
 		)
 		it("should merge command options with defaults if opts is 0", function()
 			local opts = 0
+			---@diagnostic disable-next-line: param-type-mismatch
 			local result = utils.merge_command_opts("TestHL", opts)
 			assert.equals("TestHL", result.hlgroup)
 			assert.is_table(result.animation)
@@ -554,7 +561,7 @@ describe("undo-glow.utils", function()
 					enabled = true,
 					duration = 150,
 					easing = function(x)
-						return x
+						return math.floor(x.time * x.time * x.duration)
 					end,
 					animation_type = "jitter",
 					fps = 30,
@@ -602,6 +609,7 @@ describe("undo-glow.utils", function()
 
 		it("any other opts will be nill", function()
 			local easing_empty = utils.get_easing()
+			---@diagnostic disable-next-line: param-type-mismatch
 			local easing_wrong_string = utils.get_easing("hello")
 
 			assert.is_nil(easing_empty)
@@ -625,6 +633,7 @@ describe("undo-glow.utils", function()
 		it("any other opts will be nill", function()
 			local animation_type_empty = utils.get_animation_type()
 			local animation_type_wrong_string =
+				---@diagnostic disable-next-line: param-type-mismatch
 				utils.get_animation_type("hello")
 
 			assert.is_nil(animation_type_empty)
