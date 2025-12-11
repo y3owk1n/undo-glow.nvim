@@ -23,8 +23,16 @@ end
 ---Register an animation type
 ---@param name string The animation name
 ---@param animation_fn function The animation function
+---@return boolean success
 function AnimationFactory:register(name, animation_fn)
+	local api = require("undo-glow.api")
+	api.emit("factory_registered", {
+		type = "animation",
+		name = name,
+	})
+
 	self._animations[name] = animation_fn
+	return true
 end
 
 ---Create an animation instance
@@ -79,8 +87,16 @@ end
 ---Register a highlight type
 ---@param name string The highlight name
 ---@param highlight_fn function The highlight creation function
+---@return boolean success
 function HighlightFactory:register(name, highlight_fn)
+	local api = require("undo-glow.api")
+	api.emit("factory_registered", {
+		type = "highlight",
+		name = name,
+	})
+
 	self._highlights[name] = highlight_fn
+	return true
 end
 
 ---Create a highlight instance

@@ -2,6 +2,7 @@
 
 -- Configure lazy.nvim environment variables.
 vim.env.LAZY_STDPATH = ".tests"
+vim.env.NVIM_TESTING = "1" -- Enable test mode for reduced logging
 -- vim.env.LAZY_PATH = vim.fs.normalize("~/projects/lazy.nvim")
 
 -- Bootstrap lazy.nvim by loading its bootstrap script.
@@ -22,6 +23,10 @@ require("lazy.minit").setup({
 			dir = vim.uv.cwd(),
 			opts = {
 				notify = false,
+				logging = {
+					notify = false,
+					file = false,
+				},
 			},
 		},
 	},

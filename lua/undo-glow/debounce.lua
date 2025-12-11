@@ -37,6 +37,14 @@ function M.debounce(fn, delay, key)
 			timers[key] = nil
 		end
 
+		-- Emit debounce started event
+		local api = require("undo-glow.api")
+		api.emit("debounce_started", {
+			key = key,
+			delay = delay,
+			args_count = #args,
+		})
+
 		-- Create new timer
 		local timer = vim.uv.new_timer()
 		if timer then
@@ -44,8 +52,23 @@ function M.debounce(fn, delay, key)
 				delay,
 				0,
 				vim.schedule_wrap(function()
+					-- Emit debounce executed event
+					api.emit("debounce_executed", {
+						key = key,
+						delay = delay,
+						args_count = #args,
+					})
+
 					-- Execute the function
-					fn(unpack(args))
+					local success, err = pcall(fn, unpack(args))
+					if not success then
+						api.call_hook("on_error", {
+							operation = "debounced_function",
+							error = err,
+							key = key,
+							delay = delay,
+						})
+					end
 
 					-- Clean up timer
 					if timers[key] then

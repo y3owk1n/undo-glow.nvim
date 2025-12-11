@@ -1,3 +1,10 @@
+---@mod undo-glow.callback Callback handlers
+---@brief [[
+---
+---Callback functions for handling undo/redo events and integrations.
+---
+---@brief ]]
+
 local M = {}
 
 ---Callback to track changes
@@ -52,6 +59,16 @@ function M.on_bytes_wrapper(
 	local debounce_key = string.format("highlight_%d", bufnr)
 
 	local debounced_highlight = debounce.debounce(function()
+		local api = require("undo-glow.api")
+		api.emit("buffer_changed", {
+			bufnr = bufnr,
+			s_row = s_row,
+			s_col = s_col,
+			e_row = end_row,
+			e_col = end_col,
+			state = state,
+		})
+
 		local success, err = pcall(function()
 			---@type UndoGlow.HandleHighlight
 			local handle_highlight_opts = {
@@ -71,6 +88,17 @@ function M.on_bytes_wrapper(
 			require("undo-glow.log").error(
 				"Failed to highlight changes: " .. tostring(err)
 			)
+			api.call_hook("on_error", {
+				operation = "buffer_change_highlight",
+				error = err,
+				bufnr = bufnr,
+				region = {
+					s_row = s_row,
+					s_col = s_col,
+					e_row = end_row,
+					e_col = end_col,
+				},
+			})
 		end
 	end, 50, debounce_key) -- 50ms debounce delay
 

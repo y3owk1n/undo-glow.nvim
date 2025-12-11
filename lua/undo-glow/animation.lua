@@ -1,11 +1,38 @@
+---@mod undo-glow.animation Animation system
+---@brief [[
+---
+---Core animation functionality for undo highlighting effects.
+---
+---This module provides the animation engine that powers all visual effects
+---in undo-glow. It includes built-in animations and the framework for custom ones.
+---
+---Built-in animations:
+---• fade: Smooth opacity transition
+---• fade_reverse: Reverse fade effect
+---• blink: Rapid visibility toggling
+---• pulse: Breathing effect with scaling
+---• jitter: Random movement effect
+---• spring: Bouncy spring animation
+---• desaturate: Color desaturation effect
+---• strobe: Rapid flashing effect
+---• zoom: Size scaling effect
+---• rainbow: Color cycling effect
+---• slide: Directional movement
+---• bounce: Bouncing color effect
+---
+---Custom animations can be registered via the API.
+---
+---@brief ]]
+
 local M = {}
 
 M.animate = {}
 
----Function to clear the animation when complete
----@param opts UndoGlow.Animation The animation options.
----@param timer uv.uv_timer_t The timer instance used for animation.
+---Clean up animation resources when animation completes.
+---@param opts UndoGlow.Animation The animation options containing extmark IDs and buffers.
+---@param timer uv.uv_timer_t The libuv timer instance used for the animation loop.
 ---@return nil
+---@private
 function M.animate_clear(opts, timer)
 	timer:stop()
 	if not vim.uv.is_closing(timer) then
@@ -34,6 +61,9 @@ end
 ---@param animate_fn fun(progress: number, end_animation: function): UndoGlow.HlColor|nil A function that receives the current progress (0 = start, 1 = end) and return the hl colors or nothing.
 ---@return nil
 function M.animate_start(opts, animate_fn)
+	-- Note: pre_animation hook is now called earlier in utils.lua
+	-- before animation function selection
+
 	local start_time = vim.uv.hrtime()
 	local interval = 1000 / opts.state.animation.fps
 	local timer = vim.uv.new_timer()
@@ -56,12 +86,18 @@ function M.animate_start(opts, animate_fn)
 					if progress >= 1 and not animation_ended then
 						M.animate_clear(opts, timer)
 						animation_ended = true
+						-- Call post-animation hook
+						local api = require("undo-glow.api")
+						api.call_hook("post_animation", opts)
 						return
 					end
 
 					local hl_opts = animate_fn(progress, function()
 						M.animate_clear(opts, timer)
 						animation_ended = true
+						-- Call post-animation hook
+						local api = require("undo-glow.api")
+						api.call_hook("post_animation", opts)
 					end)
 
 					-- Only update highlight if it has actually changed to avoid unnecessary redraws
@@ -88,9 +124,10 @@ function M.animate_start(opts, animate_fn)
 	end
 end
 
----Fades out a highlight group from a start color to the normal background.
----@param opts UndoGlow.Animation The animation options.
----@return boolean|nil status Return `false` to fallback to fade
+---Fades out a highlight group from start color to normal background.
+---@param opts UndoGlow.Animation Animation options with coordinates, colors, and timing.
+---@return boolean|nil status Return `false` to fallback to fade, `true` for success, `nil` for default behavior
+---@usage `require("undo-glow.factory").animation_factory:create("fade", opts)`
 function M.animate.fade(opts)
 	local extmark_opts = require("undo-glow.utils").create_extmark_opts({
 		bufnr = opts.bufnr,
@@ -481,6 +518,47 @@ function M.animate.strobe(opts)
 				) or nil,
 			}
 		end
+	end)
+end
+
+---Simulates a bounce effect with fast color changes.
+---@param opts UndoGlow.Animation Animation options with coordinates, colors, and timing.
+---@return boolean|nil status Return `false` to fallback to fade, `true` for success, `nil` for default behavior
+---@usage `require("undo-glow.factory").animation_factory:create("bounce", opts)`
+function M.animate.bounce(opts)
+	local extmark_opts = require("undo-glow.utils").create_extmark_opts({
+		bufnr = opts.bufnr,
+		hlgroup = opts.hlgroup,
+		s_row = opts.coordinates.s_row,
+		s_col = opts.coordinates.s_col,
+		e_row = opts.coordinates.e_row,
+		e_col = opts.coordinates.e_col,
+		priority = require("undo-glow.config").config.priority,
+		force_edge = opts.state.force_edge,
+		window_scoped = opts.state.animation.window_scoped,
+	})
+
+	local extmark_id = vim.api.nvim_buf_set_extmark(
+		opts.bufnr,
+		opts.ns,
+		opts.coordinates.s_row,
+		opts.coordinates.s_col,
+		extmark_opts
+	)
+
+	table.insert(opts.extmark_ids, extmark_id)
+
+	M.animate_start(opts, function(progress)
+		-- Bounce effect: fast up and down
+		local bounce = math.abs(math.sin(progress * math.pi * 4))
+		return {
+			bg = string.format(
+				"#%02X%02X%02X",
+				math.floor(255 * bounce),
+				math.floor(100 * (1 - bounce)),
+				math.floor(50 * bounce)
+			),
+		}
 	end)
 end
 

@@ -1,9 +1,14 @@
 doc:
-    vimcats -t -f -c -a \
-    lua/undo-glow/init.lua \
-    lua/undo-glow/config.lua \
-    lua/undo-glow/types.lua \
-    > doc/undo-glow.nvim.txt
+	vimcats -t -f -c -a \
+	lua/undo-glow/init.lua \
+	lua/undo-glow/api.lua \
+	lua/undo-glow/config.lua \
+	lua/undo-glow/types.lua \
+	lua/undo-glow/factory.lua \
+	lua/undo-glow/log.lua \
+	lua/undo-glow/debounce.lua \
+	lua/undo-glow/validate.lua \
+	> doc/undo-glow.nvim.txt
 
 set shell := ["bash", "-cu"]
 

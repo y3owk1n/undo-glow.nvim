@@ -1,3 +1,10 @@
+---@mod undo-glow.highlight Highlight management
+---@brief [[
+---
+---Highlight creation and management utilities.
+---
+---@brief ]]
+
 local M = {}
 
 local resolved_hl_cache = {}
@@ -7,8 +14,29 @@ local MAX_CACHE_SIZE = 100
 ---@param name string The name of the highlight group.
 ---@param color UndoGlow.HlColor The highlight color options (bg, fg, etc.).
 function M.set_highlight(name, color)
+	local api = require("undo-glow.api")
+	api.call_hook("pre_highlight_setup", { name = name, color = color })
+
 	if vim.fn.hlexists(name) == 0 then
-		vim.api.nvim_set_hl(0, name, color)
+		local success, err = pcall(vim.api.nvim_set_hl, 0, name, color)
+		if success then
+			api.call_hook(
+				"post_highlight_setup",
+				{ name = name, color = color }
+			)
+		else
+			api.call_hook("on_error", {
+				operation = "set_highlight",
+				error = err,
+				name = name,
+				color = color,
+			})
+		end
+	else
+		api.call_hook(
+			"post_highlight_setup",
+			{ name = name, color = color, existed = true }
+		)
 	end
 end
 
@@ -40,10 +68,35 @@ end
 ---@param config_hl string The configured highlight group name.
 ---@param config_hl_color UndoGlow.HlColor The configured highlight color options.
 function M.setup_highlight(target_hlgroup, config_hl, config_hl_color)
-	if config_hl ~= target_hlgroup then
-		M.link_highlight(target_hlgroup, config_hl, config_hl_color)
+	local api = require("undo-glow.api")
+	api.call_hook("pre_highlight_config", {
+		target_hlgroup = target_hlgroup,
+		config_hl = config_hl,
+		config_hl_color = config_hl_color,
+	})
+
+	local success, err = pcall(function()
+		if config_hl ~= target_hlgroup then
+			M.link_highlight(target_hlgroup, config_hl, config_hl_color)
+		else
+			M.set_highlight(config_hl, config_hl_color)
+		end
+	end)
+
+	if success then
+		api.call_hook("post_highlight_config", {
+			target_hlgroup = target_hlgroup,
+			config_hl = config_hl,
+			config_hl_color = config_hl_color,
+		})
 	else
-		M.set_highlight(config_hl, config_hl_color)
+		api.call_hook("on_error", {
+			operation = "setup_highlight",
+			error = err,
+			target_hlgroup = target_hlgroup,
+			config_hl = config_hl,
+			config_hl_color = config_hl_color,
+		})
 	end
 end
 
