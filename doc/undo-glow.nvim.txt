@@ -528,7 +528,7 @@ UndoGlow.EasingString               *undo-glow.nvim.types.UndoGlow.EasingString*
 UndoGlow.EasingFn                       *undo-glow.nvim.types.UndoGlow.EasingFn*
 
     Type: ~
-        fun(opts:UndoGlow.EasingOpts):integer
+        fun(opts:UndoGlow.EasingOpts):number
 
 
 UndoGlow.Config                           *undo-glow.nvim.types.UndoGlow.Config*
@@ -573,6 +573,41 @@ UndoGlow.Config.Animation       *undo-glow.nvim.types.UndoGlow.Config.Animation*
         {window_scoped?}   (boolean)                                                If enabled, the highlight effect is constrained to the current active window, even if the buffer is shared across splits.
 
 
+UndoGlow.Config.Performance   *undo-glow.nvim.types.UndoGlow.Config.Performance*
+    Performance-related configuration.
+
+    Fields: ~
+        {color_cache_size?}          (integer)  Maximum cached color conversions.
+        {debounce_delay?}            (integer)  Milliseconds to debounce rapid operations.
+        {animation_skip_unchanged?}  (boolean)  Skip redraws when highlights haven't changed.
+
+
+UndoGlow.Config.Logging           *undo-glow.nvim.types.UndoGlow.Config.Logging*
+    Logging configuration.
+
+    Fields: ~
+        {level?}      (string)   Log level: "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "OFF".
+        {notify?}     (boolean)  Show logs in Neovim notifications.
+        {file?}       (boolean)  Write logs to file.
+        {file_path?}  (string)   Custom log file path.
+
+
+vim.api.keyset.hl_info             *undo-glow.nvim.types.vim.api.keyset.hl_info*
+    Neovim highlight info from nvim_get_hl.
+
+    Fields: ~
+        {bg?}  (integer)  Background color.
+        {fg?}  (integer)  Foreground color.
+
+
+vim.api.keyset.set_extmark     *undo-glow.nvim.types.vim.api.keyset.set_extmark*
+    Neovim extmark options for nvim_buf_set_extmark.
+
+    Fields: ~
+        {virt_text?}          (table)    Virtual text to display.
+        {virt_text_win_col?}  (integer)  Column position for virtual text.
+
+
 UndoGlow.HlColor                         *undo-glow.nvim.types.UndoGlow.HlColor*
     Highlight color information.
 
@@ -589,6 +624,7 @@ UndoGlow.State                             *undo-glow.nvim.types.UndoGlow.State*
         {should_detach}    (boolean)                    Whether the highlight should detach.
         {animation?}       (UndoGlow.Config.Animation)  Animation configuration.
         {force_edge?}      (boolean)                    Whether to force edge highlighting.
+        {_operation?}      (string)                     Internal operation type.
 
 
 UndoGlow.RGBColor                       *undo-glow.nvim.types.UndoGlow.RGBColor*
@@ -616,6 +652,7 @@ UndoGlow.CommandOpts                 *undo-glow.nvim.types.UndoGlow.CommandOpts*
         {hlgroup?}     (string)                     Optional highlight group to use.
         {animation?}   (UndoGlow.Config.Animation)  Optional animation configuration.
         {force_edge?}  (boolean)                    Optional flag to force edge highlighting.
+        {_operation?}  (string)                     Internal operation type.
 
 
                                 *undo-glow.nvim.types.UndoGlow.HighlightChanges*
@@ -627,6 +664,9 @@ UndoGlow.HighlightChanges : UndoGlow.CommandOpts
 UndoGlow.HighlightRegion : UndoGlow.CommandOpts, UndoGlow.RowCol
     Options for highlight region API.
 
+    Fields: ~
+        {_start_time?}  (number)  Internal start time.
+
 
 UndoGlow.Animation                     *undo-glow.nvim.types.UndoGlow.Animation*
     Parameters for an animation.
@@ -635,7 +675,7 @@ UndoGlow.Animation                     *undo-glow.nvim.types.UndoGlow.Animation*
         {bufnr}         (integer)            Buffer number.
         {ns}            (integer)            Namespace id.
         {hlgroup}       (string)             Highlight group name.
-        {extmark_ids?}  (integer[])          Extmark identifiers.
+        {extmark_ids?}  (integer[]|nil)      Extmark identifiers.
         {start_bg}      (UndoGlow.RGBColor)  Starting background color.
         {end_bg}        (UndoGlow.RGBColor)  Ending background color.
         {start_fg?}     (UndoGlow.RGBColor)  Optional starting foreground color.
@@ -695,9 +735,15 @@ Factory patterns for creating animations and highlights with better extensibilit
 AnimationFactory                       *undo-glow.nvim.factory.AnimationFactory*
     Animation factory for creating animation instances
 
+    Fields: ~
+        {_animations}  (table<string,function>)
+
 
 HighlightFactory                       *undo-glow.nvim.factory.HighlightFactory*
     Highlight factory for creating highlight instances
+
+    Fields: ~
+        {_highlights}  (table<string,function>)
 
 
 ==============================================================================
@@ -914,11 +960,11 @@ M.validate_highlight_config({highlights})
         (boolean)
 
 
-M.validate_command_opts({opts})  *undo-glow.nvim.validate.validate_command_opts*
+M.validate_command_opts({opts?}) *undo-glow.nvim.validate.validate_command_opts*
     Validates command options
 
     Parameters: ~
-        {opts}  (table)  The command options to validate
+        {opts?}  (table)  The command options to validate
 
     Returns: ~
         (boolean)
