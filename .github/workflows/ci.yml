@@ -42,6 +42,7 @@ jobs:
         uses: y3owk1n/nvs@main
         with:
           version: ${{ matrix.version }}
+          use-global-cache: true
 
       - name: Run just fmt-check
         if: ${{ matrix.check == 'formatting' }}
