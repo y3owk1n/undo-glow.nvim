@@ -1,4 +1,4 @@
----@mod undo-glow.highlight Highlight management
+---@mod undo-glow.nvim.highlight Highlight management
 ---@brief [[
 ---
 ---Highlight creation and management utilities.

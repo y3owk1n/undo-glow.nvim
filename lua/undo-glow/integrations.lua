@@ -1,4 +1,4 @@
----@mod undo-glow.integrations Third-party integrations
+---@mod undo-glow.nvim.integrations Third-party integrations
 ---@brief [[
 ---
 ---Integration hooks for other Neovim plugins.

@@ -1,4 +1,4 @@
----@mod undo-glow.api Enhanced API with hooks and builders
+---@mod undo-glow.nvim.enhanced-api Enhanced API with hooks and builders
 ---@brief [[
 ---
 ---Enhanced API system with hooks, builders, and extension points for undo-glow.nvim.

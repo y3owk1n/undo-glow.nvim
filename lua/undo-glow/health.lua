@@ -1,4 +1,4 @@
----@mod undo-glow.health Health checks
+---@mod undo-glow.nvim.health Health checks
 ---@brief [[
 ---
 ---Health check utilities for plugin diagnostics.

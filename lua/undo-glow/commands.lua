@@ -1,4 +1,4 @@
----@mod undo-glow.commands Neovim commands
+---@mod undo-glow.nvim.commands Neovim commands
 ---@brief [[
 ---
 ---Neovim command definitions for undo-glow functionality.
