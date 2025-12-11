@@ -774,14 +774,12 @@ api.register_hook("pre_highlight", function(data)
 
   -- Modify the highlight color
   if data.operation == "undo" then
-    data.hl_color = { bg = "#FF0000" }
+    data.hl_color = { bg = "#FF0000" } -- Override the background color
+ -- data.hlgroup = "TermCursor" -- Use other group
+    -- Or set the highlight group directly:
+    -- vim.api.nvim_set_hl(0, "UgUndo", { bg = "#FF0000" })
   end
 end, 100) -- priority (higher = runs first)
-
--- Run after highlighting completes
-api.register_hook("post_highlight", function(data)
-  print("Highlighted:", data.operation)
-end)
 ```
 
 **Available Hooks:**
@@ -791,6 +789,12 @@ end)
 - `pre_animation` / `post_animation` - Animation lifecycle
 - `on_error` - Error handling
 - `pre_highlight_setup` / `post_highlight_setup` - Highlight group creation
+
+**Hook Data Modifications:**
+
+- `data.hl_color` - Override the highlight color (takes precedence over config)
+- `data.hlgroup` - Change the highlight group used
+- Other fields like `data.operation` are read-only
 
 ### Event System
 

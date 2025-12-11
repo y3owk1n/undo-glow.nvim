@@ -126,6 +126,7 @@ local M = {}
 ---State for the undo-glow highlight.
 ---@class UndoGlow.State
 ---@field current_hlgroup string The current highlight group in use.
+---@field hl_color? UndoGlow.HlColor Override color for the highlight.
 ---@field should_detach boolean Whether the highlight should detach.
 ---@field animation? UndoGlow.Config.Animation Animation configuration.
 ---@field force_edge? boolean Whether to force edge highlighting.
@@ -146,6 +147,7 @@ local M = {}
 ---Command options for triggering highlights.
 ---@class UndoGlow.CommandOpts
 ---@field hlgroup? string Optional highlight group to use.
+---@field hl_color? UndoGlow.HlColor Override color for the highlight.
 ---@field animation? UndoGlow.Config.Animation Optional animation configuration.
 ---@field force_edge? boolean Optional flag to force edge highlighting.
 ---@field operation? string Operation type.

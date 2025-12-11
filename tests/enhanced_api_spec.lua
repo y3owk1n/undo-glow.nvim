@@ -476,9 +476,22 @@ describe("Enhanced API", function()
 
 				assert.is_true(color_changed)
 
+				-- Verify that hl_color modification is preserved in the hook data
+				local hook_called_with_color = false
+				local test_hook_id = api.register_hook("pre_highlight", function(data)
+					if data.operation == "undo" and data.hl_color and data.hl_color.bg == "#2D1B69" then
+						hook_called_with_color = true
+					end
+				end, 100)
+
+				require("undo-glow").undo()
+
+				assert.is_true(hook_called_with_color)
+
 				-- Cleanup
 				os.date = original_os_date
 				api.remove_hook("pre_highlight", hook_id)
+				api.remove_hook("pre_highlight", test_hook_id)
 			end)
 
 			it("should react to configuration changes", function()
