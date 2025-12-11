@@ -464,7 +464,7 @@ describe("Enhanced API", function()
 						if data.operation == "undo" then
 							local hour = os.date("*t").hour
 							if hour >= 22 or hour <= 6 then
-								data.opts.hl_color = { bg = "#2D1B69" } -- Dark mode
+								data.hl_color = { bg = "#2D1B69" } -- Dark mode
 								color_changed = true
 							end
 						end

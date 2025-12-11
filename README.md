@@ -802,7 +802,7 @@ local api = require("undo-glow.api")
 -- Track command usage
 api.subscribe("command_executed", function(data)
   print("Command:", data.command)
-  print("Operation:", data.operation)
+  print("Operation:", data.opts.operation)
 end)
 
 -- Monitor configuration changes
