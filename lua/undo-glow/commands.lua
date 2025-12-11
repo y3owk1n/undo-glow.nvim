@@ -31,6 +31,9 @@ function M.undo(opts)
 	local api = require("undo-glow.api")
 	api.emit("command_executed", { command = "undo", opts = opts })
 
+	-- Call pre_highlight hook to allow modifications
+	api.call_hook("pre_highlight", opts)
+
 	-- Always trigger hooks by calling highlight_region_enhanced
 	-- This ensures all hooks fire even if there are no text changes to highlight
 	require("undo-glow.api").highlight_region_enhanced(
@@ -69,6 +72,9 @@ function M.redo(opts)
 	local api = require("undo-glow.api")
 	api.emit("command_executed", { command = "redo", opts = opts })
 
+	-- Call pre_highlight hook to allow modifications
+	api.call_hook("pre_highlight", opts)
+
 	-- Always trigger hooks by calling highlight_region_enhanced
 	-- This ensures all hooks fire even if there are no text changes to highlight
 	require("undo-glow.api").highlight_region_enhanced(
@@ -105,6 +111,9 @@ function M.yank(opts)
 	vim.g.ug_ignore_cursor_moved = true
 	opts = require("undo-glow.utils").merge_command_opts("UgYank", opts)
 	opts.operation = "yank"
+
+	-- Call pre_highlight hook to allow modifications
+	api.call_hook("pre_highlight", opts)
 
 	-- Always trigger hooks by calling highlight_region directly
 	require("undo-glow.api").highlight_region_enhanced(
@@ -149,6 +158,9 @@ function M.paste_below(opts)
 	local api = require("undo-glow.api")
 	api.emit("command_executed", { command = "paste_below", opts = opts })
 
+	-- Call pre_highlight hook to allow modifications
+	api.call_hook("pre_highlight", opts)
+
 	-- Always trigger hooks by calling highlight_region directly
 	require("undo-glow.api").highlight_region_enhanced(
 		vim.tbl_extend("force", opts, {
@@ -185,6 +197,9 @@ function M.paste_above(opts)
 
 	local api = require("undo-glow.api")
 	api.emit("command_executed", { command = "paste_above", opts = opts })
+
+	-- Call pre_highlight hook to allow modifications
+	api.call_hook("pre_highlight", opts)
 
 	-- Always trigger hooks by calling highlight_region directly
 	require("undo-glow.api").highlight_region_enhanced(
@@ -229,6 +244,10 @@ function M.search_cmd(opts)
 	opts = require("undo-glow.utils").merge_command_opts("UgSearch", opts)
 	opts.operation = "search_cmd"
 
+	local api = require("undo-glow.api")
+	-- Call pre_highlight hook to allow modifications
+	api.call_hook("pre_highlight", opts)
+
 	local region = require("undo-glow.utils").get_current_cursor_row()
 
 	require("undo-glow.api").highlight_region_enhanced(
@@ -270,6 +289,9 @@ function M.search_next(opts)
 	local api = require("undo-glow.api")
 	api.emit("command_executed", { command = "search_next", opts = opts })
 
+	-- Call pre_highlight hook to allow modifications
+	api.call_hook("pre_highlight", opts)
+
 	require("undo-glow.api").highlight_region_enhanced(
 		vim.tbl_extend("force", opts, {
 			s_row = region.s_row,
@@ -302,6 +324,9 @@ function M.search_prev(opts)
 
 	local api = require("undo-glow.api")
 	api.emit("command_executed", { command = "search_prev", opts = opts })
+
+	-- Call pre_highlight hook to allow modifications
+	api.call_hook("pre_highlight", opts)
 
 	require("undo-glow.api").highlight_region_enhanced(
 		vim.tbl_extend("force", opts, {
@@ -336,6 +361,9 @@ function M.search_star(opts)
 	local api = require("undo-glow.api")
 	api.emit("command_executed", { command = "search_star", opts = opts })
 
+	-- Call pre_highlight hook to allow modifications
+	api.call_hook("pre_highlight", opts)
+
 	require("undo-glow.api").highlight_region_enhanced(
 		vim.tbl_extend("force", opts, {
 			s_row = region.s_row,
@@ -368,6 +396,9 @@ function M.search_hash(opts)
 
 	local api = require("undo-glow.api")
 	api.emit("command_executed", { command = "search_hash", opts = opts })
+
+	-- Call pre_highlight hook to allow modifications
+	api.call_hook("pre_highlight", opts)
 
 	require("undo-glow.api").highlight_region_enhanced(
 		vim.tbl_extend("force", opts, {
@@ -448,6 +479,10 @@ function M.cursor_moved(opts, cursor_moved_opts)
 
 	opts = require("undo-glow.utils").merge_command_opts("UgCursor", opts)
 	opts.operation = "cursor_moved"
+
+	local api = require("undo-glow.api")
+	-- Call pre_highlight hook to allow modifications
+	api.call_hook("pre_highlight", opts)
 
 	cursor_moved_opts = vim.tbl_deep_extend("force", {
 		ignored_ft = {},

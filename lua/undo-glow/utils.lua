@@ -121,8 +121,13 @@ function M.handle_highlight(opts)
 			opts.state.current_hlgroup
 		)
 
-	local init_color =
-		require("undo-glow.color").init_colors(current_hlgroup_detail)
+	local init_color
+	if opts.state.hl_color then
+		init_color = vim.deepcopy(opts.state.hl_color)
+	else
+		init_color =
+			require("undo-glow.color").init_colors(current_hlgroup_detail)
+	end
 
 	opts.s_row, opts.s_col, opts.e_row, opts.e_col = M.sanitize_coords(
 		opts.bufnr,
@@ -135,6 +140,11 @@ function M.handle_highlight(opts)
 	local extmark_ids = {}
 
 	opts.ns = M.create_namespace(opts.bufnr, opts.state.animation.window_scoped)
+
+	-- If hl_color is set, update the highlight group with the custom color
+	if opts.state.hl_color then
+		vim.api.nvim_set_hl(0, unique_hlgroup, opts.state.hl_color)
+	end
 
 	--- If disabled animation, set extmark and clear it afterwards
 	if opts.state.animation.enabled ~= true then
@@ -475,6 +485,7 @@ function M.create_state(opts)
 	return {
 		should_detach = false,
 		current_hlgroup = opts.hlgroup or "UgUndo",
+		hl_color = opts.hl_color,
 		force_edge = type(opts.force_edge) == "nil" and false
 			or opts.force_edge,
 		operation = opts.operation,
