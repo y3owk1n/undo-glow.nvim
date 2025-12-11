@@ -321,7 +321,8 @@ function M.animate_or_clear_highlights(
 			animation_fn = animation_type
 		elseif type(animation_type) == "string" then
 			-- Built-in animation from factory
-			animation_fn = factory.animation_factory:create(animation_type, opts)
+			animation_fn =
+				factory.animation_factory:create(animation_type, opts)
 		else
 			-- Invalid animation type
 			animation_fn = nil
@@ -337,7 +338,9 @@ function M.animate_or_clear_highlights(
 		if animation_fn then
 			local success, status = pcall(animation_fn, animation_opts)
 			if not success then
-				require("undo-glow.log").error("Animation failed: " .. tostring(status))
+				require("undo-glow.log").error(
+					"Animation failed: " .. tostring(status)
+				)
 				-- Fallback to fade if animation fails
 				local fade_fn = factory.animation_factory:create("fade", opts)
 				if fade_fn then

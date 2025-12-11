@@ -131,7 +131,7 @@ local highlight = require("undo-glow.highlight")
 M.highlight_factory:register("basic", function(opts)
 	return {
 		hl = opts.hl or "UgHighlight",
-		hl_color = opts.hl_color or { bg = "#FF5555" }
+		hl_color = opts.hl_color or { bg = "#FF5555" },
 	}
 end)
 
