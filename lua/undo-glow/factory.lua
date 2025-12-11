@@ -28,20 +28,28 @@ function AnimationFactory:register(name, animation_fn)
 end
 
 ---Create an animation instance
----@param name string The animation name
----@param opts table The animation options
+---@param name string|function The animation name or function
+---@param opts table The animation options (unused for now, kept for API consistency)
 ---@return function|nil animation_fn The animation function or nil if not found
 function AnimationFactory:create(name, opts)
-	local animation_fn = self._animations[name]
-	if not animation_fn then
-		require("undo-glow.log").warn("Unknown animation type: " .. name)
-		return nil
+	-- If name is already a function, return it directly
+	if type(name) == "function" then
+		return name
 	end
 
-	-- Return a function that creates the animation with the given options
-	return function(anim_opts)
-		return animation_fn(vim.tbl_extend("force", opts or {}, anim_opts))
+	-- If name is a string, look it up in the registry
+	if type(name) == "string" then
+		local animation_fn = self._animations[name]
+		if not animation_fn then
+			require("undo-glow.log").warn("Unknown animation type: " .. name)
+			return nil
+		end
+		return animation_fn
 	end
+
+	-- Invalid type
+	require("undo-glow.log").warn("Invalid animation type: " .. type(name))
+	return nil
 end
 
 ---Get all registered animation names
@@ -107,16 +115,16 @@ M.highlight_factory = HighlightFactory:new()
 -- Register built-in animations
 local animation = require("undo-glow.animation")
 M.animation_factory:register("fade", animation.animate.fade)
-M.animation_factory:register("fade_reverse", function(opts) return animation.animate.fade_reverse(opts) end)
-M.animation_factory:register("blink", function(opts) return animation.animate.blink(opts) end)
-M.animation_factory:register("pulse", function(opts) return animation.animate.pulse(opts) end)
-M.animation_factory:register("jitter", function(opts) return animation.animate.jitter(opts) end)
-M.animation_factory:register("spring", function(opts) return animation.animate.spring(opts) end)
-M.animation_factory:register("desaturate", function(opts) return animation.animate.desaturate(opts) end)
-M.animation_factory:register("strobe", function(opts) return animation.animate.strobe(opts) end)
-M.animation_factory:register("zoom", function(opts) return animation.animate.zoom(opts) end)
-M.animation_factory:register("rainbow", function(opts) return animation.animate.rainbow(opts) end)
-M.animation_factory:register("slide", function(opts) return animation.animate.slide(opts) end)
+M.animation_factory:register("fade_reverse", animation.animate.fade_reverse)
+M.animation_factory:register("blink", animation.animate.blink)
+M.animation_factory:register("pulse", animation.animate.pulse)
+M.animation_factory:register("jitter", animation.animate.jitter)
+M.animation_factory:register("spring", animation.animate.spring)
+M.animation_factory:register("desaturate", animation.animate.desaturate)
+M.animation_factory:register("strobe", animation.animate.strobe)
+M.animation_factory:register("zoom", animation.animate.zoom)
+M.animation_factory:register("rainbow", animation.animate.rainbow)
+M.animation_factory:register("slide", animation.animate.slide)
 
 -- Register built-in highlights
 local highlight = require("undo-glow.highlight")
