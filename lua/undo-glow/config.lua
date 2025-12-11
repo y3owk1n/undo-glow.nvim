@@ -115,6 +115,14 @@ local defaults = {
 		-- Animation optimization
 		animation_skip_unchanged = true, -- Skip redraws when highlights haven't changed
 	},
+	logging = {
+		-- Log level: "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "OFF"
+		level = "INFO", -- Default log level
+		-- Output destinations
+		notify = true, -- Show logs in Neovim notifications
+		file = false, -- Write logs to file
+		file_path = nil, -- Custom log file path (auto-generated if nil)
+	},
 }
 
 ---@private
@@ -170,18 +178,56 @@ function M.setup(user_config)
 
 	M.config = vim.tbl_deep_extend("force", defaults, user_config)
 
-	-- Apply performance settings
+	-- Apply performance settings with validation
 	if M.config.performance then
 		local color = require("undo-glow.color")
 		local debounce = require("undo-glow.debounce")
 
-		if M.config.performance.color_cache_size then
-			color.set_cache_size(M.config.performance.color_cache_size)
+		-- Validate and apply color cache size
+		local cache_size = M.config.performance.color_cache_size
+		if cache_size and type(cache_size) == "number" and cache_size > 0 then
+			color.set_cache_size(cache_size)
 		end
 
-		if M.config.performance.debounce_delay then
-			debounce.set_default_delay(M.config.performance.debounce_delay)
+		-- Validate and apply debounce delay
+		local debounce_delay = M.config.performance.debounce_delay
+		if
+			debounce_delay
+			and type(debounce_delay) == "number"
+			and debounce_delay > 0
+		then
+			debounce.set_default_delay(debounce_delay)
 		end
+	end
+
+	-- Apply logging settings with validation
+	if M.config.logging then
+		local log = require("undo-glow.log")
+		local level_map = {
+			TRACE = log.levels.TRACE,
+			DEBUG = log.levels.DEBUG,
+			INFO = log.levels.INFO,
+			WARN = log.levels.WARN,
+			ERROR = log.levels.ERROR,
+			OFF = log.levels.OFF,
+		}
+
+		-- Validate and apply log level
+		local level = M.config.logging.level
+		if level and level_map[level] then
+			log.set_level(level_map[level])
+		end
+
+		-- Configure output destinations with validation
+		local notify = M.config.logging.notify
+		local file = M.config.logging.file
+		local file_path = M.config.logging.file_path
+
+		log.set_outputs(
+			notify ~= false, -- Default to true if not explicitly false
+			file == true, -- Only enable file logging if explicitly true
+			file_path -- Use provided path or default
+		)
 	end
 
 	local valid_keys = {

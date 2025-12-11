@@ -155,6 +155,7 @@ require("undo-glow").setup({
 ---@field priority? integer Extmark priority to render the highlight (Default 4096)
 ---@field fallback_for_transparency? UndoGlow.Config.FallbackForTransparency Fallback color for when the highlight is transparent.
 ---@field performance? UndoGlow.Config.Performance Performance tuning options.
+---@field logging? UndoGlow.Config.Logging Logging configuration options.
 
 ---Fallback color for when the highlight is transparent.
 ---@class UndoGlow.Config.FallbackForTransparency
@@ -175,6 +176,13 @@ require("undo-glow").setup({
 ---@field color_cache_size? integer Maximum number of cached color conversions (Default 1000)
 ---@field debounce_delay? integer Milliseconds to debounce rapid operations (Default 50)
 ---@field animation_skip_unchanged? boolean Skip animation redraws when highlights haven't changed (Default true)
+
+---Logging configuration options.
+---@class UndoGlow.Config.Logging
+---@field level? "TRACE"|"DEBUG"|"INFO"|"WARN"|"ERROR"|"OFF" Log level for filtering messages (Default "INFO")
+---@field notify? boolean Enable Neovim notification output (Default true)
+---@field file? boolean Enable file logging output (Default false)
+---@field file_path? string Custom path for log file (auto-generated if not set)
 
 ---Options passed to easing functions.
 ---@class UndoGlow.EasingOpts
@@ -239,6 +247,12 @@ require("undo-glow").setup({
     color_cache_size = 1000, -- Maximum cached color conversions
     debounce_delay = 50, -- Milliseconds to debounce rapid operations
     animation_skip_unchanged = true, -- Skip redraws when highlights haven't changed
+  },
+  logging = {
+    level = "INFO", -- Log level: "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "OFF"
+    notify = true, -- Show logs in Neovim notifications
+    file = false, -- Write logs to file
+    file_path = nil, -- Custom log file path (auto-generated if nil)
   },
 }
 ```
@@ -497,6 +511,69 @@ performance = {
 - **For fast machines**: Keep defaults or increase `color_cache_size`
 - **For slower machines**: Increase `debounce_delay` or decrease `color_cache_size`
 - **For debugging**: Set `animation_skip_unchanged = false` to see all animation frames
+
+## 📝 Logging Configuration
+
+**undo-glow.nvim** includes a comprehensive logging system for monitoring and debugging:
+
+### Log Levels
+
+Choose the appropriate log level for your needs:
+
+```lua
+logging = {
+  level = "INFO", -- Available: "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "OFF"
+}
+```
+
+- **TRACE**: Most verbose, includes all internal operations
+- **DEBUG**: Detailed debugging information
+- **INFO**: General information about plugin operations (default)
+- **WARN**: Warning messages for potential issues
+- **ERROR**: Error messages for failed operations
+- **OFF**: Disable all logging
+
+### Output Destinations
+
+Configure where log messages are sent:
+
+```lua
+logging = {
+  notify = true, -- Show in Neovim notifications (default: true)
+  file = false,  -- Write to log file (default: false)
+  file_path = nil, -- Custom log file path (auto-generated if nil)
+}
+```
+
+- **notify**: Displays logs in Neovim's notification system
+- **file**: Writes logs to a file for persistent storage
+- **file_path**: Custom path for log file (defaults to `~/.cache/nvim/undo-glow.log`)
+
+### Log Message Format
+
+All log messages follow a structured format:
+
+```
+[HH:MM:SS] [UndoGlow] LEVEL: Message
+Context: {additional_info}
+```
+
+### Logging Recommendations
+
+- **Development**: Use `"DEBUG"` or `"TRACE"` with `file = true` for detailed troubleshooting
+- **Production**: Use `"INFO"` with `notify = true` for general monitoring (default)
+- **Performance**: Use `"WARN"` or `"ERROR"` with `notify = false` to reduce overhead
+- **Silent**: Use `"OFF"` to disable all logging
+- **Debugging**: Enable `file = true` to persist logs for analysis
+- **CI/Headless**: Use `notify = false` and `file = true` for log capture
+
+### Health Check Integration
+
+Run `:checkhealth undo-glow` to get comprehensive diagnostics including:
+- Plugin integration status
+- Configuration validation
+- Performance settings verification
+- System compatibility checks
 
 ## 🌎 API
 

@@ -52,17 +52,26 @@ function M.on_bytes_wrapper(
 	local debounce_key = string.format("highlight_%d", bufnr)
 
 	local debounced_highlight = debounce.debounce(function()
-		---@type UndoGlow.HandleHighlight
-		local handle_highlight_opts = {
-			bufnr = bufnr,
-			state = state,
-			s_row = s_row,
-			s_col = s_col,
-			e_row = end_row,
-			e_col = end_col,
-		}
+		local success, err = pcall(function()
+			---@type UndoGlow.HandleHighlight
+			local handle_highlight_opts = {
+				bufnr = bufnr,
+				state = state,
+				s_row = s_row,
+				s_col = s_col,
+				e_row = end_row,
+				e_col = end_col,
+			}
 
-		require("undo-glow.utils").handle_highlight(handle_highlight_opts)
+			require("undo-glow.utils").handle_highlight(handle_highlight_opts)
+		end)
+
+		if not success then
+			-- Graceful degradation: log error but don't crash
+			require("undo-glow.log").error(
+				"Failed to highlight changes: " .. tostring(err)
+			)
+		end
 	end, 50, debounce_key) -- 50ms debounce delay
 
 	vim.schedule(debounced_highlight)
