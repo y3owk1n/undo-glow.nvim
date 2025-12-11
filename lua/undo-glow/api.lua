@@ -112,7 +112,9 @@ end
 ---@return table Complete configuration object that was applied
 ---@usage `local applied_config = config_builder:build()`
 function ConfigBuilder:build()
-	return vim.deepcopy(self._config)
+	local config = vim.deepcopy(self._config)
+	require("undo-glow.config").setup(config)
+	return config
 end
 
 ---Enhanced highlight function with hooks
