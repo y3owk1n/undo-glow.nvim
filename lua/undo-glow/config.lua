@@ -115,6 +115,10 @@ local defaults = {
 		-- Animation optimization
 		animation_skip_unchanged = true, -- Skip redraws when highlights haven't changed
 	},
+	logging = {
+		-- Log level: "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "OFF"
+		level = "INFO", -- Default log level
+	},
 }
 
 ---@private
@@ -181,6 +185,23 @@ function M.setup(user_config)
 
 		if M.config.performance.debounce_delay then
 			debounce.set_default_delay(M.config.performance.debounce_delay)
+		end
+	end
+
+	-- Apply logging settings
+	if M.config.logging then
+		local log = require("undo-glow.log")
+		local level_map = {
+			TRACE = log.levels.TRACE,
+			DEBUG = log.levels.DEBUG,
+			INFO = log.levels.INFO,
+			WARN = log.levels.WARN,
+			ERROR = log.levels.ERROR,
+			OFF = log.levels.OFF,
+		}
+
+		if M.config.logging.level and level_map[M.config.logging.level] then
+			log.set_level(level_map[M.config.logging.level])
 		end
 	end
 
