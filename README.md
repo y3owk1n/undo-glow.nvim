@@ -155,6 +155,7 @@ require("undo-glow").setup({
 ---@field priority? integer Extmark priority to render the highlight (Default 4096)
 ---@field fallback_for_transparency? UndoGlow.Config.FallbackForTransparency Fallback color for when the highlight is transparent.
 ---@field performance? UndoGlow.Config.Performance Performance tuning options.
+---@field logging? UndoGlow.Config.Logging Logging configuration options.
 
 ---Fallback color for when the highlight is transparent.
 ---@class UndoGlow.Config.FallbackForTransparency
@@ -175,6 +176,10 @@ require("undo-glow").setup({
 ---@field color_cache_size? integer Maximum number of cached color conversions (Default 1000)
 ---@field debounce_delay? integer Milliseconds to debounce rapid operations (Default 50)
 ---@field animation_skip_unchanged? boolean Skip animation redraws when highlights haven't changed (Default true)
+
+---Logging configuration options.
+---@class UndoGlow.Config.Logging
+---@field level? "TRACE"|"DEBUG"|"INFO"|"WARN"|"ERROR"|"OFF" Log level for filtering messages (Default "INFO")
 
 ---Options passed to easing functions.
 ---@class UndoGlow.EasingOpts
@@ -239,6 +244,9 @@ require("undo-glow").setup({
     color_cache_size = 1000, -- Maximum cached color conversions
     debounce_delay = 50, -- Milliseconds to debounce rapid operations
     animation_skip_unchanged = true, -- Skip redraws when highlights haven't changed
+  },
+  logging = {
+    level = "INFO", -- Log level: "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "OFF"
   },
 }
 ```
@@ -497,6 +505,51 @@ performance = {
 - **For fast machines**: Keep defaults or increase `color_cache_size`
 - **For slower machines**: Increase `debounce_delay` or decrease `color_cache_size`
 - **For debugging**: Set `animation_skip_unchanged = false` to see all animation frames
+
+## 📝 Logging Configuration
+
+**undo-glow.nvim** includes a comprehensive logging system for monitoring and debugging:
+
+### Log Levels
+
+Choose the appropriate log level for your needs:
+
+```lua
+logging = {
+  level = "INFO", -- Available: "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "OFF"
+}
+```
+
+- **TRACE**: Most verbose, includes all internal operations
+- **DEBUG**: Detailed debugging information
+- **INFO**: General information about plugin operations (default)
+- **WARN**: Warning messages for potential issues
+- **ERROR**: Error messages for failed operations
+- **OFF**: Disable all logging
+
+### Log Message Format
+
+All log messages follow a structured format:
+
+```
+[HH:MM:SS] [UndoGlow] LEVEL: Message
+Context: {additional_info}
+```
+
+### Logging Recommendations
+
+- **Development**: Use `"DEBUG"` or `"TRACE"` for detailed troubleshooting
+- **Production**: Use `"INFO"` for general monitoring (default)
+- **Performance**: Use `"WARN"` or `"ERROR"` to reduce logging overhead
+- **Silent**: Use `"OFF"` to disable all logging
+
+### Health Check Integration
+
+Run `:checkhealth undo-glow` to get comprehensive diagnostics including:
+- Plugin integration status
+- Configuration validation
+- Performance settings verification
+- System compatibility checks
 
 ## 🌎 API
 
