@@ -7,8 +7,13 @@ Alternatives to highlight-undo.nvim and tiny-glimmer.nvim.
 Table of Contents                                           *undo-glow.nvim.toc*
 
 API ······················································· |undo-glow.nvim.api|
+Enhanced API with hooks and builders ··························· |undo-glow.api|
 Configurations ········································· |undo-glow.nvim.config|
 Types ··················································· |undo-glow.nvim.types|
+Factory patterns for creating animations and highlights ···· |undo-glow.factory|
+Logging utilities ·············································· |undo-glow.log|
+Debouncing utilities for performance optimization ········· |undo-glow.debounce|
+Input validation utilities ································ |undo-glow.validate|
 
 ==============================================================================
 API                                                         *undo-glow.nvim.api*
@@ -247,6 +252,132 @@ M.highlight_region({opts})                 *undo-glow.nvim.api.highlight_region*
 
     Returns: ~
         (nil)
+
+
+==============================================================================
+Enhanced API with hooks and builders                             *undo-glow.api*
+
+
+Enhanced API system with hooks, builders, and extension points for undo-glow.nvim.
+
+This module provides the programmatic interface for extending and customizing
+undo-glow behavior through hooks, event subscriptions, and runtime configuration.
+
+Key features:
+• Hook system for operation customization (pre/post highlight, animation)
+• Event system for monitoring plugin activity
+• Configuration builder for runtime settings changes
+• Factory registration for custom animations and highlights
+• Status introspection for debugging and monitoring
+
+
+ConfigBuilder                                      *undo-glow.api.ConfigBuilder*
+    Configuration builder for fluent API pattern
+
+    Fields: ~
+        {_config}  (table)  Internal configuration storage
+
+
+M.highlight_region_enhanced({opts})    *undo-glow.api.highlight_region_enhanced*
+    Enhanced highlight function with hooks
+
+    Parameters: ~
+        {opts}  (UndoGlow.HighlightRegion)  Enhanced highlight options
+
+    Returns: ~
+        (nil)
+
+
+M.animate_enhanced({opts})                      *undo-glow.api.animate_enhanced*
+    Enhanced animation function with hooks
+
+    Parameters: ~
+        {opts}  (UndoGlow.Animation)  Animation options including coordinates, colors, and timing
+
+    Returns: ~
+        (nil)
+
+
+M.register_hook({event}, {callback}, {priority?})  *undo-glow.api.register_hook*
+    Register a hook for an event
+
+    Parameters: ~
+        {event}      (string)    Event name ("pre_highlight", "post_highlight", "pre_animation", "post_animation", "on_error", "on_config_change")
+        {callback}   (function)  Callback function with signature: function(data) where data contains event-specific information
+        {priority?}  (number)    Priority (higher numbers run first, default 0)
+
+    Returns: ~
+        (number)  Unique hook ID for removal
+
+
+M.remove_hook({event}, {hook_id})                    *undo-glow.api.remove_hook*
+    Remove a hook
+
+    Parameters: ~
+        {event}    (string)  Event name
+        {hook_id}  (number)  Hook ID returned by register_hook
+
+    Returns: ~
+        (boolean)  success
+
+
+M.subscribe({event}, {callback})                       *undo-glow.api.subscribe*
+    Subscribe to events
+
+    Parameters: ~
+        {event}     (string)    Event name ("command_executed", "integration_used", "buffer_changed", "config_changed", "config_error", "health_check_started", "health_check_completed", "log_message", "debounce_started", "debounce_executed", "color_conversion", "color_cache_hit", "factory_registered", "coordinates_sanitized")
+        {callback}  (function)  Callback function with signature: function(data) where data contains event-specific information
+
+    Returns: ~
+        (number)  subscription_id
+
+
+M.unsubscribe({event}, {subscription_id})            *undo-glow.api.unsubscribe*
+    Unsubscribe from events
+
+    Parameters: ~
+        {event}            (string)  Event name
+        {subscription_id}  (number)  Subscription ID
+
+    Returns: ~
+        (boolean)  success
+
+
+M.config_builder()                                *undo-glow.api.config_builder*
+    Create a configuration builder for runtime config changes
+    Use this for dynamic configuration updates after plugin initialization
+
+    Returns: ~
+        (ConfigBuilder)
+
+
+M.register_animation({name}, {animation_fn})  *undo-glow.api.register_animation*
+    Register a custom animation function
+
+    Parameters: ~
+        {name}          (string)    Animation name (used in config.animation_type)
+        {animation_fn}  (function)  Animation function with signature: function(opts: UndoGlow.Animation)
+
+    Returns: ~
+        (boolean)  success
+
+
+M.register_highlight({name}, {highlight_fn})  *undo-glow.api.register_highlight*
+    Register a custom highlight function
+
+    Parameters: ~
+        {name}          (string)    Highlight name (used in config.highlights)
+        {highlight_fn}  (function)  Highlight function with signature: function(opts) -> { hl: string, hl_color: UndoGlow.HlColor }
+
+    Returns: ~
+        (boolean)  success
+
+
+M.status()                                                *undo-glow.api.status*
+    Get comprehensive plugin status and runtime information
+
+    Returns: ~
+        (table)  Table containing: config (current config), registered_animations (list of custom animations), registered_highlights (list of custom highlights), active_hooks (hook counts by event)
 
 
 ==============================================================================
@@ -547,6 +678,245 @@ UndoGlow.CursorMovedOpts         *undo-glow.nvim.types.UndoGlow.CursorMovedOpts*
 
     Fields: ~
         {ignored_ft?}  (table)
+
+
+==============================================================================
+Factory patterns for creating animations and highlights      *undo-glow.factory*
+
+
+Factory patterns for creating animations and highlights with better extensibility.
+
+
+AnimationFactory                            *undo-glow.factory.AnimationFactory*
+    Animation factory for creating animation instances
+
+
+HighlightFactory                            *undo-glow.factory.HighlightFactory*
+    Highlight factory for creating highlight instances
+
+
+==============================================================================
+Logging utilities                                                *undo-glow.log*
+
+
+Centralized logging utilities for consistent error messages and configurable logging levels.
+
+
+M.set_level({level})                                   *undo-glow.log.set_level*
+    Set the minimum log level
+
+    Parameters: ~
+        {level}  (integer)  The minimum log level to display
+
+
+M.get_level()                                          *undo-glow.log.get_level*
+    Get the current log level
+
+    Returns: ~
+        (integer)
+
+
+M.set_outputs({notify?}, {file?}, {file_path?})      *undo-glow.log.set_outputs*
+    Enable or disable log outputs
+
+    Parameters: ~
+        {notify?}     (boolean)  Enable Neovim notifications
+        {file?}       (boolean)  Enable file logging
+        {file_path?}  (string)   Path to log file (required if file=true)
+
+
+M.get_log_file()                                    *undo-glow.log.get_log_file*
+    Get the current log file path
+
+    Returns: ~
+        (string|nil)
+
+
+M.error({message}, {context?})                             *undo-glow.log.error*
+    Log an error message with structured formatting
+
+    Parameters: ~
+        {message}   (string)  The error message
+        {context?}  (table)   Optional context information
+
+
+M.warn({message}, {context?})                               *undo-glow.log.warn*
+    Log a warning message with structured formatting
+
+    Parameters: ~
+        {message}   (string)  The warning message
+        {context?}  (table)   Optional context information
+
+
+M.info({message}, {context?})                               *undo-glow.log.info*
+    Log an info message with structured formatting
+
+    Parameters: ~
+        {message}   (string)  The info message
+        {context?}  (table)   Optional context information
+
+
+M.debug({message}, {context?})                             *undo-glow.log.debug*
+    Log a debug message with structured formatting
+
+    Parameters: ~
+        {message}   (string)  The debug message
+        {context?}  (table)   Optional context information
+
+
+M.trace({message}, {context?})                             *undo-glow.log.trace*
+    Log a trace message with structured formatting (most verbose)
+
+    Parameters: ~
+        {message}   (string)  The trace message
+        {context?}  (table)   Optional context information
+
+
+==============================================================================
+Debouncing utilities for performance optimization           *undo-glow.debounce*
+
+
+Debouncing utilities to prevent excessive operations during rapid events.
+
+
+M.set_default_delay({delay})              *undo-glow.debounce.set_default_delay*
+    Set the default debounce delay
+
+    Parameters: ~
+        {delay}  (number)  The delay in milliseconds
+
+
+M.debounce({fn}, {delay?}, {key})                  *undo-glow.debounce.debounce*
+    Debounces a function call, ensuring it's only executed after a delay
+    without being called again during that delay period.
+
+    Parameters: ~
+        {fn}      (function)  The function to debounce
+        {delay?}  (number)    The delay in milliseconds (uses default if not provided)
+        {key}     (string)    A unique key to identify this debounced function
+
+    Returns: ~
+        (function)  The debounced function
+
+
+M.throttle({fn}, {interval}, {key})                *undo-glow.debounce.throttle*
+    Throttles a function call, ensuring it's executed at most once per interval.
+
+    Parameters: ~
+        {fn}        (function)  The function to throttle
+        {interval}  (number)    The minimum interval in milliseconds
+        {key}       (string)    A unique key to identify this throttled function
+
+    Returns: ~
+        (function)  The throttled function
+
+
+M.cancel({key})                                      *undo-glow.debounce.cancel*
+    Cancels a debounced or throttled function by key
+
+    Parameters: ~
+        {key}  (string)  The key used when creating the debounced/throttled function
+
+
+M.cancel_all()                                   *undo-glow.debounce.cancel_all*
+    Cancels all active debounced/throttled functions
+
+
+==============================================================================
+Input validation utilities                                  *undo-glow.validate*
+
+
+Centralized input validation utilities for consistent parameter checking.
+
+
+M.is_table({value}, {param_name})                  *undo-glow.validate.is_table*
+    Validates that a value is a table
+
+    Parameters: ~
+        {value}       (any)     The value to check
+        {param_name}  (string)  The parameter name for error messages
+
+    Returns: ~
+        (boolean)
+
+
+M.is_string({value}, {param_name})                *undo-glow.validate.is_string*
+    Validates that a value is a string
+
+    Parameters: ~
+        {value}       (any)     The value to check
+        {param_name}  (string)  The parameter name for error messages
+
+    Returns: ~
+        (boolean)
+
+
+M.is_function({value}, {param_name})            *undo-glow.validate.is_function*
+    Validates that a value is a function
+
+    Parameters: ~
+        {value}       (any)     The value to check
+        {param_name}  (string)  The parameter name for error messages
+
+    Returns: ~
+        (boolean)
+
+
+                                                  *undo-glow.validate.is_number*
+M.is_number({value}, {param_name}, {min?}, {max?})
+    Validates that a value is a number
+
+    Parameters: ~
+        {value}       (any)     The value to check
+        {param_name}  (string)  The parameter name for error messages
+        {min?}        (number)  Optional minimum value
+        {max?}        (number)  Optional maximum value
+
+    Returns: ~
+        (boolean)
+
+
+M.is_boolean({value}, {param_name})              *undo-glow.validate.is_boolean*
+    Validates that a value is a boolean
+
+    Parameters: ~
+        {value}       (any)     The value to check
+        {param_name}  (string)  The parameter name for error messages
+
+    Returns: ~
+        (boolean)
+
+
+                                  *undo-glow.validate.validate_animation_config*
+M.validate_animation_config({animation})
+    Validates animation configuration
+
+    Parameters: ~
+        {animation}  (table)  The animation config to validate
+
+    Returns: ~
+        (boolean)
+
+
+                                  *undo-glow.validate.validate_highlight_config*
+M.validate_highlight_config({highlights})
+    Validates highlight configuration
+
+    Parameters: ~
+        {highlights}  (table)  The highlights config to validate
+
+    Returns: ~
+        (boolean)
+
+
+M.validate_command_opts({opts})       *undo-glow.validate.validate_command_opts*
+    Validates command options
+
+    Parameters: ~
+        {opts}  (table)  The command options to validate
+
+    Returns: ~
+        (boolean)
 
 
 vim:tw=78:ts=8:noet:ft=help:norl:
