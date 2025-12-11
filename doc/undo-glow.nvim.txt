@@ -7,13 +7,13 @@ Alternatives to highlight-undo.nvim and tiny-glimmer.nvim.
 Table of Contents                                           *undo-glow.nvim.toc*
 
 API ······················································· |undo-glow.nvim.api|
-Enhanced API with hooks and builders ··························· |undo-glow.api|
+Enhanced API with hooks and builders ············· |undo-glow.nvim.enhanced-api|
 Configurations ········································· |undo-glow.nvim.config|
 Types ··················································· |undo-glow.nvim.types|
-Factory patterns for creating animations and highlights ···· |undo-glow.factory|
-Logging utilities ·············································· |undo-glow.log|
-Debouncing utilities for performance optimization ········· |undo-glow.debounce|
-Input validation utilities ································ |undo-glow.validate|
+Factory patterns for creating animations and highlights  |undo-glow.nvim.factory|
+Logging utilities ········································· |undo-glow.nvim.log|
+Debouncing utilities for performance optimization ···· |undo-glow.nvim.debounce|
+Input validation utilities ··························· |undo-glow.nvim.validate|
 
 ==============================================================================
 API                                                         *undo-glow.nvim.api*
@@ -255,7 +255,7 @@ M.highlight_region({opts})                 *undo-glow.nvim.api.highlight_region*
 
 
 ==============================================================================
-Enhanced API with hooks and builders                             *undo-glow.api*
+Enhanced API with hooks and builders               *undo-glow.nvim.enhanced-api*
 
 
 Enhanced API system with hooks, builders, and extension points for undo-glow.nvim.
@@ -271,14 +271,15 @@ Key features:
 • Status introspection for debugging and monitoring
 
 
-ConfigBuilder                                      *undo-glow.api.ConfigBuilder*
+ConfigBuilder                        *undo-glow.nvim.enhanced-api.ConfigBuilder*
     Configuration builder for fluent API pattern
 
     Fields: ~
         {_config}  (table)  Internal configuration storage
 
 
-M.highlight_region_enhanced({opts})    *undo-glow.api.highlight_region_enhanced*
+                         *undo-glow.nvim.enhanced-api.highlight_region_enhanced*
+M.highlight_region_enhanced({opts})
     Enhanced highlight function with hooks
 
     Parameters: ~
@@ -288,7 +289,7 @@ M.highlight_region_enhanced({opts})    *undo-glow.api.highlight_region_enhanced*
         (nil)
 
 
-M.animate_enhanced({opts})                      *undo-glow.api.animate_enhanced*
+M.animate_enhanced({opts})        *undo-glow.nvim.enhanced-api.animate_enhanced*
     Enhanced animation function with hooks
 
     Parameters: ~
@@ -298,7 +299,8 @@ M.animate_enhanced({opts})                      *undo-glow.api.animate_enhanced*
         (nil)
 
 
-M.register_hook({event}, {callback}, {priority?})  *undo-glow.api.register_hook*
+                                     *undo-glow.nvim.enhanced-api.register_hook*
+M.register_hook({event}, {callback}, {priority?})
     Register a hook for an event
 
     Parameters: ~
@@ -310,7 +312,7 @@ M.register_hook({event}, {callback}, {priority?})  *undo-glow.api.register_hook*
         (number)  Unique hook ID for removal
 
 
-M.remove_hook({event}, {hook_id})                    *undo-glow.api.remove_hook*
+M.remove_hook({event}, {hook_id})      *undo-glow.nvim.enhanced-api.remove_hook*
     Remove a hook
 
     Parameters: ~
@@ -321,7 +323,7 @@ M.remove_hook({event}, {hook_id})                    *undo-glow.api.remove_hook*
         (boolean)  success
 
 
-M.subscribe({event}, {callback})                       *undo-glow.api.subscribe*
+M.subscribe({event}, {callback})         *undo-glow.nvim.enhanced-api.subscribe*
     Subscribe to events
 
     Parameters: ~
@@ -332,7 +334,8 @@ M.subscribe({event}, {callback})                       *undo-glow.api.subscribe*
         (number)  subscription_id
 
 
-M.unsubscribe({event}, {subscription_id})            *undo-glow.api.unsubscribe*
+                                       *undo-glow.nvim.enhanced-api.unsubscribe*
+M.unsubscribe({event}, {subscription_id})
     Unsubscribe from events
 
     Parameters: ~
@@ -343,7 +346,7 @@ M.unsubscribe({event}, {subscription_id})            *undo-glow.api.unsubscribe*
         (boolean)  success
 
 
-M.config_builder()                                *undo-glow.api.config_builder*
+M.config_builder()                  *undo-glow.nvim.enhanced-api.config_builder*
     Create a configuration builder for runtime config changes
     Use this for dynamic configuration updates after plugin initialization
 
@@ -351,7 +354,8 @@ M.config_builder()                                *undo-glow.api.config_builder*
         (ConfigBuilder)
 
 
-M.register_animation({name}, {animation_fn})  *undo-glow.api.register_animation*
+                                *undo-glow.nvim.enhanced-api.register_animation*
+M.register_animation({name}, {animation_fn})
     Register a custom animation function
 
     Parameters: ~
@@ -362,7 +366,8 @@ M.register_animation({name}, {animation_fn})  *undo-glow.api.register_animation*
         (boolean)  success
 
 
-M.register_highlight({name}, {highlight_fn})  *undo-glow.api.register_highlight*
+                                *undo-glow.nvim.enhanced-api.register_highlight*
+M.register_highlight({name}, {highlight_fn})
     Register a custom highlight function
 
     Parameters: ~
@@ -373,7 +378,7 @@ M.register_highlight({name}, {highlight_fn})  *undo-glow.api.register_highlight*
         (boolean)  success
 
 
-M.status()                                                *undo-glow.api.status*
+M.status()                                  *undo-glow.nvim.enhanced-api.status*
     Get comprehensive plugin status and runtime information
 
     Returns: ~
@@ -681,42 +686,42 @@ UndoGlow.CursorMovedOpts         *undo-glow.nvim.types.UndoGlow.CursorMovedOpts*
 
 
 ==============================================================================
-Factory patterns for creating animations and highlights      *undo-glow.factory*
+Factory patterns for creating animations and highlights *undo-glow.nvim.factory*
 
 
 Factory patterns for creating animations and highlights with better extensibility.
 
 
-AnimationFactory                            *undo-glow.factory.AnimationFactory*
+AnimationFactory                       *undo-glow.nvim.factory.AnimationFactory*
     Animation factory for creating animation instances
 
 
-HighlightFactory                            *undo-glow.factory.HighlightFactory*
+HighlightFactory                       *undo-glow.nvim.factory.HighlightFactory*
     Highlight factory for creating highlight instances
 
 
 ==============================================================================
-Logging utilities                                                *undo-glow.log*
+Logging utilities                                           *undo-glow.nvim.log*
 
 
 Centralized logging utilities for consistent error messages and configurable logging levels.
 
 
-M.set_level({level})                                   *undo-glow.log.set_level*
+M.set_level({level})                              *undo-glow.nvim.log.set_level*
     Set the minimum log level
 
     Parameters: ~
         {level}  (integer)  The minimum log level to display
 
 
-M.get_level()                                          *undo-glow.log.get_level*
+M.get_level()                                     *undo-glow.nvim.log.get_level*
     Get the current log level
 
     Returns: ~
         (integer)
 
 
-M.set_outputs({notify?}, {file?}, {file_path?})      *undo-glow.log.set_outputs*
+M.set_outputs({notify?}, {file?}, {file_path?}) *undo-glow.nvim.log.set_outputs*
     Enable or disable log outputs
 
     Parameters: ~
@@ -725,14 +730,14 @@ M.set_outputs({notify?}, {file?}, {file_path?})      *undo-glow.log.set_outputs*
         {file_path?}  (string)   Path to log file (required if file=true)
 
 
-M.get_log_file()                                    *undo-glow.log.get_log_file*
+M.get_log_file()                               *undo-glow.nvim.log.get_log_file*
     Get the current log file path
 
     Returns: ~
         (string|nil)
 
 
-M.error({message}, {context?})                             *undo-glow.log.error*
+M.error({message}, {context?})                        *undo-glow.nvim.log.error*
     Log an error message with structured formatting
 
     Parameters: ~
@@ -740,7 +745,7 @@ M.error({message}, {context?})                             *undo-glow.log.error*
         {context?}  (table)   Optional context information
 
 
-M.warn({message}, {context?})                               *undo-glow.log.warn*
+M.warn({message}, {context?})                          *undo-glow.nvim.log.warn*
     Log a warning message with structured formatting
 
     Parameters: ~
@@ -748,7 +753,7 @@ M.warn({message}, {context?})                               *undo-glow.log.warn*
         {context?}  (table)   Optional context information
 
 
-M.info({message}, {context?})                               *undo-glow.log.info*
+M.info({message}, {context?})                          *undo-glow.nvim.log.info*
     Log an info message with structured formatting
 
     Parameters: ~
@@ -756,7 +761,7 @@ M.info({message}, {context?})                               *undo-glow.log.info*
         {context?}  (table)   Optional context information
 
 
-M.debug({message}, {context?})                             *undo-glow.log.debug*
+M.debug({message}, {context?})                        *undo-glow.nvim.log.debug*
     Log a debug message with structured formatting
 
     Parameters: ~
@@ -764,7 +769,7 @@ M.debug({message}, {context?})                             *undo-glow.log.debug*
         {context?}  (table)   Optional context information
 
 
-M.trace({message}, {context?})                             *undo-glow.log.trace*
+M.trace({message}, {context?})                        *undo-glow.nvim.log.trace*
     Log a trace message with structured formatting (most verbose)
 
     Parameters: ~
@@ -773,20 +778,20 @@ M.trace({message}, {context?})                             *undo-glow.log.trace*
 
 
 ==============================================================================
-Debouncing utilities for performance optimization           *undo-glow.debounce*
+Debouncing utilities for performance optimization      *undo-glow.nvim.debounce*
 
 
 Debouncing utilities to prevent excessive operations during rapid events.
 
 
-M.set_default_delay({delay})              *undo-glow.debounce.set_default_delay*
+M.set_default_delay({delay})         *undo-glow.nvim.debounce.set_default_delay*
     Set the default debounce delay
 
     Parameters: ~
         {delay}  (number)  The delay in milliseconds
 
 
-M.debounce({fn}, {delay?}, {key})                  *undo-glow.debounce.debounce*
+M.debounce({fn}, {delay?}, {key})             *undo-glow.nvim.debounce.debounce*
     Debounces a function call, ensuring it's only executed after a delay
     without being called again during that delay period.
 
@@ -799,7 +804,7 @@ M.debounce({fn}, {delay?}, {key})                  *undo-glow.debounce.debounce*
         (function)  The debounced function
 
 
-M.throttle({fn}, {interval}, {key})                *undo-glow.debounce.throttle*
+M.throttle({fn}, {interval}, {key})           *undo-glow.nvim.debounce.throttle*
     Throttles a function call, ensuring it's executed at most once per interval.
 
     Parameters: ~
@@ -811,25 +816,25 @@ M.throttle({fn}, {interval}, {key})                *undo-glow.debounce.throttle*
         (function)  The throttled function
 
 
-M.cancel({key})                                      *undo-glow.debounce.cancel*
+M.cancel({key})                                 *undo-glow.nvim.debounce.cancel*
     Cancels a debounced or throttled function by key
 
     Parameters: ~
         {key}  (string)  The key used when creating the debounced/throttled function
 
 
-M.cancel_all()                                   *undo-glow.debounce.cancel_all*
+M.cancel_all()                              *undo-glow.nvim.debounce.cancel_all*
     Cancels all active debounced/throttled functions
 
 
 ==============================================================================
-Input validation utilities                                  *undo-glow.validate*
+Input validation utilities                             *undo-glow.nvim.validate*
 
 
 Centralized input validation utilities for consistent parameter checking.
 
 
-M.is_table({value}, {param_name})                  *undo-glow.validate.is_table*
+M.is_table({value}, {param_name})             *undo-glow.nvim.validate.is_table*
     Validates that a value is a table
 
     Parameters: ~
@@ -840,7 +845,7 @@ M.is_table({value}, {param_name})                  *undo-glow.validate.is_table*
         (boolean)
 
 
-M.is_string({value}, {param_name})                *undo-glow.validate.is_string*
+M.is_string({value}, {param_name})           *undo-glow.nvim.validate.is_string*
     Validates that a value is a string
 
     Parameters: ~
@@ -851,7 +856,7 @@ M.is_string({value}, {param_name})                *undo-glow.validate.is_string*
         (boolean)
 
 
-M.is_function({value}, {param_name})            *undo-glow.validate.is_function*
+M.is_function({value}, {param_name})       *undo-glow.nvim.validate.is_function*
     Validates that a value is a function
 
     Parameters: ~
@@ -862,7 +867,7 @@ M.is_function({value}, {param_name})            *undo-glow.validate.is_function*
         (boolean)
 
 
-                                                  *undo-glow.validate.is_number*
+                                             *undo-glow.nvim.validate.is_number*
 M.is_number({value}, {param_name}, {min?}, {max?})
     Validates that a value is a number
 
@@ -876,7 +881,7 @@ M.is_number({value}, {param_name}, {min?}, {max?})
         (boolean)
 
 
-M.is_boolean({value}, {param_name})              *undo-glow.validate.is_boolean*
+M.is_boolean({value}, {param_name})         *undo-glow.nvim.validate.is_boolean*
     Validates that a value is a boolean
 
     Parameters: ~
@@ -887,7 +892,7 @@ M.is_boolean({value}, {param_name})              *undo-glow.validate.is_boolean*
         (boolean)
 
 
-                                  *undo-glow.validate.validate_animation_config*
+                             *undo-glow.nvim.validate.validate_animation_config*
 M.validate_animation_config({animation})
     Validates animation configuration
 
@@ -898,7 +903,7 @@ M.validate_animation_config({animation})
         (boolean)
 
 
-                                  *undo-glow.validate.validate_highlight_config*
+                             *undo-glow.nvim.validate.validate_highlight_config*
 M.validate_highlight_config({highlights})
     Validates highlight configuration
 
@@ -909,7 +914,7 @@ M.validate_highlight_config({highlights})
         (boolean)
 
 
-M.validate_command_opts({opts})       *undo-glow.validate.validate_command_opts*
+M.validate_command_opts({opts})  *undo-glow.nvim.validate.validate_command_opts*
     Validates command options
 
     Parameters: ~
