@@ -19,15 +19,6 @@ M.default_search = { bg = "#BD93F9" } -- Purple
 M.default_comment = { bg = "#FFB86C" } -- Orange
 M.default_cursor = { bg = "#FF79C6" } -- Magenta
 
--- Color caches for performance optimization
-local hex_to_rgb_cache = {}
-local rgb_to_hex_cache = {}
-local rgb_to_hsl_cache = {}
-local hsl_to_rgb_cache = {}
-
--- Cache size limits to prevent memory leaks (configurable)
-local MAX_CACHE_SIZE = 1000
-
 ---Update cache size limit from configuration
 ---@param size number
 function M.set_cache_size(size)
