@@ -154,6 +154,7 @@ require("undo-glow").setup({
 ---@field highlights? table<"undo" | "redo" | "yank" | "paste" | "search" | "comment" | "cursor", { hl: string, hl_color: UndoGlow.HlColor }> Highlight configurations for various actions.
 ---@field priority? integer Extmark priority to render the highlight (Default 4096)
 ---@field fallback_for_transparency? UndoGlow.Config.FallbackForTransparency Fallback color for when the highlight is transparent.
+---@field performance? UndoGlow.Config.Performance Performance tuning options.
 
 ---Fallback color for when the highlight is transparent.
 ---@class UndoGlow.Config.FallbackForTransparency
@@ -168,6 +169,12 @@ require("undo-glow").setup({
 ---@field easing? UndoGlow.EasingString|UndoGlow.EasingFn Easing function (a string key or a custom function).
 ---@field fps? number Frames per second for the animation.
 ---@field window_scoped? boolean If enabled, the highlight effect is constrained to the current active window, even if the buffer is shared across splits.
+
+---Performance tuning options.
+---@class UndoGlow.Config.Performance
+---@field color_cache_size? integer Maximum number of cached color conversions (Default 1000)
+---@field debounce_delay? integer Milliseconds to debounce rapid operations (Default 50)
+---@field animation_skip_unchanged? boolean Skip animation redraws when highlights haven't changed (Default true)
 
 ---Options passed to easing functions.
 ---@class UndoGlow.EasingOpts
@@ -226,8 +233,13 @@ require("undo-glow").setup({
    hl = "UgCursor", -- Same as above
    hl_color = { bg = "#FF79C6" }, -- Ugly magenta color
   },
- },
- priority = 4096, -- so that it will work with render-markdown.nvim
+  },
+  priority = 4096, -- so that it will work with render-markdown.nvim
+  performance = {
+    color_cache_size = 1000, -- Maximum cached color conversions
+    debounce_delay = 50, -- Milliseconds to debounce rapid operations
+    animation_skip_unchanged = true, -- Skip redraws when highlights haven't changed
+  },
 }
 ```
 
@@ -436,6 +448,55 @@ See the example below for how to configure **undo-glow.nvim**.
 
 - See [recipes.md](recipes.md) for more examples. If you have more recipes, feel free to send a PR to add them here.
 - See [integrations](#built-in-integrations) for supported plugins.
+
+## ⚡ Performance Tuning
+
+**undo-glow.nvim** includes several performance optimizations that can be configured to suit your needs:
+
+### Color Caching
+
+The plugin caches color conversions (hex ↔ RGB ↔ HSL) to avoid expensive recalculations:
+
+```lua
+performance = {
+  color_cache_size = 1000, -- Maximum cached conversions (default: 1000)
+}
+```
+
+- **Higher values**: Better performance for color-heavy operations, but uses more memory
+- **Lower values**: Reduces memory usage but may slow down color operations
+
+### Debouncing
+
+Rapid operations (like cursor movements) are debounced to prevent excessive highlighting:
+
+```lua
+performance = {
+  debounce_delay = 50, -- Milliseconds to wait before highlighting (default: 50)
+}
+```
+
+- **Lower values**: More responsive highlighting, but may cause performance issues during rapid editing
+- **Higher values**: Better performance during rapid editing, but less responsive highlighting
+
+### Animation Optimization
+
+Animations can skip unnecessary redraws when highlights haven't changed:
+
+```lua
+performance = {
+  animation_skip_unchanged = true, -- Skip redraws for unchanged highlights (default: true)
+}
+```
+
+- **Enabled**: Better performance by avoiding redundant screen updates
+- **Disabled**: Ensures all animation frames are drawn (useful for debugging)
+
+### Performance Recommendations
+
+- **For fast machines**: Keep defaults or increase `color_cache_size`
+- **For slower machines**: Increase `debounce_delay` or decrease `color_cache_size`
+- **For debugging**: Set `animation_skip_unchanged = false` to see all animation frames
 
 ## 🌎 API
 

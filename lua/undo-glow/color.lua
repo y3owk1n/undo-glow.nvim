@@ -1,5 +1,14 @@
 local M = {}
 
+-- Color caches for performance optimization
+local hex_to_rgb_cache = {}
+local rgb_to_hex_cache = {}
+local rgb_to_hsl_cache = {}
+local hsl_to_rgb_cache = {}
+
+-- Cache size limits to prevent memory leaks
+local MAX_CACHE_SIZE = 1000
+
 M.default_bg = "#000000"
 M.default_fg = "#FFFFFF"
 M.default_undo = { bg = "#FF5555" } -- Red
@@ -10,11 +19,67 @@ M.default_search = { bg = "#BD93F9" } -- Purple
 M.default_comment = { bg = "#FFB86C" } -- Orange
 M.default_cursor = { bg = "#FF79C6" } -- Magenta
 
+-- Color caches for performance optimization
+local hex_to_rgb_cache = {}
+local rgb_to_hex_cache = {}
+local rgb_to_hsl_cache = {}
+local hsl_to_rgb_cache = {}
+
+-- Cache size limits to prevent memory leaks (configurable)
+local MAX_CACHE_SIZE = 1000
+
+---Update cache size limit from configuration
+---@param size number
+function M.set_cache_size(size)
+	MAX_CACHE_SIZE = size
+end
+
+---Helper function to create a cache key from a table
+---@param tbl table The table to create a key from
+---@return string cache_key The cache key
+local function table_to_key(tbl)
+	if not tbl then return "nil" end
+	local parts = {}
+	for k, v in pairs(tbl) do
+		table.insert(parts, string.format("%s=%s", k, v))
+	end
+	table.sort(parts)
+	return table.concat(parts, "|")
+end
+
+---Helper function to limit cache size
+---@param cache table The cache table to limit
+local function limit_cache_size(cache)
+	local count = 0
+	for _ in pairs(cache) do
+		count = count + 1
+	end
+	if count > MAX_CACHE_SIZE then
+		-- Clear half the cache when it gets too large
+		local to_remove = {}
+		local i = 1
+		for k in pairs(cache) do
+			if i % 2 == 0 then
+				table.insert(to_remove, k)
+			end
+			i = i + 1
+		end
+		for _, k in ipairs(to_remove) do
+			cache[k] = nil
+		end
+	end
+end
+
 ---Converts a hexadecimal color string to an RGB table.
 ---Examples: "#FFF" or "#FFFFFF"
 ---@param hex string The hexadecimal color string.
 ---@return UndoGlow.RGBColor rgb_color The RGB representation of the hex color.
 function M.hex_to_rgb(hex)
+	-- Check cache first
+	if hex_to_rgb_cache[hex] then
+		return hex_to_rgb_cache[hex]
+	end
+
 	local clean_hex = hex:gsub("#", "")
 	local rgb_color
 
@@ -32,6 +97,10 @@ function M.hex_to_rgb(hex)
 		}
 	end
 
+	-- Cache the result
+	hex_to_rgb_cache[hex] = rgb_color
+	limit_cache_size(hex_to_rgb_cache)
+
 	return rgb_color
 end
 
@@ -39,7 +108,18 @@ end
 ---@param rgb UndoGlow.RGBColor The RGB color table.
 ---@return string hex_code The hexadecimal representation of the color.
 function M.rgb_to_hex(rgb)
+	local cache_key = table_to_key(rgb)
+
+	-- Check cache first
+	if rgb_to_hex_cache[cache_key] then
+		return rgb_to_hex_cache[cache_key]
+	end
+
 	local hex_code = string.format("#%02X%02X%02X", rgb.r, rgb.g, rgb.b)
+
+	-- Cache the result
+	rgb_to_hex_cache[cache_key] = hex_code
+	limit_cache_size(rgb_to_hex_cache)
 
 	return hex_code
 end
@@ -48,6 +128,13 @@ end
 ---@param rgb UndoGlow.RGBColor The RGB color table.
 ---@return UndoGlow.HSLColor hsl_color The HSL representation (h in degrees, s and l as fractions).
 function M.rgb_to_hsl(rgb)
+	local cache_key = table_to_key(rgb)
+
+	-- Check cache first
+	if rgb_to_hsl_cache[cache_key] then
+		return rgb_to_hsl_cache[cache_key]
+	end
+
 	local r = rgb.r / 255
 	local g = rgb.g / 255
 	local b = rgb.b / 255
@@ -79,6 +166,10 @@ function M.rgb_to_hsl(rgb)
 	end
 
 	local hsl_color = { h = h, s = s, l = l }
+
+	-- Cache the result
+	rgb_to_hsl_cache[cache_key] = hsl_color
+	limit_cache_size(rgb_to_hsl_cache)
 
 	return hsl_color
 end

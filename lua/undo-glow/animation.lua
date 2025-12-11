@@ -37,6 +37,7 @@ function M.animate_start(opts, animate_fn)
 	local start_time = vim.uv.hrtime()
 	local interval = 1000 / opts.state.animation.fps
 	local timer = vim.uv.new_timer()
+	local last_hl_opts = nil -- Track last highlight options to avoid unnecessary redraws
 
 	if timer then
 		timer:start(
@@ -63,8 +64,10 @@ function M.animate_start(opts, animate_fn)
 						animation_ended = true
 					end)
 
-					if hl_opts then
+					-- Only update highlight if it has actually changed to avoid unnecessary redraws
+					if hl_opts and not vim.deep_equal(hl_opts, last_hl_opts) then
 						vim.api.nvim_set_hl(0, opts.hlgroup, hl_opts)
+						last_hl_opts = vim.deepcopy(hl_opts)
 					end
 				end)
 
