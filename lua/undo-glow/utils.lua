@@ -100,7 +100,9 @@ function M.handle_highlight(opts)
 
 	if opts.state.animation.window_scoped then
 		local current_win = vim.api.nvim_get_current_win()
-		if not vim.tbl_contains(vim.fn.win_findbuf(opts.bufnr), current_win) then
+		if
+			not vim.tbl_contains(vim.fn.win_findbuf(opts.bufnr), current_win)
+		then
 			return
 		end
 	end
