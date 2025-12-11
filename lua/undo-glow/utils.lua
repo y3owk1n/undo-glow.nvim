@@ -98,6 +98,13 @@ function M.handle_highlight(opts)
 
 	opts = M.validate_state_for_highlight(opts)
 
+	if opts.state.animation.window_scoped then
+		local current_win = vim.api.nvim_get_current_win()
+		if not vim.tbl_contains(vim.fn.win_findbuf(opts.bufnr), current_win) then
+			return
+		end
+	end
+
 	-- If animation is off, use the existing hlgroup else use unique hlgroups.
 	-- Unique hlgroups is needed for animated version, because we will be changing the hlgroup colors during
 	-- animation.
