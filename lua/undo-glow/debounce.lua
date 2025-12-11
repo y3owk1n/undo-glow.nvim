@@ -40,17 +40,21 @@ function M.debounce(fn, delay, key)
 		-- Create new timer
 		local timer = vim.uv.new_timer()
 		if timer then
-			timer:start(delay, 0, vim.schedule_wrap(function()
-				-- Execute the function
-				fn(unpack(args))
+			timer:start(
+				delay,
+				0,
+				vim.schedule_wrap(function()
+					-- Execute the function
+					fn(unpack(args))
 
-				-- Clean up timer
-				if timers[key] then
-					timers[key]:stop()
-					timers[key]:close()
-					timers[key] = nil
-				end
-			end))
+					-- Clean up timer
+					if timers[key] then
+						timers[key]:stop()
+						timers[key]:close()
+						timers[key] = nil
+					end
+				end)
+			)
 
 			timers[key] = timer
 		else

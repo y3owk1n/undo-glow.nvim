@@ -65,7 +65,9 @@ function M.animate_start(opts, animate_fn)
 					end)
 
 					-- Only update highlight if it has actually changed to avoid unnecessary redraws
-					if hl_opts and not vim.deep_equal(hl_opts, last_hl_opts) then
+					if
+						hl_opts and not vim.deep_equal(hl_opts, last_hl_opts)
+					then
 						vim.api.nvim_set_hl(0, opts.hlgroup, hl_opts)
 						last_hl_opts = vim.deepcopy(hl_opts)
 					end

@@ -29,7 +29,9 @@ end
 ---@param tbl table The table to create a key from
 ---@return string cache_key The cache key
 local function table_to_key(tbl)
-	if not tbl then return "nil" end
+	if not tbl then
+		return "nil"
+	end
 	local parts = {}
 	for k, v in pairs(tbl) do
 		table.insert(parts, string.format("%s=%s", k, v))

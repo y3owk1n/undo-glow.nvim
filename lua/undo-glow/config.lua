@@ -161,7 +161,9 @@ function M.setup(user_config)
 
 	-- Validate user config before merging
 	if not validate_config(user_config) then
-		require("undo-glow.log").error("Invalid configuration provided. Using defaults.")
+		require("undo-glow.log").error(
+			"Invalid configuration provided. Using defaults."
+		)
 		M.config = vim.tbl_deep_extend("force", {}, defaults)
 		return
 	end
