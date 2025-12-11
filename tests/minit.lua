@@ -15,6 +15,9 @@ load(
 require("lazy.minit").setup({
 	spec = {
 		{ "nvim-lua/plenary.nvim", lazy = false }, -- Ensure plenary loads immediately.
+		{ "gbprod/yanky.nvim", lazy = false }, -- Yank integration testing
+		{ "gbprod/substitute.nvim", lazy = false }, -- Substitute integration testing
+		{ "folke/flash.nvim", lazy = false }, -- Flash integration testing
 		{
 			dir = vim.uv.cwd(),
 			opts = {
