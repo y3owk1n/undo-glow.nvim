@@ -354,7 +354,7 @@ function M.check()
 
 		if config.performance.animation_skip_unchanged == false then
 			report_status(
-				"info",
+				"ok",
 				"Animation optimization is disabled - all frames will be rendered"
 			)
 		else

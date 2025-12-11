@@ -496,6 +496,7 @@ end
 ---@return UndoGlow.HandleHighlight The validated and updated handle highlight options.
 function M.validate_state_for_highlight(opts)
 	if not opts.state then
+		---@diagnostic disable-next-line: param-type-mismatch
 		opts.state = M.create_state(opts)
 	end
 

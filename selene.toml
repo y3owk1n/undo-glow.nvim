@@ -1,4 +1,0 @@
-[rules]
-unused_variable = "allow"
-undefined_variable = "allow"
-unscoped_variables = "allow"

@@ -20,6 +20,8 @@
 
 local M = {}
 
+local yanky_ok, _ = pcall(require, "yanky")
+
 local api = require("undo-glow.api")
 
 M.yanky = {}

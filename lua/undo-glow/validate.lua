@@ -203,7 +203,7 @@ function M.validate_highlight_config(highlights)
 end
 
 ---Validates command options
----@param opts table The command options to validate
+---@param opts? table The command options to validate
 ---@return boolean
 function M.validate_command_opts(opts)
 	if opts == nil then

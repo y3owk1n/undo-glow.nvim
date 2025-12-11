@@ -74,7 +74,11 @@ describe("Enhanced API", function()
 			api.call_hook("pre_highlight", { test = "data" })
 
 			assert.is_true(hook_called)
-			assert.equals("data", hook_data.test)
+			assert.is_table(hook_data)
+
+			if hook_data then
+				assert.equals("data", hook_data.test)
+			end
 
 			-- Cleanup
 			api.remove_hook("pre_highlight", hook_id)
@@ -83,9 +87,15 @@ describe("Enhanced API", function()
 		it("should support hook priorities", function()
 			local call_order = {}
 
-			local hook1 = api.register_hook("test_hook", function() table.insert(call_order, 1) end, 10)
-			local hook2 = api.register_hook("test_hook", function() table.insert(call_order, 2) end, 5)
-			local hook3 = api.register_hook("test_hook", function() table.insert(call_order, 3) end, 15)
+			local hook1 = api.register_hook("test_hook", function()
+				table.insert(call_order, 1)
+			end, 10)
+			local hook2 = api.register_hook("test_hook", function()
+				table.insert(call_order, 2)
+			end, 5)
+			local hook3 = api.register_hook("test_hook", function()
+				table.insert(call_order, 3)
+			end, 15)
 
 			api.call_hook("test_hook")
 
@@ -109,8 +119,12 @@ describe("Enhanced API", function()
 		it("should handle hook errors gracefully", function()
 			local good_hook_called = false
 
-			local bad_hook = api.register_hook("error_hook", function() error("Hook error") end)
-			local good_hook = api.register_hook("error_hook", function() good_hook_called = true end)
+			local bad_hook = api.register_hook("error_hook", function()
+				error("Hook error")
+			end)
+			local good_hook = api.register_hook("error_hook", function()
+				good_hook_called = true
+			end)
 
 			-- This should not crash even with the bad hook
 			local success = pcall(api.call_hook, "error_hook")
@@ -135,7 +149,11 @@ describe("Enhanced API", function()
 			api.emit("test_event", { message = "hello" })
 
 			assert.is_true(event_received)
-			assert.equals("hello", event_data.message)
+			assert.is_table(event_data)
+
+			if event_data then
+				assert.equals("hello", event_data.message)
+			end
 
 			-- Cleanup
 			api.unsubscribe("test_event", sub_id)
@@ -144,8 +162,12 @@ describe("Enhanced API", function()
 		it("should handle multiple subscribers", function()
 			local call_count = 0
 
-			local sub1 = api.subscribe("multi_event", function() call_count = call_count + 1 end)
-			local sub2 = api.subscribe("multi_event", function() call_count = call_count + 1 end)
+			local sub1 = api.subscribe("multi_event", function()
+				call_count = call_count + 1
+			end)
+			local sub2 = api.subscribe("multi_event", function()
+				call_count = call_count + 1
+			end)
 
 			api.emit("multi_event")
 
@@ -159,8 +181,12 @@ describe("Enhanced API", function()
 		it("should handle event callback errors", function()
 			local good_event_called = false
 
-			local bad_sub = api.subscribe("error_event", function() error("Event error") end)
-			local good_sub = api.subscribe("error_event", function() good_event_called = true end)
+			local bad_sub = api.subscribe("error_event", function()
+				error("Event error")
+			end)
+			local good_sub = api.subscribe("error_event", function()
+				good_event_called = true
+			end)
 
 			api.emit("error_event")
 
@@ -218,7 +244,12 @@ describe("Enhanced API", function()
 				start_bg = { r = 255, g = 0, b = 0 },
 				end_bg = { r = 0, g = 255, b = 0 },
 				duration = 100,
-				state = { animation = { fps = 60 } },
+				config = {},
+				state = {
+					current_hlgroup = "TestHL",
+					should_detach = false,
+					animation = { fps = 60 },
+				},
 				coordinates = { s_row = 0, s_col = 0, e_row = 0, e_col = 5 },
 				extmark_ids = {},
 			})
@@ -232,13 +263,21 @@ describe("Enhanced API", function()
 
 	describe("Factory Registration", function()
 		it("should register custom animations", function()
-			local success = api.register_animation("custom_anim", function() end)
+			local success = api.register_animation(
+				"custom_anim",
+				function() end
+			)
 			-- Registration should succeed
 			assert.is_true(success)
 		end)
 
 		it("should register custom highlights", function()
-			local success = api.register_highlight("custom_highlight", function() return {} end)
+			local success = api.register_highlight(
+				"custom_highlight",
+				function()
+					return {}
+				end
+			)
 			-- Registration should succeed
 			assert.is_true(success)
 		end)
@@ -285,11 +324,17 @@ describe("Enhanced API", function()
 					return ""
 				end
 
-				local hook_id = api.register_hook("pre_highlight", function(data)
-					if data.operation == "undo" then
-						vim.fn.system("afplay /System/Library/Sounds/Blow.aiff")
-					end
-				end, 100)
+				local hook_id = api.register_hook(
+					"pre_highlight",
+					function(data)
+						if data.operation == "undo" then
+							vim.fn.system(
+								"afplay /System/Library/Sounds/Blow.aiff"
+							)
+						end
+					end,
+					100
+				)
 
 				-- Simulate undo operation
 				require("undo-glow").undo()
@@ -312,11 +357,16 @@ describe("Enhanced API", function()
 					return ""
 				end
 
-				local hook_id = api.register_hook("post_highlight", function(data)
-					if data.operation == "redo" then
-						vim.fn.system("afplay /System/Library/Sounds/Glass.aiff")
+				local hook_id = api.register_hook(
+					"post_highlight",
+					function(data)
+						if data.operation == "redo" then
+							vim.fn.system(
+								"afplay /System/Library/Sounds/Glass.aiff"
+							)
+						end
 					end
-				end)
+				)
 
 				-- Simulate redo operation
 				require("undo-glow").redo()
@@ -358,7 +408,7 @@ describe("Enhanced API", function()
 					table.insert(performance_data, {
 						key = data.key,
 						delay = data.delay,
-						args_count = data.args_count
+						args_count = data.args_count,
 					})
 				end)
 
@@ -383,7 +433,7 @@ describe("Enhanced API", function()
 
 				-- Trigger an error by calling with invalid config
 				local success = pcall(require("undo-glow").setup, {
-					animation = { duration = -100 } -- Invalid
+					animation = { duration = -100 }, -- Invalid
 				})
 
 				-- Config validation logs errors but doesn't fail - it uses defaults
@@ -397,32 +447,37 @@ describe("Enhanced API", function()
 		describe("Dynamic Theming", function()
 			it("should allow context-aware color changes", function()
 				local color_changed = false
-				local original_hour = os.date
+				local original_os_date = os.date
 
 				-- Mock os.date to return late hour
+				---@diagnostic disable-next-line: duplicate-set-field
 				os.date = function(format)
 					if format == "*t" then
 						return { hour = 22 } -- Late night
 					end
-					return original_hour(format)
+					return original_os_date(format)
 				end
 
-				local hook_id = api.register_hook("pre_highlight", function(data)
-					if data.operation == "undo" then
-						local hour = os.date("*t").hour
-						if hour >= 22 or hour <= 6 then
-							data.opts.hl_color = { bg = "#2D1B69" } -- Dark mode
-							color_changed = true
+				local hook_id = api.register_hook(
+					"pre_highlight",
+					function(data)
+						if data.operation == "undo" then
+							local hour = os.date("*t").hour
+							if hour >= 22 or hour <= 6 then
+								data.opts.hl_color = { bg = "#2D1B69" } -- Dark mode
+								color_changed = true
+							end
 						end
-					end
-				end, 50)
+					end,
+					50
+				)
 
 				require("undo-glow").undo()
 
 				assert.is_true(color_changed)
 
 				-- Cleanup
-				os.date = original_hour
+				os.date = original_os_date
 				api.remove_hook("pre_highlight", hook_id)
 			end)
 
@@ -435,7 +490,7 @@ describe("Enhanced API", function()
 
 				-- Change configuration
 				require("undo-glow").setup({
-					animation = { enabled = true, duration = 500 }
+					animation = { enabled = true, duration = 500 },
 				})
 
 				assert.is_true(theme_updated)
@@ -477,6 +532,7 @@ describe("Enhanced API", function()
 				-- This should not crash even though action is invalid
 				local success = pcall(function()
 					local integrations = require("undo-glow.integrations")
+					---@diagnostic disable-next-line: param-type-mismatch
 					integrations.substitute.action("not_a_function", {}) -- Invalid action
 				end)
 
@@ -496,9 +552,12 @@ describe("Enhanced API", function()
 					cache_hits = cache_hits + 1
 				end)
 
-				local miss_sub = api.subscribe("color_conversion", function(data)
-					cache_misses = cache_misses + 1
-				end)
+				local miss_sub = api.subscribe(
+					"color_conversion",
+					function(data)
+						cache_misses = cache_misses + 1
+					end
+				)
 
 				-- Trigger some color operations
 				local color1 = require("undo-glow.color").hex_to_rgb("#FF0000")
@@ -519,13 +578,22 @@ describe("Enhanced API", function()
 				local coords_sanitized = false
 				local sanitized_data = nil
 
-				local sub_id = api.subscribe("coordinates_sanitized", function(data)
-					coords_sanitized = true
-					sanitized_data = data
-				end)
+				local sub_id = api.subscribe(
+					"coordinates_sanitized",
+					function(data)
+						coords_sanitized = true
+						sanitized_data = data
+					end
+				)
 
 				-- Add some content to the buffer to trigger sanitization
-				vim.api.nvim_buf_set_lines(0, 0, -1, false, {"test line with content"})
+				vim.api.nvim_buf_set_lines(
+					0,
+					0,
+					-1,
+					false,
+					{ "test line with content" }
+				)
 
 				-- Trigger coordinate sanitization through highlight_region
 				require("undo-glow").highlight_region({
@@ -534,7 +602,7 @@ describe("Enhanced API", function()
 					e_row = 0,
 					e_col = 50, -- Beyond line length to trigger sanitization
 					hlgroup = "UgUndo",
-					animation = { enabled = false }
+					animation = { enabled = false },
 				})
 
 				-- Coordinate sanitization should work regardless of event emission
@@ -548,19 +616,35 @@ describe("Enhanced API", function()
 			it("should allow registering custom animations", function()
 				local animation_called = false
 
-				local success = api.register_animation("test_wave", function(opts)
-					animation_called = true
-					-- Mock animation function
-					return function(progress)
-						return {
-							bg = string.format("#%02X%02X%02X",
-								math.floor(100 + 155 * math.sin(progress * math.pi * 4)),
-								math.floor(150),
-								math.floor(200 + 55 * math.sin(progress * math.pi * 4))
-							)
-						}
+				local success = api.register_animation(
+					"test_wave",
+					function(opts)
+						animation_called = true
+						-- Mock animation function
+						return function(progress)
+							return {
+								bg = string.format(
+									"#%02X%02X%02X",
+									math.floor(
+										100
+											+ 155
+												* math.sin(
+													progress * math.pi * 4
+												)
+									),
+									math.floor(150),
+									math.floor(
+										200
+											+ 55
+												* math.sin(
+													progress * math.pi * 4
+												)
+									)
+								),
+							}
+						end
 					end
-				end)
+				)
 
 				assert.is_true(success)
 
@@ -579,12 +663,15 @@ describe("Enhanced API", function()
 			it("should allow custom animation selection via hooks", function()
 				local animation_type_changed = false
 
-				local anim_hook = api.register_hook("pre_animation", function(data)
-					if data.operation == "search" then
-						data.animation_type = "test_wave"
-						animation_type_changed = true
+				local anim_hook = api.register_hook(
+					"pre_animation",
+					function(data)
+						if data.operation == "search" then
+							data.animation_type = "test_wave"
+							animation_type_changed = true
+						end
 					end
-				end)
+				)
 
 				-- This would normally trigger animation selection
 				-- For testing, we just verify the hook is registered
@@ -635,7 +722,7 @@ describe("Enhanced API", function()
 						e_row = 0,
 						e_col = 5,
 						hlgroup = "UgUndo",
-						animation = { enabled = false }
+						animation = { enabled = false },
 					})
 				end)
 
@@ -669,7 +756,7 @@ describe("Enhanced API", function()
 						e_row = 0,
 						e_col = 5,
 						hlgroup = "UgUndo",
-						animation = { enabled = false }
+						animation = { enabled = false },
 					})
 				end)
 
@@ -685,20 +772,28 @@ describe("Enhanced API", function()
 			it("should validate configuration changes", function()
 				local validation_errors = {}
 
-				local hook_id = api.register_hook("on_config_change", function(data)
-					if data.phase == "pre" then
-						local config = data.user_config
-						if config.animation and config.animation.duration then
-							if config.animation.duration < 50 then
-								table.insert(validation_errors, "Duration too short")
+				local hook_id = api.register_hook(
+					"on_config_change",
+					function(data)
+						if data.phase == "pre" then
+							local config = data.user_config
+							if
+								config.animation and config.animation.duration
+							then
+								if config.animation.duration < 50 then
+									table.insert(
+										validation_errors,
+										"Duration too short"
+									)
+								end
 							end
 						end
 					end
-				end)
+				)
 
 				-- Try invalid config
 				local success = pcall(require("undo-glow").setup, {
-					animation = { duration = 10 } -- Too short
+					animation = { duration = 10 }, -- Too short
 				})
 
 				assert.is_true(#validation_errors > 0)
@@ -712,13 +807,13 @@ describe("Enhanced API", function()
 				local sub_id = api.subscribe("config_changed", function(data)
 					table.insert(change_notifications, {
 						old_duration = data.old_config.animation.duration,
-						new_duration = data.new_config.animation.duration
+						new_duration = data.new_config.animation.duration,
 					})
 				end)
 
 				-- Change config
 				require("undo-glow").setup({
-					animation = { duration = 500 }
+					animation = { duration = 500 },
 				})
 
 				-- Config change notifications should work
@@ -737,7 +832,7 @@ describe("Enhanced API", function()
 
 				-- Try invalid config that causes validation error
 				local success = pcall(require("undo-glow").setup, {
-					animation = { duration = -100 } -- Invalid
+					animation = { duration = -100 }, -- Invalid
 				})
 
 				assert.is_true(success) -- Config validation logs errors but continues with defaults
@@ -752,10 +847,13 @@ describe("Enhanced API", function()
 				local hook_called = false
 				local operation_type = nil
 
-				local hook_id = api.register_hook("pre_highlight", function(data)
-					hook_called = true
-					operation_type = data.operation
-				end)
+				local hook_id = api.register_hook(
+					"pre_highlight",
+					function(data)
+						hook_called = true
+						operation_type = data.operation
+					end
+				)
 
 				require("undo-glow").undo()
 
@@ -769,10 +867,13 @@ describe("Enhanced API", function()
 				local hook_called = false
 				local operation_type = nil
 
-				local hook_id = api.register_hook("pre_highlight", function(data)
-					hook_called = true
-					operation_type = data.operation
-				end)
+				local hook_id = api.register_hook(
+					"pre_highlight",
+					function(data)
+						hook_called = true
+						operation_type = data.operation
+					end
+				)
 
 				require("undo-glow").redo()
 
@@ -786,10 +887,13 @@ describe("Enhanced API", function()
 				local hook_called = false
 				local operation_type = nil
 
-				local hook_id = api.register_hook("pre_highlight", function(data)
-					hook_called = true
-					operation_type = data.operation
-				end)
+				local hook_id = api.register_hook(
+					"pre_highlight",
+					function(data)
+						hook_called = true
+						operation_type = data.operation
+					end
+				)
 
 				require("undo-glow").paste_below()
 
@@ -802,12 +906,16 @@ describe("Enhanced API", function()
 			it("should include timing information in hooks", function()
 				local hook_data = nil
 
-				local hook_id = api.register_hook("pre_highlight", function(data)
-					hook_data = data
-				end)
+				local hook_id = api.register_hook(
+					"pre_highlight",
+					function(data)
+						hook_data = data
+					end
+				)
 
 				require("undo-glow").undo()
 
+				assert(hook_data, "hook_data should be set")
 				assert.is_table(hook_data)
 				assert.is_number(hook_data.timestamp)
 				assert.is_true(hook_data.timestamp > 0)

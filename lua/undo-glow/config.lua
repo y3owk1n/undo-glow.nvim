@@ -198,7 +198,7 @@ function M.setup(user_config)
 		log.set_outputs(
 			M.config.logging.notify,
 			M.config.logging.file,
-			M.config.logging.file and M.config.logging.file_path
+			M.config.logging.file and M.config.logging.file_path or nil
 		)
 		if M.config.logging.level then
 			local level_map = {

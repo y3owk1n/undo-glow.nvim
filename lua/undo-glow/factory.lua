@@ -9,6 +9,7 @@ local M = {}
 
 ---Animation factory for creating animation instances
 ---@class AnimationFactory
+---@field _animations table<string, function>
 local AnimationFactory = {}
 AnimationFactory.__index = AnimationFactory
 
@@ -73,6 +74,7 @@ end
 
 ---Highlight factory for creating highlight instances
 ---@class HighlightFactory
+---@field _highlights table<string, function>
 local HighlightFactory = {}
 HighlightFactory.__index = HighlightFactory
 
