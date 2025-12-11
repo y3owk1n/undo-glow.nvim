@@ -843,7 +843,7 @@ api.config_builder()
   :animation({
     enabled = true,
     duration = 500,
-    animation_type = "bounce"
+    animation_type = "spring"
   })
   :performance({
     debounce_delay = 100
@@ -870,7 +870,7 @@ api.register_hook("pre_animation", function(data)
   if vim.tbl_contains(search_ops, data.operation) then
     data.animation_type = "rainbow"
   elseif data.operation == "cursor_moved" then
-    data.animation_type = "bounce"
+    data.animation_type = "spring"
   elseif data.operation == "undo" then
     data.animation_type = "pulse"
   end
