@@ -311,18 +311,48 @@ function M.animate_or_clear_highlights(
 			extmark_ids = {},
 		}
 
-		local success, status =
-			pcall(opts.state.animation.animation_type, animation_opts)
+		-- Use factory to resolve animation
+		local factory = require("undo-glow.factory")
+		local animation_type = opts.state.animation.animation_type
 
-		if not success then
+		local animation_fn
+		if type(animation_type) == "function" then
+			-- Custom animation function (including spy functions from tests)
+			animation_fn = animation_type
+		elseif type(animation_type) == "string" then
+			-- Built-in animation from factory
+			animation_fn =
+				factory.animation_factory:create(animation_type, opts)
+		else
+			-- Invalid animation type
+			animation_fn = nil
+		end
+
+		if not animation_fn then
 			require("undo-glow.log").error(
 				"Animation type must be one of the builtin or a function. Falling back to fade."
 			)
-			status = false
+			animation_fn = factory.animation_factory:create("fade", opts)
 		end
 
-		if status == false then
-			require("undo-glow.animation").animate.fade(animation_opts)
+		if animation_fn then
+			local success, status = pcall(animation_fn, animation_opts)
+			if not success then
+				require("undo-glow.log").error(
+					"Animation failed: " .. tostring(status)
+				)
+				-- Fallback to fade if animation fails
+				local fade_fn = factory.animation_factory:create("fade", opts)
+				if fade_fn then
+					fade_fn(animation_opts)
+				end
+			elseif status == false then
+				-- Animation returned false, fallback to fade
+				local fade_fn = factory.animation_factory:create("fade", opts)
+				if fade_fn then
+					fade_fn(animation_opts)
+				end
+			end
 		end
 	else
 		if extmark_ids and vim.tbl_count(extmark_ids) > 0 then
