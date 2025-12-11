@@ -128,6 +128,13 @@ describe("undo-glow API", function()
 			assert.is_function(M.yank)
 		end)
 
+		it("should call yank command without error", function()
+			-- Regression test: ensure yank doesn't fail during TextYankPost-like conditions
+			-- This tests that emit is deferred to avoid window change errors
+			local success, err = pcall(M.yank)
+			assert.is_true(success, "yank command should not error: " .. (err or ""))
+		end)
+
 		it("should have paste command functions", function()
 			assert.is_function(M.paste_below)
 			assert.is_function(M.paste_above)

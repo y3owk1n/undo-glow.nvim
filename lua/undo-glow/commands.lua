@@ -98,7 +98,9 @@ end
 ---@return nil
 function M.yank(opts)
 	local api = require("undo-glow.api")
-	api.emit("command_executed", { command = "yank", opts = opts })
+	vim.schedule(function()
+		api.emit("command_executed", { command = "yank", opts = opts })
+	end)
 
 	vim.g.ug_ignore_cursor_moved = true
 	opts = require("undo-glow.utils").merge_command_opts("UgYank", opts)
