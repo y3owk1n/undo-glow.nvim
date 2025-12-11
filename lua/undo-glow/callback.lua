@@ -47,9 +47,13 @@ function M.on_bytes_wrapper(
 		end_col = new_ec
 	end
 
-	vim.schedule(function()
+	-- Use debouncing to prevent excessive highlighting during rapid operations
+	local debounce = require("undo-glow.debounce")
+	local debounce_key = string.format("highlight_%d", bufnr)
+
+	local debounced_highlight = debounce.debounce(function()
 		---@type UndoGlow.HandleHighlight
-		local opts = {
+		local handle_highlight_opts = {
 			bufnr = bufnr,
 			state = state,
 			s_row = s_row,
@@ -58,8 +62,10 @@ function M.on_bytes_wrapper(
 			e_col = end_col,
 		}
 
-		require("undo-glow.utils").handle_highlight(opts)
-	end)
+		require("undo-glow.utils").handle_highlight(handle_highlight_opts)
+	end, 50, debounce_key) -- 50ms debounce delay
+
+	vim.schedule(debounced_highlight)
 	return false
 end
 

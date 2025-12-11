@@ -48,6 +48,11 @@
 ---		},
 ---	},
 ---	priority = 4096, -- so that it will work with render-markdown.nvim
+---	performance = {
+---		color_cache_size = 1000, -- Maximum cached color conversions
+---		debounce_delay = 50, -- Milliseconds to debounce rapid operations
+---		animation_skip_unchanged = true, -- Skip redraws when highlights haven't changed
+---	},
 ---}
 ---<
 ---
@@ -102,6 +107,14 @@ local defaults = {
 		},
 	},
 	priority = 4096, -- so that it will work with render-markdown.nvim
+	performance = {
+		-- Color conversion caching
+		color_cache_size = 1000, -- Maximum cached color conversions
+		-- Debouncing settings
+		debounce_delay = 50, -- Milliseconds to debounce rapid operations
+		-- Animation optimization
+		animation_skip_unchanged = true, -- Skip redraws when highlights haven't changed
+	},
 }
 
 ---@private
@@ -156,6 +169,20 @@ function M.setup(user_config)
 	end
 
 	M.config = vim.tbl_deep_extend("force", defaults, user_config)
+
+	-- Apply performance settings
+	if M.config.performance then
+		local color = require("undo-glow.color")
+		local debounce = require("undo-glow.debounce")
+
+		if M.config.performance.color_cache_size then
+			color.set_cache_size(M.config.performance.color_cache_size)
+		end
+
+		if M.config.performance.debounce_delay then
+			debounce.set_default_delay(M.config.performance.debounce_delay)
+		end
+	end
 
 	local valid_keys = {
 		undo = true,
