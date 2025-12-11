@@ -1,4 +1,4 @@
----@mod undo-glow.validate Input validation utilities
+---@mod undo-glow.nvim.validate Input validation utilities
 ---@brief [[
 ---
 ---Centralized input validation utilities for consistent parameter checking.

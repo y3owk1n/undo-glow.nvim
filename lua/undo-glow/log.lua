@@ -1,4 +1,4 @@
----@mod undo-glow.log Logging utilities
+---@mod undo-glow.nvim.log Logging utilities
 ---@brief [[
 ---
 ---Centralized logging utilities for consistent error messages and configurable logging levels.

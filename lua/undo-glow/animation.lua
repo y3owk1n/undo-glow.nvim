@@ -1,4 +1,4 @@
----@mod undo-glow.animation Animation system
+---@mod undo-glow.nvim.animation Animation system
 ---@brief [[
 ---
 ---Core animation functionality for undo highlighting effects.

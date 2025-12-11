@@ -1,4 +1,4 @@
----@mod undo-glow.factory Factory patterns for creating animations and highlights
+---@mod undo-glow.nvim.factory Factory patterns for creating animations and highlights
 ---@brief [[
 ---
 ---Factory patterns for creating animations and highlights with better extensibility.

@@ -1,4 +1,4 @@
----@mod undo-glow.utils Utility functions
+---@mod undo-glow.nvim.utils Utility functions
 ---@brief [[
 ---
 ---General utility functions and helpers for undo-glow.

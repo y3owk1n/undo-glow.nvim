@@ -1,4 +1,4 @@
----@mod undo-glow.color Color utilities
+---@mod undo-glow.nvim.color Color utilities
 ---@brief [[
 ---
 ---Color conversion and manipulation utilities with caching.

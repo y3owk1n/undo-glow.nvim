@@ -1,4 +1,4 @@
----@mod undo-glow.callback Callback handlers
+---@mod undo-glow.nvim.callback Callback handlers
 ---@brief [[
 ---
 ---Callback functions for handling undo/redo events and integrations.

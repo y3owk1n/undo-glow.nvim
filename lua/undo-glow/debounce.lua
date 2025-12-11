@@ -1,4 +1,4 @@
----@mod undo-glow.debounce Debouncing utilities for performance optimization
+---@mod undo-glow.nvim.debounce Debouncing utilities for performance optimization
 ---@brief [[
 ---
 ---Debouncing utilities to prevent excessive operations during rapid events.
