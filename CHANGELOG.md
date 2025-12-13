@@ -1,5 +1,29 @@
 # Changelog
 
+## [1.13.0](https://github.com/y3owk1n/undo-glow.nvim/compare/v1.12.0...v1.13.0) (2025-12-11)
+
+
+### Features
+
+* Complete enhanced API implementation with comprehensive documentation ([#285](https://github.com/y3owk1n/undo-glow.nvim/issues/285)) ([e0b4b15](https://github.com/y3owk1n/undo-glow.nvim/commit/e0b4b152b652e6fd8c7d1671351ed7f524a2b77c))
+* implemenent factory pattern for better extensibility ([#284](https://github.com/y3owk1n/undo-glow.nvim/issues/284)) ([db94838](https://github.com/y3owk1n/undo-glow.nvim/commit/db948386c2bd49061e6d9441a1c08852442b290f))
+
+
+### Bug Fixes
+
+* correct command_executed event data and standardize operation field ([#293](https://github.com/y3owk1n/undo-glow.nvim/issues/293)) ([8cfebc8](https://github.com/y3owk1n/undo-glow.nvim/commit/8cfebc8aa46fd158aa3cf03a11c229dc57b2760c))
+* defer yank emit to avoid TextYankPost error ([#291](https://github.com/y3owk1n/undo-glow.nvim/issues/291)) ([e1c0cef](https://github.com/y3owk1n/undo-glow.nvim/commit/e1c0cef506f49cf1121f5f6eda234bd6c8705a14))
+* enhance reliability and monitoring with comprehensive health checks ([#283](https://github.com/y3owk1n/undo-glow.nvim/issues/283)) ([c9ea5b2](https://github.com/y3owk1n/undo-glow.nvim/commit/c9ea5b244251a9f8c426156ccbac33107676a689))
+* make config_builder:build() apply config immediately ([#295](https://github.com/y3owk1n/undo-glow.nvim/issues/295)) ([e8df76b](https://github.com/y3owk1n/undo-glow.nvim/commit/e8df76b99b0e6215773ce2001c1924ef5e13f183))
+* make pre_highlight hook modifications work for hl_color and hlgroup ([#294](https://github.com/y3owk1n/undo-glow.nvim/issues/294)) ([9b88ff1](https://github.com/y3owk1n/undo-glow.nvim/commit/9b88ff1ac08013d39c154200b59cc8832004b66e))
+* prevent error when closing split with window_scoped animation ([#286](https://github.com/y3owk1n/undo-glow.nvim/issues/286)) ([b24995c](https://github.com/y3owk1n/undo-glow.nvim/commit/b24995ceaabd044c8c6b9e2f41da6cf87f6eb70b))
+* **search_cmd:** ensure only trigger highlight for `/` and `?` ([#290](https://github.com/y3owk1n/undo-glow.nvim/issues/290)) ([132572e](https://github.com/y3owk1n/undo-glow.nvim/commit/132572e07de953f8d42177ba11a6b4c98b0b3da6))
+
+
+### Performance Improvements
+
+* optimize performance with caching, debouncing, and animation improvements ([#281](https://github.com/y3owk1n/undo-glow.nvim/issues/281)) ([f81b768](https://github.com/y3owk1n/undo-glow.nvim/commit/f81b768d7c4bc3ad93797437beb5ec3ead7ceb74))
+
 ## [1.12.0](https://github.com/y3owk1n/undo-glow.nvim/compare/v1.11.0...v1.12.0) (2025-09-23)
 
 
