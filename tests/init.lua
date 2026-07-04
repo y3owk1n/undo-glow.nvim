@@ -6,7 +6,4 @@ for _, name in ipairs({ "yanky.nvim", "substitute.nvim", "flash.nvim" }) do
 end
 vim.opt.rtp:prepend(vim.fn.getcwd())
 
-require("undo-glow").setup({
-	notify = false,
-	logging = { notify = false, file = false },
-})
+require("undo-glow").setup()

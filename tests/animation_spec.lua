@@ -145,16 +145,16 @@ describe("undo-glow.animation", function()
 			end
 
 			animation.animate_start(opts, animate_fn)
-			vim.wait(20, function() end) -- Wait for animation to finish
 
-			-- Verify cleanup
-			local marks = vim.api.nvim_buf_get_extmarks(bufnr, ns, 0, -1, {})
+			-- Wait for animation to finish (predicate-based to handle CI timing)
+			local ok = vim.wait(500, function()
+				local marks =
+					vim.api.nvim_buf_get_extmarks(bufnr, ns, 0, -1, {})
+				return #marks == 0
+			end)
+			assert.is_true(ok, "Extmark should be deleted after completion")
+
 			local hl = vim.api.nvim_get_hl(0, { name = opts.hlgroup })
-			assert.equal(
-				0,
-				#marks,
-				"Extmark should be deleted after completion"
-			)
 			assert.is_nil(
 				hl.background,
 				"Highlight should be cleared after completion"
