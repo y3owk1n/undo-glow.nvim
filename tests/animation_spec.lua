@@ -122,6 +122,7 @@ describe("undo-glow.animation", function()
 		it("should handle animation completion", function()
 			local opts = {
 				bufnr = bufnr,
+				ns = ns,
 				duration = 10, -- Short duration for testing
 				hlgroup = hlgroup,
 				state = { animation = { fps = 60 } },

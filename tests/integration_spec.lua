@@ -110,6 +110,8 @@ describe("undo-glow.integrations", function()
 			before_each(function()
 				-- Reset global state
 				vim.g.ug_ignore_cursor_moved = nil
+				-- Mock flash to avoid hanging in headless mode
+				package.loaded["flash"] = { jump = function() end }
 			end)
 
 			after_each(function()
